@@ -21,6 +21,7 @@ class SUPERVISOR:
         self.FinalTime=FinalTime
         self.ROBN=10
         self.velocity=14
+        self.collisionDist=0.05
         self.ground=cv.imread('ground.png') # (1024,512)
         self.swarm=[0]*self.ROBN
         self.wallNum=4
@@ -106,7 +107,7 @@ class SUPERVISOR:
             for i in range(0,self.ROBN):
                 for j in range(0,self.ROBN):
                     if j!=i:
-                        if dist(self.swarm[j].position,self.swarm[i].position)<=self.robotSenseRad*2 and self.flagsR[i][j]==False: 
+                        if dist(self.swarm[j].position,self.swarm[i].position)<=self.robotSenseRad+self.collisionDist and self.flagsR[i][j]==False: 
                             collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] , self.swarm[j].position[1]-self.swarm[i].position[1] )))
                             self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
                             self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
@@ -124,7 +125,7 @@ class SUPERVISOR:
             i=robotNum
             for j in range(0,self.ROBN):
                 if j!=i:
-                    if dist(self.swarm[j].position,self.swarm[i].position)<=self.robotSenseRad*2 and self.flagsR[i][j]==False: 
+                    if dist(self.swarm[j].position,self.swarm[i].position)<=self.robotSenseRad+self.collisionDist and self.flagsR[i][j]==False: 
                         self.swarm[i].rotation+=rnd.randint(90,270)
                         collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] , self.swarm[j].position[1]-self.swarm[i].position[1] )))
                         self.swarm[i].rotation=collisionAngle+rnd.randint(90,270) 

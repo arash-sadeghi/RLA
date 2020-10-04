@@ -1,6 +1,7 @@
 from header import SUPERVISOR
 import numpy as np
-
+from time import time as TIME
+from time import ctime
 if __name__ == "__main__":
     iteration=20
     FinalTime=5000
@@ -28,5 +29,5 @@ if __name__ == "__main__":
                    print("      [+] ", sup.getTime())
 
         del sup
-    with open('results.npy','wb') as f:
+    with open('results'+ctime(TIME()).replace(':','_')+'.npy','wb') as f:
         np.save(f,results)
