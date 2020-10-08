@@ -6,7 +6,7 @@ if __name__ == "__main__":
     iteration=20
     FinalTime=5000
     samplingPeriod=5
-    vizFlag=False
+    vizFlag=True
     epoch=FinalTime//samplingPeriod+1
     results=np.zeros((iteration,epoch))
     for it in range(iteration):

@@ -21,7 +21,7 @@ class SUPERVISOR:
         self.FinalTime=FinalTime
         self.ROBN=10
         self.velocity=14
-        self.collisionDist=0.05
+        self.collisionDist=m2px(0.05)
         self.ground=cv.imread('ground.png') # (1024,512)
         self.swarm=[0]*self.ROBN
         self.wallNum=4
@@ -46,7 +46,7 @@ class SUPERVISOR:
         for i in range(self.ROBN):
             self.swarm[i]=ROBOT(str(i))
             self.swarm[i].position=np.array([int(rnd.sample(list(possibleX),1)[0]),int(rnd.sample(list(possibleY),1)[0])])
-            self.swarm[i].rotation=rnd.sample(list(possibleRot),1)[0]
+            self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
 
     def visualize(self):
         background=np.copy(self.ground)
