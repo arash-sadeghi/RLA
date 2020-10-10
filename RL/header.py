@@ -17,6 +17,7 @@ def dist(x,y):
 class SUPERVISOR:
     def __init__(self,FinalTime,samplingPeriod):
         self.sharedParams()
+        # self.rewardMemory=[]
         self.fps=int(self.timeStep*1000)//50
         self.samplingPeriod=samplingPeriod
         self.FinalTime=FinalTime
@@ -32,13 +33,14 @@ class SUPERVISOR:
         self.robotRad=0.06
         self.robotSenseRad=m2px(self.robotRad+self.detectRad)
         self.Wmax=120
-        # self.QRloc=[(self.Ylen,self.Xlen//4),(self.Ylen,self.Xlen//4*2),(self.Ylen,self.Xlen//4*3),(0,self.Ylen//4*3),(0,self.Ylen//4*2),(0,self.Ylen//4)]
-        self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
-            'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
-        self.QRdetectableArea=m2px(0.3)
         
-#...............................................................................................................................
+# ...............................................................................................................................
     def sharedParams(self):
+        """
+        These parameters are constant
+        Other wise it will cause conflict between
+        supervisor and robots
+        """
         self.ground=cv.imread('ground.png') 
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
@@ -61,6 +63,11 @@ class SUPERVISOR:
         self.velocity=14
         self.timeStep=512*0.001
         self.printFlag=False
+
+        self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
+            'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
+        self.QRdetectableArea=m2px(0.3)
+
 #...............................................................................................................................
     def generateRobots(self):
         margin=m2px(self.robotRad)*5
@@ -80,8 +87,11 @@ class SUPERVISOR:
                 I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
                 E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
                 C=tuple(map(lambda x: int(round(x)),self.swarm[i].position))
-                cv.arrowedLine(background,I,E,(0,0,255),2)
-                cv.arrowedLine(background,I,C,(255,0,0),2)
+                Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
+                cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
+                # cv.arrowedLine(background,I,C,(255,0,0),2) # motion trajectory
+                cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
+                cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
             
             vizPos=[]
             for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
@@ -136,7 +146,9 @@ class SUPERVISOR:
                             self.swarm[i].rotation2B=rnd.randint(270,360+90)# -
 
                     self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
-                    self.swarm[i].inAction=False
+                    if self.swarm[i].inAction==True:
+                        self.swarm[i].actAndReward(-10)
+                        self.swarm[i].inAction=False
                     self.swarm[i].actionCompelte=False
          
             for i in range(0,self.ROBN):
@@ -191,7 +203,7 @@ class SUPERVISOR:
 #...............................................................................................................................
     def getQRs(self):
         for i in range(self.ROBN):
-            self.swarm[i].detectQR(self.QRloc,self.QRdetectableArea)
+            self.swarm[i].detectQR()
 #...............................................................................................................................
     def swarmRL(self):
         for i in range(self.ROBN):
@@ -209,6 +221,7 @@ class ROBOT(SUPERVISOR):
         self.waitingTime=0
         self.delayFlag=False
         self.detectedQR=' '
+        self.lastdetectedQR=' '
         self.Qtable=np.zeros((self.numberOfStates,self.NumberOfActions))
         self.inAction=False
         self.actionCompelte=False
@@ -216,6 +229,8 @@ class ROBOT(SUPERVISOR):
         self.action=0
         self.state=0
         self.initialPos=0
+        self.rewardMemory=[]
+        self.sudoVec=0
 #...............................................................................................................................  
     def move(self):
             self.rotation=self.rotation2B
@@ -239,39 +254,47 @@ class ROBOT(SUPERVISOR):
             self.waitingTime=Wmax*((self.groundSensorValue**2)/((self.groundSensorValue**2) + 5000))
             self.delayFlag=True
 #...............................................................................................................................
-    def detectQR(self,QRloc,QRdetectableArea):
-        for QRpos in QRloc:
-            if dist(self.position,QRloc[QRpos])<=QRdetectableArea :
+    def detectQR(self):
+        for QRpos in self.QRloc:
+            if dist(self.position,self.QRloc[QRpos])<=self.QRdetectableArea :
                 self.detectedQR=QRpos
                 break
             else:
                 self.detectedQR='QR0'
 #...............................................................................................................................
-    def actAndReward(self):
+    def actAndReward(self,rewardInp=None):
         if self.inAction==False:
             angle=self.action[1]
             length=self.action[0]
             if self.state<=3: angle=180+angle
 
+            actionXY=np.array([length*sin(np.radians(angle)),length*cos(np.radians(angle))])
+            self.sudoVec= np.array(self.QRloc[self.detectedQR])-self.position
+            actionXY_SudoVec=actionXY+self.sudoVec
+            angle=np.degrees(atan2(actionXY_SudoVec[0],actionXY_SudoVec[1]))
+            length=sqrt(actionXY_SudoVec[0]**2+actionXY_SudoVec[1]**2)
             self.rotation2B=angle
             self.inAction=True
             self.actionCompelte=False
             self.initialPos=np.copy(self.position)
             self.reward=0
+            self.desiredPos=self.initialPos+actionXY_SudoVec
+            self.lastdetectedQR=self.detectedQR
 
-
-            self.desiredPos=[self.initialPos[0]+length*sin(np.radians(angle)),\
-                self.initialPos[1]+length*cos(np.radians(angle))]
-            # print("act",self.initialPos,self.desiredPos,angle)
         else:
             if dist(self.position,self.desiredPos)<=20:
                 self.actionCompelte=True
                 self.inAction=False
-                self.groundSense()
-                self.reward=self.groundSensorValue
+                if rewardInp==None:
+                    self.groundSense()
+                    self.reward=self.groundSensorValue
+                    if self.reward==0:self.reward-=1
+                else: self.reward=rewardInp
                 if self.printFlag: print("REWARD::",self.reward)
                 actionIndx=self.actionSpace.index(self.action)
                 self.Qtable[self.state,actionIndx]+=self.reward*self.RLparams['alpha']
+                self.rewardMemory.append(self.reward)
+                # self.QMemory.append(self.reward)
 #...............................................................................................................................
     def RL(self):
         if self.inAction==False :
