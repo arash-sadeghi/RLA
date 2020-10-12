@@ -3,6 +3,10 @@ import numpy as np
 import random as rnd
 from math import sin,cos,sqrt,atan2
 from itertools import product
+from time import time as TIME
+from time import ctime
+import os
+
 def m2px(inp):
     return int(inp*512/2)
 
@@ -15,13 +19,13 @@ def dist(x,y):
     return sqrt((x[0]-y[0])**2+(x[1]-y[1])**2)
 
 class SUPERVISOR:
-    def __init__(self,FinalTime,samplingPeriod):
+    def __init__(self,FinalTime,samplingPeriod,codeBeginTime):
         self.sharedParams()
         # self.rewardMemory=[]
         self.fps=int(self.timeStep*1000)//50
         self.samplingPeriod=samplingPeriod
         self.FinalTime=FinalTime
-        self.ROBN=1
+        self.ROBN=10
         self.collisionDist=m2px(0.05)
         self.swarm=[0]*self.ROBN
         self.wallNum=4
@@ -33,7 +37,16 @@ class SUPERVISOR:
         self.robotRad=0.06
         self.robotSenseRad=m2px(self.robotRad+self.detectRad)
         self.Wmax=120
-        
+        videoRecordTime=ctime(TIME()).replace(':','_')
+        capture_rate=5
+        FPS=20
+        size=(self.Xlen,self.Ylen)
+        fourcc = cv.VideoWriter_fourcc(*'mp4v')
+        if os.name=='nt':
+            self.video = cv.VideoWriter(codeBeginTime+'\\'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+        else:
+            self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+
 # ...............................................................................................................................
     def sharedParams(self):
         """
@@ -79,7 +92,7 @@ class SUPERVISOR:
             self.swarm[i].position=np.array([rnd.sample(list(possibleX),1)[0],rnd.sample(list(possibleY),1)[0]])
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
 #...............................................................................................................................
-    def visualize(self):
+    def visualize(self,vizFlag):
         background=np.copy(self.ground)
         for i in range(self.ROBN):
 
@@ -106,9 +119,10 @@ class SUPERVISOR:
             cv.line(background,tuple(vizPos),tuple(np.array(vizPos)+direction),(0,0,200),3)
 
         cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-
-        cv.imshow("background",background)
-        cv.waitKey(self.fps)
+        if vizFlag:
+            cv.imshow("background",background)
+            cv.waitKey(self.fps)
+        else: self.video.write(background)
 #...............................................................................................................................
     def moveAll(self):
         for i in range(self.ROBN):
@@ -119,7 +133,7 @@ class SUPERVISOR:
                 if self.swarm[i].waitingTime<=0:
                     self.swarm[i].delayFlag=False
                     self.checkCollision(specific=True,robotNum=i)            
-                    self.swarm[i].move(self.velocity,self.timeStep,self.Xlen,self.Ylen)
+                    self.swarm[i].move()
 
         self.time+=self.timeStep
 #...............................................................................................................................

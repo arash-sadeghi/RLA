@@ -6,10 +6,11 @@ import os
 if __name__ == "__main__":
     iteration=20
     FinalTime=5000
-    samplingPeriod=500000
+    samplingPeriod=50000
     vizFlag= not True
     epoch=FinalTime//samplingPeriod+1
-    results=np.zeros((iteration,epoch))
+    # results=np.zeros((iteration,epoch))
+    results=[]
     codeBeginTime=ctime(TIME()).replace(':','_')
     saved=0
     folder=os.makedirs(codeBeginTime)
@@ -29,12 +30,19 @@ if __name__ == "__main__":
             sup.getQRs()
             sup.swarmRL()
             sup.moveAll()
-            # if vizFlag or saved>3: sup.visualize()
-            if vizFlag or saved >= 8 or True: sup.visualize()
+            if vizFlag: sup.visualize()
+            # if vizFlag or saved >= 8 or True: sup.visualize()
+
+            if sup.getTime()%10==0 and sup.getTime()-t>1 :
+                results.append(sup.getStatus())
+
             if sup.getTime()%samplingPeriod==0 and sup.getTime()-t>1 :
-                # results[it,col]=sup.getStatus()
-                # col+=1
+                # results.append(sup.getStatus())
+                col+=1
                 t=sup.getTime()
+                saved+=1
+                with open(str(saved)+' results '+codeBeginTime+'.npy','wb') as f:
+                    np.save(f,np.array(results))
                 # if col%(epoch//5)==0:
                 #    print("      [+] ", sup.getTime())
                 #    with open('Qtable.npy','wb') as Qtable:
@@ -42,7 +50,6 @@ if __name__ == "__main__":
                 print("      [+] ", sup.getTime(), "epsilon of robot 0", sup.swarm[0].RLparams["epsilon"])
                 with open(str(saved)+' Qtable '+codeBeginTime+' .npy','wb') as Qtable:
                     np.save(Qtable,sup.swarm[0].Qtable)
-                    saved+=1
                 with open(str(saved)+' rewards '+codeBeginTime+' .npy','wb') as reward:
                     np.save(reward,np.array(sup.swarm[0].rewardMemory))
                 

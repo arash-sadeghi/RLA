@@ -31,12 +31,26 @@
 
 # print(a,b)
 #..................................................
-a=[]
-a.append(3)
-print(a)
+# a=[]
+# a.append(3)
+# print(a)
+#..................................................
+import numpy
+import numpy as np
+import matplotlib.pyplot as plt
 
-
-
+x = numpy.array([1, 7, 20, 50, 79])
+y = numpy.array([10, 19, 30, 35, 51])
+Z=numpy.polyfit(numpy.log(x), y, 1)
+z=Z[0]*np.log(x)+Z[1]
+# plt.plot(x,label='x')
+plt.plot(x,y,label='y')
+plt.plot(x,z,label='z')
+plt.legend()
+plt.xlim(0,80)
+plt.ylim(10,50)
+plt.show()
+# array([ 8.46295607,  6.61867463])
 
 
 
