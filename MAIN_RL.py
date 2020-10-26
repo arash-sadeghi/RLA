@@ -1,5 +1,21 @@
 from header import *
 import numpy as np
+import signal
+
+if os.name=='nt':
+    dirChangeCharacter='\\'
+else:
+    dirChangeCharacter='/'
+
+def keyboardInterruptHandler(signal, frame):
+    global results
+    with open(codeBeginTime+dirChangeCharacter+'results halfdone '+ctime(TIME()).replace(':','_')+'.npy','wb') as f:
+        np.save(f,np.array(results))
+        print('[+] half data saved')
+    ans=input('quit? [y/n]')
+    if ans=='y': exit(0)
+signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
+
 if __name__ == "__main__":
     iteration=20//4
     samplingPeriodSmall=10
@@ -54,14 +70,18 @@ if __name__ == "__main__":
             #     for _ in sup.swarm[0].Qtable:
             #         trainingCheck.append(any(_>0))
             #     print(trainingCheck)
+            signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
+
         
         results.append(results_)
 
 
 
-
+        sup.video.release()
         del sup
 
     os.chdir(codeBeginTime)
     with open('results '+ctime(TIME()).replace(':','_')+'.npy','wb') as f:
         np.save(f,np.array(results))
+        print('[+] goodbye')
+
