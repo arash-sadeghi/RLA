@@ -18,14 +18,21 @@ def RotStandard(inp):
 def dist(x,y):
     return sqrt((x[0]-y[0])**2+(x[1]-y[1])**2)
 
+def TableCompare(table1,table2):
+    # tableResult=np.zeros(table1.shape)
+    # for row in range(table1.shape[0]):
+    #     for col in range(table1.shape[1]):
+    #         tableResult[row,col]=max(table2[row,col],table1[row,col])
+    # return tableResult
+    return np.round((table1+table2)/2,3)
+
 class SUPERVISOR:
-    def __init__(self,FinalTime,samplingPeriod,codeBeginTime):
+    def __init__(self,ROBN,codeBeginTime,vizFlag):
         self.sharedParams()
         # self.rewardMemory=[]
+        self.vizFlag=vizFlag
         self.fps=int(self.timeStep*1000)//50
-        self.samplingPeriod=samplingPeriod
-        self.FinalTime=FinalTime
-        self.ROBN=10
+        self.ROBN=ROBN
         self.collisionDist=m2px(0.05)
         self.swarm=[0]*self.ROBN
         self.wallNum=4
@@ -46,7 +53,6 @@ class SUPERVISOR:
             self.video = cv.VideoWriter(codeBeginTime+'\\'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
         else:
             self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
-
 # ...............................................................................................................................
     def sharedParams(self):
         """
@@ -58,7 +64,8 @@ class SUPERVISOR:
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
-        self.numberOfStates=7
+        self.EpsilonDampRatio=0.999
+
         # angles=np.arange(0,180+18,18)
         # maxlen=sqrt((self.Xlen)**2+(self.Ylen)**2)//3
         # maxlen=int(20*512/9.2) # 14
@@ -71,7 +78,9 @@ class SUPERVISOR:
         lens=[maxlen//4,2*maxlen//4,3*maxlen//4,3*maxlen//4]
         self.actionSpace=list(product(lens,angles))
 
+        self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
+
         self.RLparams={"epsilon":0.9,"alpha":0.1}
         self.velocity=14
         self.timeStep=512*0.001
@@ -79,8 +88,7 @@ class SUPERVISOR:
 
         self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
             'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
-        self.QRdetectableArea=m2px(0.3)
-
+        self.QRdetectableArea=m2px(0.3)      
 #...............................................................................................................................
     def generateRobots(self):
         margin=m2px(self.robotRad)*5
@@ -92,7 +100,7 @@ class SUPERVISOR:
             self.swarm[i].position=np.array([rnd.sample(list(possibleX),1)[0],rnd.sample(list(possibleY),1)[0]])
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
 #...............................................................................................................................
-    def visualize(self,vizFlag):
+    def visualize(self):
         background=np.copy(self.ground)
         for i in range(self.ROBN):
 
@@ -109,8 +117,12 @@ class SUPERVISOR:
             vizPos=[]
             for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
 
-            cv.circle(background,tuple(vizPos),self.robotSenseRad,(255,100,100),1)
-            cv.circle(background,tuple(vizPos),m2px(self.robotRad),(255,100,100),-1)
+            RobotColor=(255,100,100)
+            if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
+                RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
+
+            cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
+            cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
 
             direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
                 , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
@@ -119,7 +131,12 @@ class SUPERVISOR:
             cv.line(background,tuple(vizPos),tuple(np.array(vizPos)+direction),(0,0,200),3)
 
         cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-        if vizFlag:
+
+        AllEpsilons=np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
+        EpsilonAverage=round(np.mean(AllEpsilons),3)
+        cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
+
+        if self.vizFlag:
             cv.imshow("background",background)
             cv.waitKey(self.fps)
         else: self.video.write(background)
@@ -223,7 +240,29 @@ class SUPERVISOR:
         for i in range(self.ROBN):
             if self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True:
                 self.swarm[i].RL()
+#...............................................................................................................................
+    def talk(self):
+        for i in range(self.ROBN):
+            if any(self.flagsR[i]):
+                tobesharedRobots=np.where(self.flagsR[i])[0]
+                for j in tobesharedRobots:
+                    temp=TableCompare(self.swarm[i].Qtable,self.swarm[j].Qtable)
+                    if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),end=' ')
+                    self.swarm[i].Qtable=np.copy(temp)
+                    self.swarm[j].Qtable=np.copy(temp)
+                    if self.vizFlag : print(np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),\
+                        self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
+                    
+                    temp=min(self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
+                    self.swarm[i].RLparams['epsilon']=temp
+                    self.swarm[j].RLparams['epsilon']=temp
+                    if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
+        if self.vizFlag : print("------------------------------------------------------")
+
 ################################################################################################################################
+################################################################################################################################
+################################################################################################################################
+
 class ROBOT(SUPERVISOR):
     def __init__(self,name):
         super().sharedParams()
@@ -245,6 +284,7 @@ class ROBOT(SUPERVISOR):
         self.initialPos=0
         self.rewardMemory=[]
         self.sudoVec=0
+        self.ExploreExploit=''
 #...............................................................................................................................  
     def move(self):
             self.rotation=self.rotation2B
@@ -275,6 +315,25 @@ class ROBOT(SUPERVISOR):
                 break
             else:
                 self.detectedQR='QR0'
+
+#...............................................................................................................................
+    def RL(self):
+        if self.inAction==False :
+            self.state=int(self.detectedQR[-1])
+            if rnd.random()<= self.RLparams["epsilon"]:
+                self.action=rnd.sample(self.actionSpace,1)[0]
+                self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
+                if self.printFlag: print("EXPLORED",self.action,self.RLparams["epsilon"])
+                self.ExploreExploit='Explore'
+            else:
+                actionIndx=np.argmax(self.Qtable[self.state,:])
+                self.action=self.actionSpace[actionIndx]
+                if self.printFlag: print("EXPLOITED",self.action,self.RLparams["epsilon"])
+                self.ExploreExploit='Exploit'
+
+            self.actAndReward()
+        else:
+            self.actAndReward()
 #...............................................................................................................................
     def actAndReward(self,rewardInp=None):
         if self.inAction==False:
@@ -310,18 +369,3 @@ class ROBOT(SUPERVISOR):
                 self.rewardMemory.append(self.reward)
                 # self.QMemory.append(self.reward)
 #...............................................................................................................................
-    def RL(self):
-        if self.inAction==False :
-            self.state=int(self.detectedQR[-1])
-            if rnd.random()<= self.RLparams["epsilon"]:
-                self.action=rnd.sample(self.actionSpace,1)[0]
-                self.RLparams["epsilon"]*=0.999
-                if self.printFlag: print("EXPLORED",self.action,self.RLparams["epsilon"])
-            else:
-                actionIndx=np.argmax(self.Qtable[self.state,:])
-                self.action=self.actionSpace[actionIndx]
-                if self.printFlag: print("EXPLOITED",self.action,self.RLparams["epsilon"])
-
-            self.actAndReward()
-        else:
-            self.actAndReward()
