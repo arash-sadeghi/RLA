@@ -27,9 +27,8 @@ def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
 
 class SUPERVISOR:
-    def __init__(self,ROBN,codeBeginTime,vizFlag):
+    def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False):
         self.sharedParams()
-        # self.rewardMemory=[]
         self.vizFlag=vizFlag
         self.fps=int(self.timeStep*1000)//50
         self.ROBN=ROBN
@@ -44,15 +43,20 @@ class SUPERVISOR:
         self.robotRad=0.06
         self.robotSenseRad=m2px(self.robotRad+self.detectRad)
         self.Wmax=120
+        self.log=0
+        self.record=record
         videoRecordTime=ctime(TIME()).replace(':','_')
         capture_rate=5
         FPS=20
         size=(self.Xlen,self.Ylen)
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
-        if os.name=='nt':
-            self.video = cv.VideoWriter(codeBeginTime+'\\'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
-        else:
-            self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+        if self.record:
+            if os.name=='nt':
+                self.video = cv.VideoWriter(codeBeginTime+'\\'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+            else:
+                self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+        
+        self.globalQ=globalQ
 # ...............................................................................................................................
     def sharedParams(self):
         """
@@ -64,16 +68,9 @@ class SUPERVISOR:
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
-        self.EpsilonDampRatio=0.999
-
-        # angles=np.arange(0,180+18,18)
-        # maxlen=sqrt((self.Xlen)**2+(self.Ylen)**2)//3
-        # maxlen=int(20*512/9.2) # 14
-        # lens=[maxlen//3,2*maxlen//3,3*maxlen//3]
-        # self.actionSpace=list(product(lens,angles))
+        self.EpsilonDampRatio=0.8#0.999 #######
 
         angles=np.arange(0,180+18,18)
-
         maxlen=int(16*512/9.2) # 14
         lens=[maxlen//4,2*maxlen//4,3*maxlen//4,3*maxlen//4]
         self.actionSpace=list(product(lens,angles))
@@ -99,6 +96,12 @@ class SUPERVISOR:
             self.swarm[i]=ROBOT(str(i))
             self.swarm[i].position=np.array([rnd.sample(list(possibleX),1)[0],rnd.sample(list(possibleY),1)[0]])
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
+
+            # sharing the Qtable addres for all robots
+            if self.globalQ:
+                if i==0: tmp=self.swarm[i].Qtable
+                else: self.swarm[i].Qtable=tmp
+
 #...............................................................................................................................
     def visualize(self):
         background=np.copy(self.ground)
@@ -139,7 +142,7 @@ class SUPERVISOR:
         if self.vizFlag:
             cv.imshow("background",background)
             cv.waitKey(self.fps)
-        else: self.video.write(background)
+        if self.record: self.video.write(background)
 #...............................................................................................................................
     def moveAll(self):
         for i in range(self.ROBN):
@@ -258,6 +261,24 @@ class SUPERVISOR:
                     self.swarm[j].RLparams['epsilon']=temp
                     if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
         if self.vizFlag : print("------------------------------------------------------")
+#...............................................................................................................................
+    def getlog(self):
+        location=[]
+        for i in range(self.ROBN):
+            location.append(np.append(self.swarm[i].position,self.swarm[i].rotation))
+        return np.array(location)
+#...............................................................................................................................
+    def getQtables(self):
+        Qtables=[]
+        for i in range(self.ROBN):
+            Qtables.append(self.swarm[i].Qtable)
+        return np.array(Qtables)
+#...............................................................................................................................
+    def getReward(self):
+        Rewards=[]
+        for i in range(self.ROBN):
+            Rewards.append(self.swarm[i].rewardMemory)
+        return Rewards
 
 ################################################################################################################################
 ################################################################################################################################

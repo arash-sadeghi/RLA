@@ -1,6 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from time import time as TIME
+from time import ctime
+scriptLoc=__file__
+''' with this segment code is callable from any folder '''
+for i in range(len(scriptLoc)):
+    print(scriptLoc[-i-2:-i])
+    if '/' in scriptLoc[-i-2:-i]:
+        scriptLoc=scriptLoc[0:-i-2]
+        break
+print('[+] code path',scriptLoc)
+os.chdir(scriptLoc)
+''' done '''
 
 samplingPeriodSmall=10
 FinalTime=116000
@@ -12,7 +24,7 @@ ticknum=11
 
 allFiles=os.listdir()
 # label=['BEECLUST','RL without comminucation']
-palete=['r','b','g']
+palete=['r','b','g','purple','pink']
 tobeDeleted=[]
 for files in allFiles:
     if os.path.splitext(files)[1]!='.npy':
@@ -66,6 +78,7 @@ plt.xlim(0,)
 plt.legend(fontsize=15)
 plt.xlabel('Time [s] / 100',fontsize=15,fontweight='bold')
 plt.ylabel('Normalized aggregation size',fontsize=15,fontweight='bold')
-plt.title('10 Robots with '+str(itNum)+' time repition',fontsize=15,fontweight='bold')
+plt.title('10 Robots with '+str(itNum)+' time repetition',fontsize=15,fontweight='bold')
 plt.grid()
+plt.savefig(ctime(TIME()).replace(':','_')+'.png')
 plt.show()
