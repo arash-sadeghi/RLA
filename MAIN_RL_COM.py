@@ -1,92 +1,83 @@
 from header import *
-import numpy as np
-import signal
-from varname import nameof
 
-if os.name=='nt':
-    dirChangeCharacter='\\'
-else:
-    dirChangeCharacter='/'
-
-def keyboardInterruptHandler(signal, frame):
+def saveData():
     QtableMem[it,:,:,:]=sup.getQtables()
     rewardMem[it]=sup.getReward()
     data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
     data2BsavedStr=["results","log","Qtable","rewards"]
-    fileName=codeBeginTime+dirChangeCharacter+ctime(TIME()).replace(':','_')+' halfDone '
+    fileName=codeBeginTime+dirChangeCharacter+'process data'+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' halfDone '
     for i in range(len(data2Bsaved)):
-        with open(fileName+' '+data2BsavedStr[i]+'.npy','wb') as f:
+        with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
             np.save(f,data2Bsaved[i])
 
+def keyboardInterruptHandler(signal, frame):
+    saveData()
     print('[+] half data saved')
     ans=input('quit? [y/n]')
     if ans=='y': exit(0)
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 
+
 if __name__ == "__main__":
+    dirChangeCharacter=DirLocManage()
+    Lx=2
+    Ly=4
+    cueRaduis=0.7
+    visibleRaduis=0.3
     iteration=20//4
     samplingPeriodSmall=10
-    FinalTime=20 #116000
-    samplingPeriod=20000#50000
+    FinalTime=116000
+    samplingPeriod=116000//100
     ROBN=10
-    vizFlag=not  True
-    globalQ=True
+    vizFlag= True
+    globalQ=not True
+    communicate=not True
+    if globalQ and communicate:
+        raise NameError('[-] what do you want?')
     record=False
     sampledDataNum=FinalTime//samplingPeriodSmall
     results=[]
     method='RL'
     codeBeginTime=ctime(TIME()).replace(':','_')+' '+method
     saved=0
-    folder=os.makedirs(codeBeginTime)
+    os.makedirs(codeBeginTime)
+    os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
     print('[+] '+method)
     QtableMem=np.zeros((iteration,ROBN,7,44)) ###
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
-    rewardMem=[[] for _ in range(ROBN)]
+    rewardMem=[[] for _ in range(iteration)]
 
 
 
     for it in range(iteration):
         print("     [+] iteration: ", it)
-        col=0
-        t=0
-        tt=0
+        t=0;tt=0;sampled=0
         results_=[]
-        sup=SUPERVISOR(ROBN=ROBN,codeBeginTime=codeBeginTime,vizFlag=vizFlag,globalQ=globalQ,record=record)
+        sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis)
         sup.generateRobots()
-        sup.moveAll()
-        sampled=0
+        sup.moveAll() # to make initilazation happen
         while sup.getTime()<=FinalTime:
-
+            checkHealth()
             sup.checkCollision()
             sup.getGroundSensors()
             sup.aggregateSwarm()
             if method=='RL':
                 sup.getQRs()
                 sup.swarmRL()
-                if globalQ: sup.talk()
-
+                if communicate==True:
+                    sup.talk()
             sup.moveAll()
             sup.visualize()
 
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
                 results_.append(sup.getStatus())
                 log[it,sampled,:,:]=sup.getlog()
-                t=sup.getTime()
                 sampled+=1
+                t=sup.getTime()
 
-
-            # if sup.getTime()%samplingPeriod==0 and sup.getTime()-tt>1 :
-            #     tt=sup.getTime()
-            #     with open(str(it)+' Qtable '+codeBeginTime+' .npy','wb') as Qtable:
-            #         np.save(Qtable,sup.swarm[0].Qtable)
-            #     with open(str(saved)+' rewards '+codeBeginTime+' .npy','wb') as reward:
-            #         np.save(reward,np.array(sup.swarm[0].rewardMemory))
-                
-            #     trainingCheck=[]
-            #     for _ in sup.swarm[0].Qtable:
-            #         trainingCheck.append(any(_>0))
-            #     print(trainingCheck)
-
+            if sup.getTime()%samplingPeriod==0 and sup.getTime()-tt>1 :
+                tt=sup.getTime()
+                saveData()
             signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 
         

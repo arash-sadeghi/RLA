@@ -3,19 +3,17 @@ import matplotlib.pyplot as plt
 import os
 from time import time as TIME
 from time import ctime
-def goToScriptDir():
-    ''' with this segment code is callable from any folder '''
-    scriptLoc=__file__
-    for i in range(len(scriptLoc)):
-        # if '/' in scriptLoc[-i-2:-i]: # in running
-        if '\\' in scriptLoc[-i-2:-i]: # in debuging
+scriptLoc=__file__
+''' with this segment code is callable from any folder '''
+for i in range(len(scriptLoc)):
+    # if '/' in scriptLoc[-i-2:-i]: # in running
+    if '\\' in scriptLoc[-i-2:-i]: # in debuging
 
-            scriptLoc=scriptLoc[0:-i-2]
-            break
-    print('[+] code path',scriptLoc)
-    os.chdir(scriptLoc)
-    ''' done '''
-goToScriptDir()
+        scriptLoc=scriptLoc[0:-i-2]
+        break
+print('[+] code path',scriptLoc)
+os.chdir(scriptLoc)
+''' done '''
 
 samplingPeriodSmall=10
 FinalTime=116000
@@ -30,7 +28,7 @@ allFiles=os.listdir()
 palete=['r','b','g','purple','pink']
 tobeDeleted=[]
 for files in allFiles:
-    if os.path.splitext(files)[1]!='.npy' or not ('results' in os.path.splitext(files)[0]):
+    if os.path.splitext(files)[1]!='.npy' or not ('rewards' in os.path.splitext(files)[0]):
         tobeDeleted.append(files)
 
 for i in tobeDeleted:
@@ -39,7 +37,7 @@ for i in tobeDeleted:
 label=list(map(lambda x: os.path.splitext(x)[0],allFiles))
 for count,file_ in enumerate(allFiles):
     with open(file_,'rb') as Reward:
-        data=np.load(Reward)
+        data=np.load(Reward,allow_pickle=True)
     averagedData=np.zeros((len(data),pointN))
     window=np.shape(data)[1]//pointN # 1000 is the number of points that i want to see in plot
     for k in range(len(data)):

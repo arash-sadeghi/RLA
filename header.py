@@ -1,11 +1,19 @@
 import cv2 as cv
 import numpy as np
 import random as rnd
-from math import sin,cos,sqrt,atan2
+from math import sin,cos,sqrt,atan2,exp
 from itertools import product
 from time import time as TIME
 from time import ctime
 import os
+import shutil
+import signal
+from varname import nameof
+
+def checkHealth():
+    health=shutil.disk_usage('/')
+    if health[-1]/(2**30)<=5:
+        raise NameError('[-] disk is getting full')
 
 def m2px(inp):
     return int(inp*512/2)
@@ -19,15 +27,32 @@ def dist(x,y):
     return sqrt((x[0]-y[0])**2+(x[1]-y[1])**2)
 
 def TableCompare(table1,table2):
-    # tableResult=np.zeros(table1.shape)
-    # for row in range(table1.shape[0]):
-    #     for col in range(table1.shape[1]):
-    #         tableResult[row,col]=max(table2[row,col],table1[row,col])
-    # return tableResult
     return np.round((table1+table2)/2,3)
 
+def DirLocManage():
+    ''' with this segment code is callable from any folder '''
+    if os.name=='nt':
+        dirChangeCharacter='\\'
+    else:
+        dirChangeCharacter='/'
+    scriptLoc=__file__
+    for i in range(len(scriptLoc)):
+        # if '/' in scriptLoc[-i-2:-i]: # in running
+        if dirChangeCharacter in scriptLoc[-i-2:-i]: # in debuging
+            scriptLoc=scriptLoc[0:-i-2]
+            break
+    print('[+] code path',scriptLoc)
+    os.chdir(scriptLoc)
+    return dirChangeCharacter
+    ''' done '''
+
 class SUPERVISOR:
-    def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False):
+    def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3):
+        self.Lx=m2px(Lx)
+        self.Ly=m2px(Ly)
+        self.cueRaduis=m2px(cueRaduis)
+        self.visibleRaduis=m2px(visibleRaduis)
+        self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRaduis,self.visibleRaduis)
         self.sharedParams()
         self.vizFlag=vizFlag
         self.fps=int(self.timeStep*1000)//50
@@ -64,7 +89,6 @@ class SUPERVISOR:
         Other wise it will cause conflict between
         supervisor and robots
         """
-        self.ground=cv.imread('ground.png') 
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
@@ -87,21 +111,45 @@ class SUPERVISOR:
             'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
         self.QRdetectableArea=m2px(0.3)      
 #...............................................................................................................................
+    def generateBackground(self,Lx,Ly,cueRaduis,visibleRaduis):
+        Lxpx=Lx
+        Lypx=Ly
+        R=cueRaduis
+        def gauss(x):
+            a = 1.0 # amplititude of peak
+            b = Lxpx/2.0 # center of peak
+            c = Lxpx/7# standard deviation
+            return a*exp(-((x-b)**2)/(2*(c**2)))
+        im=np.zeros((Lxpx,Lypx))
+        for i in range(0,R):
+            cv.circle(im,(int((Lypx/4)),int(Lxpx/2)),i,gauss(Lxpx/2-i),2)
+        im=cv.rotate(im, cv.ROTATE_90_CLOCKWISE)
+        QRlocs=[(Lxpx,Lypx//4),(Lxpx,Lypx//2),(Lxpx,3*Lypx//4),(0,3*Lypx//4),(0,Lypx//2),(0,Lypx//4)]
+        for i in QRlocs:
+            cv.circle(im,i,10,(255,255,255),-1)
+            cv.circle(im,i,visibleRaduis,(255,255,255),1)
+        for i in range(0,Lypx):
+            for j in range(0,Lxpx):
+                im[i,j]=im[i,j]*255
+                im[i,j]=255-im[i,j]
+        cv.imwrite("BackgroundGeneratedBySim.png",im)
+        return cv.imread("BackgroundGeneratedBySim.png")
+#------------------------------------------------------------------------------------------------------
     def generateRobots(self):
         margin=m2px(self.robotRad)*5
         possibleY=np.linspace(0+margin,self.Xlen-margin,int(self.Xlen//2*self.robotSenseRad))
         possibleX=np.linspace(0+margin,self.Ylen-margin,int(self.Ylen//2*self.robotSenseRad))
         possibleRot=np.linspace(0,360,10)
         for i in range(self.ROBN):
-            self.swarm[i]=ROBOT(str(i))
+            self.swarm[i]=ROBOT(str(i),self.ground)
             self.swarm[i].position=np.array([rnd.sample(list(possibleX),1)[0],rnd.sample(list(possibleY),1)[0]])
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
+            self.swarm[i].ground=self.ground # sharing ground image among robots
 
             # sharing the Qtable addres for all robots
             if self.globalQ:
                 if i==0: tmp=self.swarm[i].Qtable
                 else: self.swarm[i].Qtable=tmp
-
 #...............................................................................................................................
     def visualize(self):
         background=np.copy(self.ground)
@@ -285,8 +333,10 @@ class SUPERVISOR:
 ################################################################################################################################
 
 class ROBOT(SUPERVISOR):
-    def __init__(self,name):
+    def __init__(self,name,ground):
+        self.ground=ground
         super().sharedParams()
+        self.ground=0 # initilizing for robots
         self.rotation=0
         self.rotation2B=0
         self.position=[0,0]
