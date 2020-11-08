@@ -9,26 +9,29 @@ import os
 import shutil
 import signal
 from varname import nameof
-
+import pickle
+################################################################################################################################
+################################################################################################################################
+################################################################################################################################
 def checkHealth():
     health=shutil.disk_usage('/')
     if health[-1]/(2**30)<=5:
         raise NameError('[-] disk is getting full')
-
+# ...............................................................................................................................
 def m2px(inp):
     return int(inp*512/2)
-
+# ...............................................................................................................................
 def RotStandard(inp):
     if inp<0: inp+=360
     if inp>360: inp-=360
     return inp
-
+# ...............................................................................................................................
 def dist(x,y):
     return sqrt((x[0]-y[0])**2+(x[1]-y[1])**2)
-
+# ...............................................................................................................................
 def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
-
+# ...............................................................................................................................
 def DirLocManage():
     ''' with this segment code is callable from any folder '''
     if os.name=='nt':
@@ -45,7 +48,9 @@ def DirLocManage():
     os.chdir(scriptLoc)
     return dirChangeCharacter
     ''' done '''
-
+################################################################################################################################
+################################################################################################################################
+################################################################################################################################
 class SUPERVISOR:
     def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3):
         self.Lx=m2px(Lx)
@@ -92,7 +97,7 @@ class SUPERVISOR:
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
-        self.EpsilonDampRatio=0.8#0.999 #######
+        self.EpsilonDampRatio=0.999 #######
 
         angles=np.arange(0,180+18,18)
         maxlen=int(16*512/9.2) # 14
@@ -134,7 +139,7 @@ class SUPERVISOR:
                 im[i,j]=255-im[i,j]
         cv.imwrite("BackgroundGeneratedBySim.png",im)
         return cv.imread("BackgroundGeneratedBySim.png")
-#------------------------------------------------------------------------------------------------------
+# ...............................................................................................................................
     def generateRobots(self):
         margin=m2px(self.robotRad)*5
         possibleY=np.linspace(0+margin,self.Xlen-margin,int(self.Xlen//2*self.robotSenseRad))
@@ -436,7 +441,8 @@ class ROBOT(SUPERVISOR):
                 else: self.reward=rewardInp
                 if self.printFlag: print("REWARD::",self.reward)
                 actionIndx=self.actionSpace.index(self.action)
-                self.Qtable[self.state,actionIndx]+=self.reward*self.RLparams['alpha']
+                ''' update rule '''
+                self.Qtable[self.state,actionIndx]+=self.RLparams['alpha']*(self.reward-self.Qtable[self.state,actionIndx])
                 self.rewardMemory.append(self.reward)
                 # self.QMemory.append(self.reward)
 #...............................................................................................................................

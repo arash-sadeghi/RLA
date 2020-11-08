@@ -1,19 +1,35 @@
 from header import *
 
-def saveData():
-    QtableMem[it,:,:,:]=sup.getQtables()
-    rewardMem[it]=sup.getReward()
-    data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
-    data2BsavedStr=["results","log","Qtable","rewards"]
-    fileName=codeBeginTime+dirChangeCharacter+'process data'+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' halfDone '
-    for i in range(len(data2Bsaved)):
-        with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
-            np.save(f,data2Bsaved[i])
+def saveData(inpStr=' halfDone '):
+    if inpStr ==' halfDone ': 
+        dataType='process data'
+        QtableMem[it,:,:,:]=sup.getQtables()
+        rewardMem[it]=sup.getReward()
+        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
+        data2BsavedStr=["results","log","Qtable","rewards"]
+        
+        fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+inpStr
+    
+
+        for i in range(len(data2Bsaved)):
+            with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
+                np.save(f,data2Bsaved[i])
+        with open(fileName+'sup class.hi', 'wb') as supSaver:
+            pickle.dump(sup, supSaver)
+
+    else: 
+        dataType='full data'
+        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
+        data2BsavedStr=["results","log","Qtable","rewards"]
+        fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+ctime(TIME()).replace(':','_')+inpStr
+        for i in range(len(data2Bsaved)):
+            with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
+                np.save(f,data2Bsaved[i])
 
 def keyboardInterruptHandler(signal, frame):
     saveData()
     print('[+] half data saved')
-    ans=input('quit? [y/n]')
+    ans=input('\t[+]quit? [y/n]')
     if ans=='y': exit(0)
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 
@@ -26,10 +42,10 @@ if __name__ == "__main__":
     visibleRaduis=0.3
     iteration=20//4
     samplingPeriodSmall=10
-    FinalTime=116000
-    samplingPeriod=116000//100
+    FinalTime=116000*5
+    samplingPeriod=FinalTime//100
     ROBN=10
-    vizFlag= True
+    vizFlag=not True
     globalQ=not True
     communicate=not True
     if globalQ and communicate:
@@ -42,7 +58,9 @@ if __name__ == "__main__":
     saved=0
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
+    os.makedirs(codeBeginTime+dirChangeCharacter+'full data')
     print('[+] '+method)
+    print('[+] press ctrl+c for saving data asynchronously')
     QtableMem=np.zeros((iteration,ROBN,7,44)) ###
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
     rewardMem=[[] for _ in range(iteration)]
@@ -50,7 +68,7 @@ if __name__ == "__main__":
 
 
     for it in range(iteration):
-        print("     [+] iteration: ", it)
+        print("\t[+] iteration: ", it)
         t=0;tt=0;sampled=0
         results_=[]
         sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis)
@@ -87,11 +105,6 @@ if __name__ == "__main__":
         if record: sup.video.release()
         del sup
 
-    os.chdir(codeBeginTime)
-    data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
-    data2BsavedStr=["results","log","Qtable","rewards"]
-    for i in range(len(data2Bsaved)):
-        with open(data2BsavedStr[i]+' '+ctime(TIME()).replace(':','_')+'.npy','wb') as f:
-            np.save(f,data2Bsaved[i])
+    saveData('fulDone')
     print('[+] goodbye')
 

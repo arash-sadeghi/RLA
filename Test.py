@@ -1,52 +1,28 @@
-import numpy as np
-import signal
-# print('hi')
 # class x:
 #     def __init__(self):
 #         self.xv='xv'
-#     def tell(self):
-#         print('I am father')
-#     def xvset(self,v):
-#         self.xv=v
 
-# class y(x):
-#     def __init__(self):
-#         x.__init__(self)
-#         # pass
-#         # super().__init__()
-#         # self.yv='yv'
-#         # self.a=x.xv
 #     def printer(self):
 #         print(self.xv)
-#         # print(x.xv)
-
-# yy=y()
+#     def changer(self):
+#         self.xv='1'
 # xx=x()
-# yy.printer()
-# print('hi')
-###################
-# class x:
-#     def __init__(self):
-#         self.xv='xv'
+# # Step 1
+import pickle
+ 
+ 
+# # Step 2
+# with open('xx.hi', 'wb') as xx_file:
+#    # Step 3
+#   pickle.dump(xx, xx_file)
 
-#     class y:
-#         def printer(self):
-#             print(self.xv)
-#         def changer(self):
-#             self.xv='1'
-# xx=x()
-# print('hi')
-###################
-# def keyboardInterruptHandler(signal=None, frame=None):
-#     print('[+] half data saved')
-    
-# signal.signal(signal.SIGINT, keyboardInterruptHandler)  
+with open('x.hi', 'rb') as xx_file:
+ 
+    # Step 3
+    XX = pickle.load(xx_file)
+ 
+    # After config_dictionary is read from file
+    print(XX)
 
-# while True:
-#     keyboardInterruptHandler()
-#     pass
-###################
-while True:
-    x=input('ver')
-    if x=='x':
-        raise NameError('HiThere')
+
+
