@@ -1,13 +1,12 @@
 from header import *
 
 def saveData(inpStr=' halfDone '):
+    data2BsavedStr=["results","log","Qtable","rewards","eps","alpha"]
     if inpStr ==' halfDone ': 
         dataType='process data'
         QtableMem[it,:,:,:]=sup.getQtables()
         rewardMem[it]=sup.getReward()
-        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
-        data2BsavedStr=["results","log","Qtable","rewards"]
-        
+        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem),eps,alpha]
         fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+inpStr
     
 
@@ -19,8 +18,7 @@ def saveData(inpStr=' halfDone '):
 
     else: 
         dataType='full data'
-        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem)]
-        data2BsavedStr=["results","log","Qtable","rewards"]
+        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem),eps,alpha]
         fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+ctime(TIME()).replace(':','_')+inpStr
         for i in range(len(data2Bsaved)):
             with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
@@ -42,10 +40,10 @@ if __name__ == "__main__":
     visibleRaduis=0.3
     iteration=20//4
     samplingPeriodSmall=10
-    FinalTime=116000*5
-    samplingPeriod=FinalTime//100
-    ROBN=10
-    vizFlag=not True
+    FinalTime=116000*3//2
+    samplingPeriod=FinalTime//20 #100 causes in 2500 files 100*5*5
+    ROBN=1#10
+    vizFlag=True
     globalQ=not True
     communicate=not True
     if globalQ and communicate:
@@ -63,12 +61,14 @@ if __name__ == "__main__":
     print('[+] press ctrl+c for saving data asynchronously')
     QtableMem=np.zeros((iteration,ROBN,7,44)) ###
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
+    eps=np.zeros((iteration,sampledDataNum,ROBN))
+    alpha=np.zeros((iteration,sampledDataNum,ROBN))
     rewardMem=[[] for _ in range(iteration)]
 
 
 
     for it in range(iteration):
-        print("\t[+] iteration: ", it)
+        print(c("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
         results_=[]
         sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis)
@@ -90,6 +90,9 @@ if __name__ == "__main__":
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
                 results_.append(sup.getStatus())
                 log[it,sampled,:,:]=sup.getlog()
+                eps[it,sampled,:]=sup.geteps()
+                alpha[it,sampled,:]=sup.getalpha()
+
                 sampled+=1
                 t=sup.getTime()
 
@@ -97,6 +100,10 @@ if __name__ == "__main__":
                 tt=sup.getTime()
                 saveData()
             signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
+
+            if abs(FinalTime//2-sup.getTime())<1:
+                print('\t [+]')
+
 
         
         results.append(results_)

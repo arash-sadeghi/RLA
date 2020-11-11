@@ -10,6 +10,7 @@ import shutil
 import signal
 from varname import nameof
 import pickle
+from termcolor import colored as c
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -17,21 +18,21 @@ def checkHealth():
     health=shutil.disk_usage('/')
     if health[-1]/(2**30)<=5:
         raise NameError('[-] disk is getting full')
-# ...............................................................................................................................
+# ------------------------------------------------------------------------------------------------------------------------------
 def m2px(inp):
     return int(inp*512/2)
-# ...............................................................................................................................
+# ------------------------------------------------------------------------------------------------------------------------------
 def RotStandard(inp):
     if inp<0: inp+=360
     if inp>360: inp-=360
     return inp
-# ...............................................................................................................................
+# ------------------------------------------------------------------------------------------------------------------------------
 def dist(x,y):
     return sqrt((x[0]-y[0])**2+(x[1]-y[1])**2)
-# ...............................................................................................................................
+# ------------------------------------------------------------------------------------------------------------------------------
 def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
-# ...............................................................................................................................
+# ------------------------------------------------------------------------------------------------------------------------------
 def DirLocManage():
     ''' with this segment code is callable from any folder '''
     if os.name=='nt':
@@ -48,6 +49,14 @@ def DirLocManage():
     os.chdir(scriptLoc)
     return dirChangeCharacter
     ''' done '''
+# ------------------------------------------------------------------------------------------------------------------------------
+def sigmoid(x):
+    return 1/(1+exp(-10*x+5))
+# ------------------------------------------------------------------------------------------------------------------------------
+def saturate(x):
+    if x>=1: return 1
+    elif x<=0: return 0
+    else: return x
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -72,7 +81,8 @@ class SUPERVISOR:
         self.detectRad=0.06
         self.robotRad=0.06
         self.robotSenseRad=m2px(self.robotRad+self.detectRad)
-        self.Wmax=120
+        self.Wmax=120 if not self.debug else 0
+        if self.debug: print('\t[+] Debugging mode: Wmax=0')
         self.log=0
         self.record=record
         videoRecordTime=ctime(TIME()).replace(':','_')
@@ -94,6 +104,8 @@ class SUPERVISOR:
         Other wise it will cause conflict between
         supervisor and robots
         """
+        self.paramReductionMethod='my'
+        self.maxdiff=255
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
@@ -107,11 +119,11 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":0.9,"alpha":0.1}
+        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":0.2}
         self.velocity=14
         self.timeStep=512*0.001
         self.printFlag=False
-
+        self.debug=True ##########
         self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
             'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
         self.QRdetectableArea=m2px(0.3)      
@@ -174,11 +186,16 @@ class SUPERVISOR:
             for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
 
             RobotColor=(255,100,100)
+            debugRobotColor=(0,255,0)
             if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
                 RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
 
-            cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
-            cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
+            if self.debug and i==0:
+                cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
+                cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
+            else:
+                cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
+                cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
 
             direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
                 , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
@@ -234,7 +251,8 @@ class SUPERVISOR:
 
                     self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                     if self.swarm[i].inAction==True:
-                        self.swarm[i].actAndReward(-10)
+                        # self.swarm[i].actAndReward(-10) ########3
+                        self.swarm[i].actAndReward(0)
                         self.swarm[i].inAction=False
                     self.swarm[i].actionCompelte=False
          
@@ -297,7 +315,7 @@ class SUPERVISOR:
             if self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True:
                 self.swarm[i].RL()
 #...............................................................................................................................
-    def talk(self):
+    def talk(self): ##### print must be fixed
         for i in range(self.ROBN):
             if any(self.flagsR[i]):
                 tobesharedRobots=np.where(self.flagsR[i])[0]
@@ -332,6 +350,18 @@ class SUPERVISOR:
         for i in range(self.ROBN):
             Rewards.append(self.swarm[i].rewardMemory)
         return Rewards
+#...............................................................................................................................
+    def geteps(self):
+        eps=[]
+        for i in range(self.ROBN):
+            eps.append(self.swarm[i].RLparams["epsilon"])
+        return eps
+#...............................................................................................................................
+    def getalpha(self):
+        alpha=[]
+        for i in range(self.ROBN):
+            alpha.append(self.swarm[i].RLparams["alpha"])
+        return alpha
 
 ################################################################################################################################
 ################################################################################################################################
@@ -361,6 +391,14 @@ class ROBOT(SUPERVISOR):
         self.rewardMemory=[]
         self.sudoVec=0
         self.ExploreExploit=''
+
+        self.delta=0
+        self.deltaDot=0
+        self.prevdelta=0
+        self.DELTA=0
+        self.deltaDot=0
+        if self.debug and self.robotName=='0': self.printFlag=True
+
 #...............................................................................................................................  
     def move(self):
             self.rotation=self.rotation2B
@@ -398,13 +436,13 @@ class ROBOT(SUPERVISOR):
             self.state=int(self.detectedQR[-1])
             if rnd.random()<= self.RLparams["epsilon"]:
                 self.action=rnd.sample(self.actionSpace,1)[0]
-                self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
-                if self.printFlag: print("EXPLORED",self.action,self.RLparams["epsilon"])
+                # self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
+                # if self.printFlag: print("\t [+] EXPLORED",self.action,self.RLparams["epsilon"])
                 self.ExploreExploit='Explore'
             else:
                 actionIndx=np.argmax(self.Qtable[self.state,:])
                 self.action=self.actionSpace[actionIndx]
-                if self.printFlag: print("EXPLOITED",self.action,self.RLparams["epsilon"])
+                # if self.printFlag: print("\t [+] EXPLOITED",self.action,self.RLparams["epsilon"])
                 self.ExploreExploit='Exploit'
 
             self.actAndReward()
@@ -437,12 +475,36 @@ class ROBOT(SUPERVISOR):
                 if rewardInp==None:
                     self.groundSense()
                     self.reward=self.groundSensorValue
-                    if self.reward==0:self.reward-=1
+                    # if self.reward==0:self.reward-=1 #######
                 else: self.reward=rewardInp
-                if self.printFlag: print("REWARD::",self.reward)
+                # if self.printFlag: print("\t [+] REWARD::",self.reward)
                 actionIndx=self.actionSpace.index(self.action)
+
+                ''' parameter adaptation '''
+                self.delta=abs(self.reward-self.Qtable[self.state,actionIndx])
+                self.deltaDot=self.delta-self.prevdelta
+                deltaDotSign=np.sign(self.deltaDot)
+                deltaDotSign = deltaDotSign if deltaDotSign!=0 else 1
+                self.DELTA=deltaDotSign*self.delta/self.maxdiff
+                if self.printFlag:
+                    print('\t[+] reward {} Qtable {} delta {} deltaDotSign {} prevdelta {} DELTA {}'\
+                        .format(self.reward,self.Qtable[self.state,actionIndx],self.delta,deltaDotSign,self.prevdelta,self.DELTA))
+                    print('\t[+]')
+                self.prevdelta=self.delta
+                self.updateRLparameters()
+
                 ''' update rule '''
                 self.Qtable[self.state,actionIndx]+=self.RLparams['alpha']*(self.reward-self.Qtable[self.state,actionIndx])
                 self.rewardMemory.append(self.reward)
-                # self.QMemory.append(self.reward)
+
 #...............................................................................................................................
+    def updateRLparameters(self):
+        if self.paramReductionMethod=='old':
+            self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
+        elif self.paramReductionMethod=='my':
+            if self.printFlag: print('\t[+] before update: eps {} alpha {}'.format(self.RLparams["epsilon"],self.RLparams["alpha"]))
+            # self.RLparams["epsilon"]=sigmoid(self.RLparams["epsilon"]+self.DELTA/self.RLparams["sensitivity"])
+            self.RLparams["epsilon"]=saturate(self.RLparams["epsilon"]+self.DELTA*self.RLparams["sensitivity"])
+
+            self.RLparams["alpha"]=self.RLparams["epsilon"]/2 ####
+            if self.printFlag: print('\t[+] after update: eps {} alpha {}'.format(self.RLparams["epsilon"],self.RLparams["alpha"]))
