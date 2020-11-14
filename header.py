@@ -14,6 +14,12 @@ from termcolor import colored as c
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
+def warningSupress():
+    from sys import warnoptions
+    from warnings import simplefilter
+    if not warnoptions:
+        simplefilter("ignore")
+# ------------------------------------------------------------------------------------------------------------------------------
 def checkHealth():
     health=shutil.disk_usage('/')
     if health[-1]/(2**30)<=5:
@@ -61,7 +67,7 @@ def saturate(x):
 ################################################################################################################################
 ################################################################################################################################
 class SUPERVISOR:
-    def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3):
+    def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3,paramReductionMethod='adaptive'):
         self.Lx=m2px(Lx)
         self.Ly=m2px(Ly)
         self.cueRaduis=m2px(cueRaduis)
@@ -82,6 +88,8 @@ class SUPERVISOR:
         self.robotRad=0.06
         self.robotSenseRad=m2px(self.robotRad+self.detectRad)
         self.Wmax=120 if not self.debug else 0
+        self.paramReductionMethod=paramReductionMethod
+        print(c('\t[+] paramReductionMethod','red'),self.paramReductionMethod)
         if self.debug: print('\t[+] Debugging mode: Wmax=0')
         self.log=0
         self.record=record
@@ -97,6 +105,7 @@ class SUPERVISOR:
                 self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
         
         self.globalQ=globalQ
+
 # ...............................................................................................................................
     def sharedParams(self):
         """
@@ -104,8 +113,6 @@ class SUPERVISOR:
         Other wise it will cause conflict between
         supervisor and robots
         """
-        self.paramReductionMethod='my'
-        self.maxdiff=255
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
@@ -119,11 +126,11 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":0.2}
+        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":11,"maxdiff":255}
         self.velocity=14
         self.timeStep=512*0.001
-        self.printFlag=False
-        self.debug=True ##########
+        self.printFlag=True # print flag for robot 0
+        self.debug=not True ##########
         self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
             'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
         self.QRdetectableArea=m2px(0.3)      
@@ -158,7 +165,7 @@ class SUPERVISOR:
         possibleX=np.linspace(0+margin,self.Ylen-margin,int(self.Ylen//2*self.robotSenseRad))
         possibleRot=np.linspace(0,360,10)
         for i in range(self.ROBN):
-            self.swarm[i]=ROBOT(str(i),self.ground)
+            self.swarm[i]=ROBOT(self,str(i))
             self.swarm[i].position=np.array([rnd.sample(list(possibleX),1)[0],rnd.sample(list(possibleY),1)[0]])
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
             self.swarm[i].ground=self.ground # sharing ground image among robots
@@ -205,7 +212,9 @@ class SUPERVISOR:
 
         cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
-        AllEpsilons=np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
+        # AllEpsilons=np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
+        AllEpsilons=np.array([np.mean(self.swarm[_].epsilon) for _ in range(self.ROBN)])
+
         EpsilonAverage=round(np.mean(AllEpsilons),3)
         cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
@@ -251,10 +260,8 @@ class SUPERVISOR:
 
                     self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                     if self.swarm[i].inAction==True:
-                        # self.swarm[i].actAndReward(-10) ########3
-                        self.swarm[i].actAndReward(0)
-                        self.swarm[i].inAction=False
-                    self.swarm[i].actionCompelte=False
+                        self.swarm[i].actAndReward(-1) ########3
+                        # self.swarm[i].actAndReward(0)
          
             for i in range(0,self.ROBN):
                 for j in range(0,self.ROBN):
@@ -265,7 +272,6 @@ class SUPERVISOR:
                             self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                             self.flagsR[i][j]=True
                             self.swarm[i].inAction=False
-                            self.swarm[i].actionCompelte=False
                             break
 
                         elif self.flagsR[i][j]==True:
@@ -315,7 +321,7 @@ class SUPERVISOR:
             if self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True:
                 self.swarm[i].RL()
 #...............................................................................................................................
-    def talk(self): ##### print must be fixed
+    def talk(self): ##### print must be fixed ####### epsilon sharing policy must be changed
         for i in range(self.ROBN):
             if any(self.flagsR[i]):
                 tobesharedRobots=np.where(self.flagsR[i])[0]
@@ -352,38 +358,38 @@ class SUPERVISOR:
         return Rewards
 #...............................................................................................................................
     def geteps(self):
-        eps=[]
-        for i in range(self.ROBN):
-            eps.append(self.swarm[i].RLparams["epsilon"])
-        return eps
+        if self.paramReductionMethod=='classic':
+            return np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)]) 
+        else:
+            return np.array([np.mean(self.swarm[_].epsilon) for _ in range(self.ROBN)]) 
 #...............................................................................................................................
     def getalpha(self):
-        alpha=[]
-        for i in range(self.ROBN):
-            alpha.append(self.swarm[i].RLparams["alpha"])
-        return alpha
+        return np.array([np.mean(self.swarm[_].alpha) for _ in range(self.ROBN)]) 
 
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
 
 class ROBOT(SUPERVISOR):
-    def __init__(self,name,ground):
-        self.ground=ground
+    def __init__(self,SUPERVISOR,name):
+        self.SUPERVISOR=SUPERVISOR # address of supervisor hass passed here
+        self.ground=self.SUPERVISOR.ground # grounds will also have same address since it is array
+        self.robotName=name
+        self.paramReductionMethod=self.SUPERVISOR.paramReductionMethod
         super().sharedParams()
         self.ground=0 # initilizing for robots
         self.rotation=0
         self.rotation2B=0
         self.position=[0,0]
         self.groundSensorValue=0
-        self.robotName=name
         self.waitingTime=0
         self.delayFlag=False
         self.detectedQR=' '
         self.lastdetectedQR=' '
         self.Qtable=np.zeros((self.numberOfStates,self.NumberOfActions))
+        self.QtableCheck=np.zeros((self.numberOfStates,self.NumberOfActions))
+        self.exploredAmount=0
         self.inAction=False
-        self.actionCompelte=False
         self.desiredPos=0
         self.action=0
         self.state=0
@@ -391,13 +397,19 @@ class ROBOT(SUPERVISOR):
         self.rewardMemory=[]
         self.sudoVec=0
         self.ExploreExploit=''
+        self.actionIndx=0
 
-        self.delta=0
-        self.deltaDot=0
-        self.prevdelta=0
-        self.DELTA=0
-        self.deltaDot=0
-        if self.debug and self.robotName=='0': self.printFlag=True
+        self.delta=np.zeros(np.shape(self.Qtable))
+        self.deltaDot=np.zeros(np.shape(self.Qtable))
+        self.prevdelta=np.zeros(np.shape(self.Qtable))
+        self.DELTA=np.zeros(np.shape(self.Qtable))
+        self.deltaDot=np.zeros(np.shape(self.Qtable))
+
+        ''' start from full eaxploration and complete learning '''
+        self.epsilon=np.zeros(np.shape(self.Qtable))+self.RLparams['epsilon']
+        self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
+
+        self.printFlag=True if self.robotName=='0' and self.printFlag else False # only robot 0 will talk 
 
 #...............................................................................................................................  
     def move(self):
@@ -429,20 +441,21 @@ class ROBOT(SUPERVISOR):
                 break
             else:
                 self.detectedQR='QR0'
-
 #...............................................................................................................................
     def RL(self):
         if self.inAction==False :
             self.state=int(self.detectedQR[-1])
-            if rnd.random()<= self.RLparams["epsilon"]:
+            if self.paramReductionMethod=='classic':
+                eps=self.RLparams['epsilon']
+            elif self.paramReductionMethod=='adaptive':
+                eps=np.mean(self.epsilon[self.state]) #########
+            
+            if rnd.random()<= eps: ###################
                 self.action=rnd.sample(self.actionSpace,1)[0]
-                # self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
-                # if self.printFlag: print("\t [+] EXPLORED",self.action,self.RLparams["epsilon"])
                 self.ExploreExploit='Explore'
             else:
                 actionIndx=np.argmax(self.Qtable[self.state,:])
                 self.action=self.actionSpace[actionIndx]
-                # if self.printFlag: print("\t [+] EXPLOITED",self.action,self.RLparams["epsilon"])
                 self.ExploreExploit='Exploit'
 
             self.actAndReward()
@@ -462,49 +475,56 @@ class ROBOT(SUPERVISOR):
             length=sqrt(actionXY_SudoVec[0]**2+actionXY_SudoVec[1]**2)
             self.rotation2B=angle
             self.inAction=True
-            self.actionCompelte=False
             self.initialPos=np.copy(self.position)
             self.reward=0
             self.desiredPos=self.initialPos+actionXY_SudoVec
             self.lastdetectedQR=self.detectedQR
+        elif (self.inAction==True and dist(self.position,self.desiredPos)<=20) or rewardInp!=None:
+            ''' elif goal reached or a reward is forced '''
+            self.inAction=False
+            if rewardInp==None:
+                self.groundSense()
+                self.reward=self.groundSensorValue
+                # if self.reward==0:self.reward-=1 #######
+            else: self.reward=rewardInp
+            # if self.printFlag: print("\t [+] REWARD::",self.reward)
+            self.actionIndx=self.actionSpace.index(self.action)
+            x=self.state
+            y=self.actionIndx
 
-        else:
-            if dist(self.position,self.desiredPos)<=20:
-                self.actionCompelte=True
-                self.inAction=False
-                if rewardInp==None:
-                    self.groundSense()
-                    self.reward=self.groundSensorValue
-                    # if self.reward==0:self.reward-=1 #######
-                else: self.reward=rewardInp
-                # if self.printFlag: print("\t [+] REWARD::",self.reward)
-                actionIndx=self.actionSpace.index(self.action)
+            ''' parameter adaptation '''
+            self.delta[x,y]=abs(self.reward-self.Qtable[x,y])
+            self.deltaDot[x,y]=self.delta[x,y]-self.prevdelta[x,y]
+            self.deltaDot[x,y]=np.sign(self.deltaDot[x,y])
 
-                ''' parameter adaptation '''
-                self.delta=abs(self.reward-self.Qtable[self.state,actionIndx])
-                self.deltaDot=self.delta-self.prevdelta
-                deltaDotSign=np.sign(self.deltaDot)
-                deltaDotSign = deltaDotSign if deltaDotSign!=0 else 1
-                self.DELTA=deltaDotSign*self.delta/self.maxdiff
-                if self.printFlag:
-                    print('\t[+] reward {} Qtable {} delta {} deltaDotSign {} prevdelta {} DELTA {}'\
-                        .format(self.reward,self.Qtable[self.state,actionIndx],self.delta,deltaDotSign,self.prevdelta,self.DELTA))
-                    print('\t[+]')
-                self.prevdelta=self.delta
-                self.updateRLparameters()
+            self.deltaDot[x,y] = self.deltaDot[x,y] if self.deltaDot[x,y]!=0 else 1
+            self.DELTA[x,y]=self.deltaDot[x,y]*self.delta[x,y]/self.RLparams['maxdiff']
+            if self.printFlag:
+                print(c('\t[+] index {} reward {} Qtable {} delta {} prevdelta {} deltaDot {} DELTA {}','green')\
+                    .format([x,y],self.reward,self.Qtable[x,y],\
+                        self.delta[x,y],self.prevdelta[x,y],self.deltaDot[x,y],self.DELTA[x,y]))
+            self.prevdelta[x,y]=self.delta[x,y]
+            self.updateRLparameters()
 
-                ''' update rule '''
-                self.Qtable[self.state,actionIndx]+=self.RLparams['alpha']*(self.reward-self.Qtable[self.state,actionIndx])
-                self.rewardMemory.append(self.reward)
+            ''' update rule '''
+            if self.paramReductionMethod=='classic':
+                self.Qtable[x,y]+=self.RLparams['alpha']*(self.reward-self.Qtable[x,y]) ########################
+            elif self.paramReductionMethod=='adaptive':
+                self.Qtable[x,y]+=self.alpha[x,y]*(self.reward-self.Qtable[x,y]) ########################
+
+            self.QtableCheck[x,y]=1
+            self.exploredAmount=(self.QtableCheck==1).sum()/np.size(self.Qtable[1:]) # discarding data of state 0
+
+
+            self.rewardMemory.append(self.reward)
 
 #...............................................................................................................................
     def updateRLparameters(self):
-        if self.paramReductionMethod=='old':
+        if self.paramReductionMethod=='classic':
             self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
-        elif self.paramReductionMethod=='my':
-            if self.printFlag: print('\t[+] before update: eps {} alpha {}'.format(self.RLparams["epsilon"],self.RLparams["alpha"]))
-            # self.RLparams["epsilon"]=sigmoid(self.RLparams["epsilon"]+self.DELTA/self.RLparams["sensitivity"])
-            self.RLparams["epsilon"]=saturate(self.RLparams["epsilon"]+self.DELTA*self.RLparams["sensitivity"])
-
-            self.RLparams["alpha"]=self.RLparams["epsilon"]/2 ####
-            if self.printFlag: print('\t[+] after update: eps {} alpha {}'.format(self.RLparams["epsilon"],self.RLparams["alpha"]))
+        elif self.paramReductionMethod=='adaptive':
+            if self.printFlag: print('\t[+] before update: eps {} alpha {}'.format(self.epsilon[self.state,self.actionIndx],self.alpha[self.state,self.actionIndx]))
+            ''' sensitivity must be multiplied not divided '''
+            self.epsilon[self.state,self.actionIndx]=saturate(self.epsilon[self.state,self.actionIndx]+self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
+            self.alpha[self.state,self.actionIndx]=self.epsilon[self.state,self.actionIndx]/2 ####
+            if self.printFlag: print('\t[+] after update: eps {} alpha {}'.format(self.epsilon[self.state,self.actionIndx],self.alpha[self.state,self.actionIndx]))
