@@ -63,6 +63,9 @@ def saturate(x):
     if x>=1: return 1
     elif x<=0: return 0
     else: return x
+# ------------------------------------------------------------------------------------------------------------------------------
+def quadratic(x):
+    return saturate(x**2)
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -105,7 +108,6 @@ class SUPERVISOR:
                 self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
         
         self.globalQ=globalQ
-
 # ...............................................................................................................................
     def sharedParams(self):
         """
@@ -126,7 +128,7 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":11,"maxdiff":255}
+        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":1,"maxdiff":255}
         self.velocity=14
         self.timeStep=512*0.001
         self.printFlag=True # print flag for robot 0
@@ -365,11 +367,9 @@ class SUPERVISOR:
 #...............................................................................................................................
     def getalpha(self):
         return np.array([np.mean(self.swarm[_].alpha) for _ in range(self.ROBN)]) 
-
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
-
 class ROBOT(SUPERVISOR):
     def __init__(self,SUPERVISOR,name):
         self.SUPERVISOR=SUPERVISOR # address of supervisor hass passed here
@@ -410,7 +410,6 @@ class ROBOT(SUPERVISOR):
         self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
 
         self.printFlag=True if self.robotName=='0' and self.printFlag else False # only robot 0 will talk 
-
 #...............................................................................................................................  
     def move(self):
             self.rotation=self.rotation2B
@@ -498,9 +497,9 @@ class ROBOT(SUPERVISOR):
             self.deltaDot[x,y]=np.sign(self.deltaDot[x,y])
 
             self.deltaDot[x,y] = self.deltaDot[x,y] if self.deltaDot[x,y]!=0 else 1
-            self.DELTA[x,y]=self.deltaDot[x,y]*self.delta[x,y]/self.RLparams['maxdiff']
+            self.DELTA[x,y]=self.delta[x,y]/self.RLparams['maxdiff']
             if self.printFlag:
-                print(c('\t[+] index {} reward {} Qtable {} delta {} prevdelta {} deltaDot {} DELTA {}','green')\
+                print(c('\t[+] index {} reward {} Qtable {} delta {} prevdelta {} deltaDot {} DELTA {}','white')\
                     .format([x,y],self.reward,self.Qtable[x,y],\
                         self.delta[x,y],self.prevdelta[x,y],self.deltaDot[x,y],self.DELTA[x,y]))
             self.prevdelta[x,y]=self.delta[x,y]
@@ -523,8 +522,14 @@ class ROBOT(SUPERVISOR):
         if self.paramReductionMethod=='classic':
             self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
         elif self.paramReductionMethod=='adaptive':
-            if self.printFlag: print('\t[+] before update: eps {} alpha {}'.format(self.epsilon[self.state,self.actionIndx],self.alpha[self.state,self.actionIndx]))
+            beforeEps=self.epsilon[self.state,self.actionIndx]
+            beforeAlpha=self.alpha[self.state,self.actionIndx]
             ''' sensitivity must be multiplied not divided '''
-            self.epsilon[self.state,self.actionIndx]=saturate(self.epsilon[self.state,self.actionIndx]+self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
+
+            # self.epsilon[self.state,self.actionIndx]=saturate(self.epsilon[self.state,self.actionIndx]+self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
+            # self.epsilon[self.state,self.actionIndx]=quadratic(self.epsilon[self.state,self.actionIndx]+self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
+            self.epsilon[self.state,self.actionIndx]=saturate(self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
+
             self.alpha[self.state,self.actionIndx]=self.epsilon[self.state,self.actionIndx]/2 ####
-            if self.printFlag: print('\t[+] after update: eps {} alpha {}'.format(self.epsilon[self.state,self.actionIndx],self.alpha[self.state,self.actionIndx]))
+            if self.printFlag: print('\t[+] eps: {}->{} alpha: {}->{}'\
+                .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3)))

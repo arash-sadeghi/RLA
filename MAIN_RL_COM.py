@@ -44,7 +44,8 @@ if __name__ == "__main__":
     visibleRaduis=0.3
     iteration=20//4
     samplingPeriodSmall=10
-    FinalTime=116000*3//2
+    # FinalTime=116000*3//2
+    FinalTime=116000*5
     samplingPeriod=FinalTime//20 #100 causes in 2500 files 100*5*5
     ROBN=10#10
     paramReductionMethod='adaptive' # possible values= 'adaptive' , 'classic'
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
         'FinalTime':FinalTime , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'vizFlag':vizFlag , 'globalQ':globalQ , \
             'communicate':communicate , 'record':record , 'method':method}
-    with open('params.txt','w') as paramfile :
+    with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
         paramfile.write(str(paramDict))
 
 
@@ -117,12 +118,12 @@ if __name__ == "__main__":
             if sup.getTime()%samplingPeriod==0 and sup.getTime()-tt>1 :
                 tt=sup.getTime()
                 saveData()
-                print('\t[+] average exploredAmount:',np.mean(list(map(lambda x: x.exploredAmount,sup.swarm))))
+                print(c('\t[+] average exploredAmount:','green'),np.mean(list(map(lambda x: x.exploredAmount,sup.swarm))))
 
             signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 
             if abs(FinalTime//2-sup.getTime())<0.5:
-                print('\t[+] half time reached')
+                print(c('\t[+] half time reached','green'))
 
 
         
