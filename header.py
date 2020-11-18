@@ -28,6 +28,9 @@ def checkHealth():
 def m2px(inp):
     return int(inp*512/2)
 # ------------------------------------------------------------------------------------------------------------------------------
+def px2m(inp):
+    return inp*2/512
+# ------------------------------------------------------------------------------------------------------------------------------
 def RotStandard(inp):
     if inp<0: inp+=360
     if inp>360: inp-=360
@@ -128,7 +131,7 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":1,"maxdiff":255}
+        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":10,"maxdiff":255}
         self.velocity=14
         self.timeStep=512*0.001
         self.printFlag=True # print flag for robot 0
@@ -302,12 +305,12 @@ class SUPERVISOR:
 #...............................................................................................................................
     def aggregateSwarm(self):
         for i in range(self.ROBN):
-            self.swarm[i].aggregate(self.flagsR,self.Wmax)
+            self.swarm[i].aggregate()
 #...............................................................................................................................
     def getTime(self):
         return int(self.time)
 #...............................................................................................................................
-    def getStatus(self):
+    def getNAS(self):
         inCue=0
         for i in range(self.ROBN):
             if self.swarm[i].groundSensorValue>0:
@@ -341,7 +344,7 @@ class SUPERVISOR:
                     if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
         if self.vizFlag : print("------------------------------------------------------")
 #...............................................................................................................................
-    def getlog(self):
+    def getLog(self):
         location=[]
         for i in range(self.ROBN):
             location.append(np.append(self.swarm[i].position,self.swarm[i].rotation))
@@ -354,19 +357,24 @@ class SUPERVISOR:
         return np.array(Qtables)
 #...............................................................................................................................
     def getReward(self):
-        Rewards=[]
-        for i in range(self.ROBN):
-            Rewards.append(self.swarm[i].rewardMemory)
-        return Rewards
+            return np.array([self.swarm[_].rewardMemory[-1] if len(self.swarm[_].rewardMemory)>0 else 0\
+                 for _ in range(self.ROBN)]) 
 #...............................................................................................................................
-    def geteps(self):
+    def getEps(self):
         if self.paramReductionMethod=='classic':
             return np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)]) 
         else:
             return np.array([np.mean(self.swarm[_].epsilon) for _ in range(self.ROBN)]) 
 #...............................................................................................................................
-    def getalpha(self):
+    def getAlpha(self):
         return np.array([np.mean(self.swarm[_].alpha) for _ in range(self.ROBN)]) 
+#...............................................................................................................................
+    def changeGround(self):
+        ''' this code will ruin address exchange'''
+        self.ground=cv.rotate(self.ground,cv.ROTATE_180)
+        for i in range(self.ROBN):
+            self.swarm[i].ground=self.ground
+        ''' now address equality returned '''
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -424,13 +432,16 @@ class ROBOT(SUPERVISOR):
 #...............................................................................................................................
     def groundSense(self):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
-        if dist(self.position,[self.Xlen//4,self.Ylen//2])<=self.cueRadius:
+        ''' if dist(self.position,[self.Xlen//4,self.Ylen//2])<=self.cueRadius: '''
+        ''' for dynamic env, x condition is deleted ''' ####
+        if self.position[0]<= self.Ylen-self.SUPERVISOR.visibleRaduis and self.position[0]>= self.SUPERVISOR.visibleRaduis:
+
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
 #...............................................................................................................................
-    def aggregate(self,flagsR,Wmax):
-        if any(flagsR[int(self.robotName)]) and self.groundSensorValue>0 and not self.delayFlag :
-            self.waitingTime=Wmax*((self.groundSensorValue**2)/((self.groundSensorValue**2) + 5000))
+    def aggregate(self):
+        if any(self.SUPERVISOR.flagsR[int(self.robotName)]) and self.groundSensorValue>0 and not self.delayFlag :
+            self.waitingTime=self.SUPERVISOR.Wmax*((self.groundSensorValue**2)/((self.groundSensorValue**2) + 5000))
             self.delayFlag=True
 #...............................................................................................................................
     def detectQR(self):
@@ -448,6 +459,9 @@ class ROBOT(SUPERVISOR):
                 eps=self.RLparams['epsilon']
             elif self.paramReductionMethod=='adaptive':
                 eps=np.mean(self.epsilon[self.state]) #########
+            elif self.paramReductionMethod=='adaptive united':
+                eps=np.mean(self.epsilon) ######### shared eps
+
             
             if rnd.random()<= eps: ###################
                 self.action=rnd.sample(self.actionSpace,1)[0]
@@ -498,9 +512,9 @@ class ROBOT(SUPERVISOR):
 
             self.deltaDot[x,y] = self.deltaDot[x,y] if self.deltaDot[x,y]!=0 else 1
             self.DELTA[x,y]=self.delta[x,y]/self.RLparams['maxdiff']
-            if self.printFlag:
-                print(c('\t[+] index {} reward {} Qtable {} delta {} prevdelta {} deltaDot {} DELTA {}','white')\
-                    .format([x,y],self.reward,self.Qtable[x,y],\
+            if self.printFlag and self.paramReductionMethod!='classic':
+                print(c('\t[+] time {} index {} reward {} Qtable {} delta {} prevdelta {} deltaDot {} DELTA {}','white')\
+                    .format(self.SUPERVISOR.getTime(),[x,y],self.reward,self.Qtable[x,y],\
                         self.delta[x,y],self.prevdelta[x,y],self.deltaDot[x,y],self.DELTA[x,y]))
             self.prevdelta[x,y]=self.delta[x,y]
             self.updateRLparameters()
@@ -510,20 +524,26 @@ class ROBOT(SUPERVISOR):
                 self.Qtable[x,y]+=self.RLparams['alpha']*(self.reward-self.Qtable[x,y]) ########################
             elif self.paramReductionMethod=='adaptive':
                 self.Qtable[x,y]+=self.alpha[x,y]*(self.reward-self.Qtable[x,y]) ########################
+            elif self.paramReductionMethod=='adaptive united':
+                self.Qtable[x,y]+=np.mean(self.alpha[x,y])*(self.reward-self.Qtable[x,y]) ########################
+
 
             self.QtableCheck[x,y]=1
             self.exploredAmount=(self.QtableCheck==1).sum()/np.size(self.Qtable[1:]) # discarding data of state 0
 
 
             self.rewardMemory.append(self.reward)
-
 #...............................................................................................................................
     def updateRLparameters(self):
         if self.paramReductionMethod=='classic':
             self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
-        elif self.paramReductionMethod=='adaptive':
-            beforeEps=self.epsilon[self.state,self.actionIndx]
-            beforeAlpha=self.alpha[self.state,self.actionIndx]
+        else :
+            if self.paramReductionMethod=='adaptive':
+                beforeEps=self.epsilon[self.state,self.actionIndx]
+                beforeAlpha=self.alpha[self.state,self.actionIndx]
+            if self.paramReductionMethod=='adaptive united':
+                beforeEps=np.mean(self.epsilon)
+                beforeAlpha=np.mean(self.alpha)
             ''' sensitivity must be multiplied not divided '''
 
             # self.epsilon[self.state,self.actionIndx]=saturate(self.epsilon[self.state,self.actionIndx]+self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
@@ -531,5 +551,11 @@ class ROBOT(SUPERVISOR):
             self.epsilon[self.state,self.actionIndx]=saturate(self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
 
             self.alpha[self.state,self.actionIndx]=self.epsilon[self.state,self.actionIndx]/2 ####
-            if self.printFlag: print('\t[+] eps: {}->{} alpha: {}->{}'\
-                .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3)))
+            if self.printFlag:
+                if self.paramReductionMethod=='adaptive':
+                    print('\t[+] eps: {}->{} alpha: {}->{}\n'\
+                    .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3)))
+                elif self.paramReductionMethod=='adaptive united':
+                    print('\t[+] eps: {}->{} alpha: {}->{}\n'\
+                    .format(round(beforeEps,3),round(np.mean(self.epsilon),3),round(beforeAlpha,3),round(np.mean(self.alpha),3)))
+

@@ -1,36 +1,24 @@
 from header import *
-
-def saveData(inpStr=' halfDone ',forced=False):
-    data2BsavedStr=["results","log","Qtable","rewards","eps","alpha"]
-    if inpStr ==' halfDone ' and (it==0 or forced): 
-        dataType='process data'
-        QtableMem[it,:,:,:]=sup.getQtables()
-        rewardMem[it]=sup.getReward()
-        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem),eps,alpha]
-        fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+inpStr
-    
-
-        for i in range(len(data2Bsaved)):
-            with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
-                np.save(f,data2Bsaved[i])
-        with open(fileName+'sup class.hi', 'wb') as supSaver:
-            pickle.dump(sup, supSaver)
-
-    elif inpStr !=' halfDone ': 
-        dataType='full data'
-        data2Bsaved=[np.array(results),log,QtableMem,np.array(rewardMem),eps,alpha]
-        fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+ctime(TIME()).replace(':','_')+inpStr
-        for i in range(len(data2Bsaved)):
-            with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
-                np.save(f,data2Bsaved[i])
-
+#...............................................................................................................................
+def saveData():
+    data2BsavedStr=["NAS","log","Qtable","rewards","eps","alpha"]
+    dataType='process data'
+    QtableMem[it,:,:,:]=sup.getQtables()
+    data2Bsaved=[NAS,log,QtableMem,reward,eps,alpha]
+    fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+paramReductionMethod+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' '
+    for i in range(len(data2Bsaved)):
+        with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
+            np.save(f,data2Bsaved[i])
+    with open(fileName+' sup class.sup', 'wb') as supSaver:
+        pickle.dump(sup, supSaver)
+#...............................................................................................................................
 def keyboardInterruptHandler(signal, frame):
-    saveData(forced=True)
+    saveData()
     print('[+] half data saved')
     ans=input('\t[+] continue/quit? [c/q]')
-    if ans=='y': exit(0)
+    if ans=='q': exit(0)
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
-
+#...............................................................................................................................
 
 if __name__ == "__main__":
     ''' call wsential functions '''
@@ -44,11 +32,12 @@ if __name__ == "__main__":
     visibleRaduis=0.3
     iteration=20//4
     samplingPeriodSmall=10
-    # FinalTime=116000*3//2
-    FinalTime=116000*5
-    samplingPeriod=FinalTime//20 #100 causes in 2500 files 100*5*5
+    FinalTime=116000*10#3
+    HalfTime=FinalTime//2
+    dynamic=True
+    samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10#10
-    paramReductionMethod='adaptive' # possible values= 'adaptive' , 'classic'
+    paramReductionMethod='adaptive' # possible values= 'adaptive' , 'classic' , 'adaptive united'
     vizFlag=not True
     globalQ=not True
     communicate=not True
@@ -65,7 +54,7 @@ if __name__ == "__main__":
 
     ''' save parameters into a file '''
     paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
-        'FinalTime':FinalTime , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'vizFlag':vizFlag , 'globalQ':globalQ , \
+        'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'vizFlag':vizFlag , 'globalQ':globalQ , \
             'communicate':communicate , 'record':record , 'method':method}
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
         paramfile.write(str(paramDict))
@@ -73,7 +62,6 @@ if __name__ == "__main__":
 
     ''' initilization '''
     sampledDataNum=FinalTime//samplingPeriodSmall
-    results=[]
     saved=0
     print(c('[+] '+method,'green'))
     print(c('[+] press ctrl+c for saving data asynchronously','green'))
@@ -81,7 +69,8 @@ if __name__ == "__main__":
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
     eps=np.zeros((iteration,sampledDataNum,ROBN))
     alpha=np.zeros((iteration,sampledDataNum,ROBN))
-    rewardMem=[[] for _ in range(iteration)]
+    reward=np.zeros((iteration,sampledDataNum,ROBN))
+    NAS=np.zeros((iteration,sampledDataNum))
 
 
 
@@ -92,8 +81,9 @@ if __name__ == "__main__":
         sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
         sup.generateRobots()
         sup.moveAll() # to make initilazation happen
+        GroundChanged=False # to make sure ground is changed only once in each iteration
+        checkHealth()
         while sup.getTime()<=FinalTime:
-            checkHealth()
             sup.checkCollision()
             sup.getGroundSensors()
             sup.aggregateSwarm()
@@ -106,33 +96,27 @@ if __name__ == "__main__":
             sup.visualize()
 
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
-                results_.append(sup.getStatus())
-                log[it,sampled,:,:]=sup.getlog()
-                eps[it,sampled,:]=sup.geteps()
-                alpha[it,sampled,:]=sup.getalpha()
+                NAS[it,sampled]=sup.getNAS()
+                log[it,sampled,:,:]=sup.getLog()
+                eps[it,sampled,:]=sup.getEps()
+                alpha[it,sampled,:]=sup.getAlpha()
+                reward[it,sampled,:]=sup.getReward()
                 ''' dont forget the effect of state 0'''
-
                 sampled+=1
                 t=sup.getTime()
+            # signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 
-            if sup.getTime()%samplingPeriod==0 and sup.getTime()-tt>1 :
-                tt=sup.getTime()
-                saveData()
-                print(c('\t[+] average exploredAmount:','green'),np.mean(list(map(lambda x: x.exploredAmount,sup.swarm))))
-
-            signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
-
-            if abs(FinalTime//2-sup.getTime())<0.5:
+            if abs(HalfTime-sup.getTime())<1 and GroundChanged==False:
+                GroundChanged=True
                 print(c('\t[+] half time reached','green'))
-
+                if dynamic:
+                    sup.changeGround()
 
         
-        results.append(results_)
         QtableMem[it,:,:,:]=sup.getQtables()
-        rewardMem[it]=sup.getReward()
         if record: sup.video.release()
+        saveData()
         del sup
 
-    saveData('fulDone')
     print('[+] goodbye')
 
