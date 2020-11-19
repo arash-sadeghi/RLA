@@ -19,8 +19,13 @@ def keyboardInterruptHandler(signal, frame):
     if ans=='q': exit(0)
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 #...............................................................................................................................
+def clearTerminal(): 
+    # check and make call for specific operating system 
+    call('clear' if os.name =='posix' else 'cls')
+#...............................................................................................................................
 
 if __name__ == "__main__":
+    clearTerminal()
     ''' call wsential functions '''
     warningSupress()
     dirChangeCharacter=DirLocManage()
@@ -37,7 +42,8 @@ if __name__ == "__main__":
     dynamic=True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10#10
-    paramReductionMethod='adaptive' # possible values= 'adaptive' , 'classic' , 'adaptive united'
+    paramReductionMethod='adaptive shut' # possible values= 'adaptive' , 'classic' , 'adaptive united'
+    print(colored('[+] adaptive shut with modofication','green'))
     vizFlag=not True
     globalQ=not True
     communicate=not True
@@ -50,7 +56,12 @@ if __name__ == "__main__":
     ''' preparing dirs '''
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
-    os.makedirs(codeBeginTime+dirChangeCharacter+'full data')
+
+    ''' for saving image of mats '''
+    os.makedirs(codeBeginTime+dirChangeCharacter+'ims') 
+    imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck"]
+    for _ in imsName:
+        os.makedirs(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+_)
 
     ''' save parameters into a file '''
     paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
@@ -63,8 +74,8 @@ if __name__ == "__main__":
     ''' initilization '''
     sampledDataNum=FinalTime//samplingPeriodSmall
     saved=0
-    print(c('[+] '+method,'green'))
-    print(c('[+] press ctrl+c for saving data asynchronously','green'))
+    print(colored('[+] '+method,'green'))
+    print(colored('[+] press ctrl+c for saving data asynchronously','green'))
     QtableMem=np.zeros((iteration,ROBN,7,44)) ###
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
     eps=np.zeros((iteration,sampledDataNum,ROBN))
@@ -75,7 +86,7 @@ if __name__ == "__main__":
 
 
     for it in range(iteration):
-        print(c("\t[+] iteration: ",'blue'), it)
+        print(colored("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
         results_=[]
         sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
@@ -101,14 +112,20 @@ if __name__ == "__main__":
                 eps[it,sampled,:]=sup.getEps()
                 alpha[it,sampled,:]=sup.getAlpha()
                 reward[it,sampled,:]=sup.getReward()
+                if it==0 and sampled % 100==0:
+                    deltaDotTemp=np.copy(sup.swarm[0].deltaDot)
+                    deltaDotTemp[deltaDotTemp>=0]=0 # positives will be white
+                    deltaDotTemp[deltaDotTemp<0]=255 # negative will be black
+                    imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255]
+                    for count_,v in enumerate(imsMat):
+                        cv.imwrite(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+imsName[count_]+dirChangeCharacter+str(sup.getTime())+'.png',255-v)
                 ''' dont forget the effect of state 0'''
                 sampled+=1
                 t=sup.getTime()
-            # signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 
             if abs(HalfTime-sup.getTime())<1 and GroundChanged==False:
                 GroundChanged=True
-                print(c('\t[+] half time reached','green'))
+                print(colored('\t[+] half time reached','green'))
                 if dynamic:
                     sup.changeGround()
 
