@@ -37,8 +37,8 @@ def RotStandard(inp):
     if inp>360: inp-=360
     return inp
 # ------------------------------------------------------------------------------------------------------------------------------
-def dist(x,y):
-    return sqrt((x[0]-y[0])**2+(x[1]-y[1])**2)
+def dist(delta):
+    return np.sqrt(np.square(delta[0])+np.square(delta[1]))
 # ------------------------------------------------------------------------------------------------------------------------------
 def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
@@ -88,12 +88,13 @@ class SUPERVISOR:
         self.swarm=[0]*self.ROBN
         self.wallNum=4
         self.time=0
-        self.flagsR=[[False for _ in range(self.ROBN)] for _i in range(self.ROBN)] # [[False]*self.ROBN]*self.ROBN >>this one has address problem<<
-        self.counterR= [[0 for _ in range(self.ROBN)] for _i in range(self.ROBN)]# [[0]*self.ROBN]*self.ROBN >>this one has address problem<<
+        self.flagsR=np.zeros((self.ROBN,self.ROBN))
+        self.counterR=np.zeros((self.ROBN,self.ROBN))
         self.collisionDelay=1
         self.detectRad=0.06
         self.robotRad=0.06
         self.robotSenseRad=m2px(self.robotRad+self.detectRad)
+        self.collisionDetectDist=self.robotSenseRad+self.collisionDist
         self.Wmax=120 if not self.debug else 0
         self.paramReductionMethod=paramReductionMethod
         print(colored('\t[+] paramReductionMethod','red'),self.paramReductionMethod)
@@ -158,10 +159,7 @@ class SUPERVISOR:
         for i in QRlocs:
             cv.circle(im,i,10,(255,255,255),-1)
             cv.circle(im,i,visibleRaduis,(255,255,255),1)
-        for i in range(0,Lypx):
-            for j in range(0,Lxpx):
-                im[i,j]=im[i,j]*255
-                im[i,j]=255-im[i,j]
+        im=255-255*im
         cv.imwrite("BackgroundGeneratedBySim.png",im)
         return cv.imread("BackgroundGeneratedBySim.png")
 # generateRobots ...............................................................................................................................
@@ -182,49 +180,48 @@ class SUPERVISOR:
                 else: self.swarm[i].Qtable=tmp
 # visualize ...............................................................................................................................
     def visualize(self):
-        background=np.copy(self.ground)
-        for i in range(self.ROBN):
-
-            if self.swarm[i].inAction== True:
-                I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
-                E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
-                C=tuple(map(lambda x: int(round(x)),self.swarm[i].position))
-                Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
-                cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
-                # cv.arrowedLine(background,I,C,(255,0,0),2) # motion trajectory
-                cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
-                cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
-            
-            vizPos=[]
-            for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
-
-            RobotColor=(255,100,100)
-            debugRobotColor=(0,255,0)
-            if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
-                RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
-
-            if self.debug and i==0:
-                cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
-                cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
-            else:
-                cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
-                cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
-
-            direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
-                , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
-            cv.putText(background,str(i),tuple([vizPos[0]-10,vizPos[1]+10]),cv.FONT_HERSHEY_SIMPLEX\
-                ,0.75,(0,0,0),3 )
-            cv.line(background,tuple(vizPos),tuple(np.array(vizPos)+direction),(0,0,200),3)
-
-        cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-
-        # AllEpsilons=np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
-        AllEpsilons=np.array([np.mean(self.swarm[_].epsilon) for _ in range(self.ROBN)])
-
-        EpsilonAverage=round(np.mean(AllEpsilons),3)
-        cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-
         if self.vizFlag:
+            background=np.copy(self.ground)
+            for i in range(self.ROBN):
+                if self.swarm[i].inAction== True:
+                    I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
+                    E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
+                    C=tuple(map(lambda x: int(round(x)),self.swarm[i].position))
+                    Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
+                    cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
+                    # cv.arrowedLine(background,I,C,(255,0,0),2) # motion trajectory
+                    cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
+                    cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
+                
+                vizPos=[]
+                for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
+
+                RobotColor=(255,100,100)
+                debugRobotColor=(0,255,0)
+                if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
+                    RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
+
+                if self.debug and i==0:
+                    cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
+                    cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
+                else:
+                    cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
+                    cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
+
+                direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
+                    , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
+                cv.putText(background,str(i),tuple([vizPos[0]-10,vizPos[1]+10]),cv.FONT_HERSHEY_SIMPLEX\
+                    ,0.75,(0,0,0),3 )
+                cv.line(background,tuple(vizPos),tuple(np.array(vizPos)+direction),(0,0,200),3)
+
+            cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
+
+            # AllEpsilons=np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
+            AllEpsilons=np.array([np.mean(self.swarm[_].epsilon) for _ in range(self.ROBN)])
+
+            EpsilonAverage=round(np.mean(AllEpsilons),3)
+            cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
+
             cv.imshow("background",background)
             cv.waitKey(self.fps)
         if self.record: self.video.write(background)
@@ -272,7 +269,7 @@ class SUPERVISOR:
             for i in range(0,self.ROBN):
                 for j in range(0,self.ROBN):
                     if j!=i:
-                        if dist(self.swarm[j].position,self.swarm[i].position)<=self.robotSenseRad+self.collisionDist and self.flagsR[i][j]==False: 
+                        if dist(self.swarm[j].position-self.swarm[i].position)<=self.robotSenseRad+self.collisionDist and self.flagsR[i][j]==False: 
                             collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] , self.swarm[j].position[1]-self.swarm[i].position[1] )))
                             self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
                             self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
@@ -285,14 +282,14 @@ class SUPERVISOR:
                             if self.counterR[i][j]>=self.collisionDelay:
                                 self.counterR[i][j]=0
                                 self.flagsR[i][j]=False
-                        elif dist(self.swarm[j].position,self.swarm[i].position)>=self.robotSenseRad*2 :
+                        elif dist(self.swarm[j].position-self.swarm[i].position)>=self.robotSenseRad*2 :
                             self.flagsR[i][j]=False
                         
         else:
             i=robotNum
             for j in range(0,self.ROBN):
                 if j!=i:
-                    if dist(self.swarm[j].position,self.swarm[i].position)<=self.robotSenseRad+self.collisionDist and self.flagsR[i][j]==False: 
+                    if dist(self.swarm[j].position-self.swarm[i].position)<=self.robotSenseRad+self.collisionDist and self.flagsR[i][j]==False: 
                         self.swarm[i].rotation+=rnd.randint(90,270)
                         collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] , self.swarm[j].position[1]-self.swarm[i].position[1] )))
                         self.swarm[i].rotation=collisionAngle+rnd.randint(90,270) 
@@ -312,10 +309,8 @@ class SUPERVISOR:
         return int(self.time)
 # getNAS ...............................................................................................................................
     def getNAS(self):
-        inCue=0
-        for i in range(self.ROBN):
-            if self.swarm[i].groundSensorValue>0:
-                inCue+=1
+        f=np.vectorize(lambda x: x.groundSensorValue)
+        inCue=np.count_nonzero(f(self.swarm))
         return inCue/self.ROBN
 # getQRs ...............................................................................................................................
     def getQRs(self):
@@ -453,7 +448,7 @@ class ROBOT(SUPERVISOR):
 # detectQR ...............................................................................................................................
     def detectQR(self):
         for QRpos in self.QRloc:
-            if dist(self.position,self.QRloc[QRpos])<=self.QRdetectableArea :
+            if dist(self.position-np.array(self.QRloc[QRpos]))<=self.QRdetectableArea :
                 self.detectedQR=QRpos
                 break
             else:
@@ -499,7 +494,7 @@ class ROBOT(SUPERVISOR):
             self.reward=0
             self.desiredPos=self.initialPos+actionXY_SudoVec
             self.lastdetectedQR=self.detectedQR
-        elif (self.inAction==True and dist(self.position,self.desiredPos)<=20) or rewardInp!=None:
+        elif (self.inAction==True and dist(self.position-self.desiredPos)<=20) or rewardInp!=None:
             ''' elif goal reached or a reward is forced '''
             self.inAction=False
             if rewardInp==None:

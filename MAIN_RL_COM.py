@@ -21,7 +21,9 @@ signal.signal(signal.SIGINT, keyboardInterruptHandler)
 #...............................................................................................................................
 def clearTerminal(): 
     # check and make call for specific operating system 
-    call('clear' if os.name =='posix' else 'cls')
+    # call('clear' if os.name =='posix' else 'cls')
+    if os.name=='nt':os.system('cls')
+    else:os.system('clear')
 #...............................................................................................................................
 
 if __name__ == "__main__":
@@ -44,7 +46,7 @@ if __name__ == "__main__":
     ROBN=10#10
     paramReductionMethod='adaptive shut' # possible values= 'adaptive' , 'classic' , 'adaptive united'
     print(colored('[+] adaptive shut with modofication','green'))
-    vizFlag=not True
+    vizFlag=True
     globalQ=not True
     communicate=not True
     if globalQ and communicate:
@@ -61,6 +63,7 @@ if __name__ == "__main__":
     os.makedirs(codeBeginTime+dirChangeCharacter+'ims') 
     imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck"]
     for _ in imsName:
+        if _=="DELTA" and os.name=='nt': _+='_' # in windows this wierd thing happens
         os.makedirs(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+_)
 
     ''' save parameters into a file '''
@@ -88,7 +91,6 @@ if __name__ == "__main__":
     for it in range(iteration):
         print(colored("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
-        results_=[]
         sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
         sup.generateRobots()
         sup.moveAll() # to make initilazation happen
