@@ -1,0 +1,1520 @@
+        
+[+] index [5, 8] reward 0 Qtable 8.534989535407455 delta 8.534989535407455 prevdelta 8.682815587417453 deltaDot -1.0 DELTA 0.033470547197676295
+[+] eps: 0.034->0.033 alpha: 0.017->0.017
+        
+[+] index [1, 12] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 8.39215415036919 delta 8.39215415036919 prevdelta 8.534989535407455 deltaDot -1.0 DELTA 0.03291040843282036
+[+] eps: 0.033->0.033 alpha: 0.017->0.016
+        
+[+] index [1, 3] reward 0 Qtable 6.4619567601742025 delta 6.4619567601742025 prevdelta 6.545975978831938 deltaDot -1.0 DELTA 0.02534100690264393
+[+] eps: 0.026->0.025 alpha: 0.013->0.013
+        
+[+] index [6, 4] reward 0 Qtable 19.08490623384511 delta 19.08490623384511 prevdelta 19.858132565170365 deltaDot -1.0 DELTA 0.07484276954449062
+[+] eps: 0.078->0.075 alpha: 0.039->0.037
+        
+[+] index [6, 5] reward 0 Qtable 18.97116646621902 delta 18.97116646621902 prevdelta 19.734819613636198 deltaDot -1.0 DELTA 0.07439673124007459
+[+] eps: 0.077->0.074 alpha: 0.039->0.037
+        
+[+] index [1, 3] reward 0 Qtable 6.380080514742122 delta 6.380080514742122 prevdelta 6.4619567601742025 deltaDot -1.0 DELTA 0.02501992358722401
+[+] eps: 0.025->0.025 alpha: 0.013->0.013
+        
+[+] index [6, 6] reward 0 Qtable 18.63238440951099 delta 18.63238440951099 prevdelta 19.36790551550624 deltaDot -1.0 DELTA 0.07306817415494506
+[+] eps: 0.076->0.073 alpha: 0.038->0.037
+        
+[+] index [1, 3] reward 0 Qtable 6.30026595126253 delta 6.30026595126253 prevdelta 6.380080514742122 deltaDot -1.0 DELTA 0.024706925299068743
+[+] eps: 0.025->0.025 alpha: 0.013->0.012
+        
+[+] index [1, 3] reward 0 Qtable 6.222435851151475 delta 6.222435851151475 prevdelta 6.30026595126253 deltaDot -1.0 DELTA 0.02440170922020186
+[+] eps: 0.025->0.024 alpha: 0.012->0.012
+        
+[+] index [6, 4] reward 0 Qtable 18.37072261432617 delta 18.37072261432617 prevdelta 19.08490623384511 deltaDot -1.0 DELTA 0.07204204946794576
+[+] eps: 0.075->0.072 alpha: 0.037->0.036
+        
+[+] index [1, 23] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 0] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 17] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.9->0.0 alpha: 0.45->0.0
+        
+[+] index [2, 27] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 8.254059540009271 delta 8.254059540009271 prevdelta 8.39215415036919 deltaDot -1.0 DELTA 0.03236886094121283
+[+] eps: 0.033->0.032 alpha: 0.016->0.016
+        
+[+] index [1, 3] reward 0 Qtable 6.146516816010895 delta 6.146516816010895 prevdelta 6.222435851151475 deltaDot -1.0 DELTA 0.024103987513768216
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [1, 3] reward 0 Qtable 6.072439033717749 delta 6.072439033717749 prevdelta 6.146516816010895 deltaDot -1.0 DELTA 0.023813486406736268
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [6, 5] reward 0 Qtable 18.265470079770015 delta 18.265470079770015 prevdelta 18.97116646621902 deltaDot -1.0 DELTA 0.07162929443047064
+[+] eps: 0.074->0.072 alpha: 0.037->0.036
+        
+[+] index [1, 3] reward 0 Qtable 6.000136061525162 delta 6.000136061525162 prevdelta 6.072439033717749 deltaDot -1.0 DELTA 0.02352994533931436
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [6, 29] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 31] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 6] reward 0 Qtable 17.951667255032973 delta 17.951667255032973 prevdelta 18.63238440951099 deltaDot -1.0 DELTA 0.07039869511777637
+[+] eps: 0.073->0.07 alpha: 0.037->0.035
+        
+[+] index [6, 4] reward 0 Qtable 17.70899036065457 delta 17.70899036065457 prevdelta 18.37072261432617 deltaDot -1.0 DELTA 0.06944702102217479
+[+] eps: 0.072->0.069 alpha: 0.036->0.035
+        
+[+] index [5, 8] reward 0 Qtable 8.120472287283745 delta 8.120472287283745 prevdelta 8.254059540009271 deltaDot -1.0 DELTA 0.03184498936189704
+[+] eps: 0.032->0.032 alpha: 0.016->0.016
+        
+[+] index [1, 3] reward 0 Qtable 5.929544624747094 delta 5.929544624747094 prevdelta 6.000136061525162 deltaDot -1.0 DELTA 0.0232531161754788
+[+] eps: 0.024->0.023 alpha: 0.012->0.012
+        [+] average exploredAmount: 0.6363636363636365
+        
+[+] index [6, 5] reward 0 Qtable 17.611298712642615 delta 17.611298712642615 prevdelta 18.265470079770015 deltaDot -1.0 DELTA 0.06906391652016712
+[+] eps: 0.072->0.069 alpha: 0.036->0.035
+        
+[+] index [4, 6] reward 120 Qtable 93.31992196969503 delta 26.68007803030497 prevdelta 47.01403844358998 deltaDot -1.0 DELTA 0.10462775698158812
+[+] eps: 0.184->0.105 alpha: 0.092->0.052
+        
+[+] index [3, 24] reward 0 Qtable 17.765320123229426 delta 17.765320123229426 prevdelta 18.431433328193425 deltaDot -1.0 DELTA 0.0696679220518801
+[+] eps: 0.072->0.07 alpha: 0.036->0.035
+        
+[+] index [4, 24] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 24] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 10] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 6] reward 0 Qtable 17.319780280061554 delta 17.319780280061554 prevdelta 17.951667255032973 deltaDot -1.0 DELTA 0.06792070698063354
+[+] eps: 0.07->0.068 alpha: 0.035->0.034
+        
+[+] index [1, 3] reward 0 Qtable 5.860604429733629 delta 5.860604429733629 prevdelta 5.929544624747094 deltaDot -1.0 DELTA 0.02298276246954364
+[+] eps: 0.023->0.023 alpha: 0.012->0.011
+        
+[+] index [3, 32] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward 0 Qtable 17.146483654443504 delta 17.146483654443504 prevdelta 17.765320123229426 deltaDot -1.0 DELTA 0.06724111237036669
+[+] eps: 0.07->0.067 alpha: 0.035->0.034
+        
+[+] index [6, 4] reward 0 Qtable 17.094072047725636 delta 17.094072047725636 prevdelta 17.70899036065457 deltaDot -1.0 DELTA 0.06703557665774759
+[+] eps: 0.069->0.067 alpha: 0.035->0.034
+        
+[+] index [2, 16] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.9->0.0 alpha: 0.45->0.0
+        
+[+] index [5, 8] reward 0 Qtable 7.991174110482679 delta 7.991174110482679 prevdelta 8.120472287283745 deltaDot -1.0 DELTA 0.03133793768816737
+[+] eps: 0.032->0.031 alpha: 0.016->0.016
+        
+[+] index [1, 0] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 3] reward 0 Qtable 5.793257989965367 delta 5.793257989965367 prevdelta 5.860604429733629 deltaDot -1.0 DELTA 0.02271865878417791
+[+] eps: 0.023->0.023 alpha: 0.011->0.011
+        
+[+] index [6, 5] reward 0 Qtable 17.003146080591776 delta 17.003146080591776 prevdelta 17.611298712642615 deltaDot -1.0 DELTA 0.0666790042376148
+[+] eps: 0.069->0.067 alpha: 0.035->0.033
+        
+[+] index [1, 7] reward 0 Qtable 4.519471027579272 delta 4.519471027579272 prevdelta 4.560247213157929 deltaDot -1.0 DELTA 0.01772341579442852
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 6] reward 0 Qtable 16.731594419376044 delta 16.731594419376044 prevdelta 17.319780280061554 deltaDot -1.0 DELTA 0.065614095762259
+[+] eps: 0.068->0.066 alpha: 0.034->0.033
+        
+[+] index [1, 3] reward 0 Qtable 5.727450464203999 delta 5.727450464203999 prevdelta 5.793257989965367 deltaDot -1.0 DELTA 0.022460590055701956
+[+] eps: 0.023->0.022 alpha: 0.011->0.011
+        
+[+] index [2, 22] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 15.269535761540693 delta 15.269535761540693 prevdelta 15.756323465772148 deltaDot -1.0 DELTA 0.059880532398198794
+[+] eps: 0.062->0.06 alpha: 0.031->0.03
+        
+[+] index [6, 21] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 14.812361796103497 delta 14.812361796103497 prevdelta 15.269535761540693 deltaDot -1.0 DELTA 0.05808769331805293
+[+] eps: 0.06->0.058 alpha: 0.03->0.029
+        
+[+] index [6, 8] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [4, 6] reward 122 Qtable 94.7156603298973 delta 27.284339670102696 prevdelta 26.68007803030497 deltaDot 1.0 DELTA 0.10699741047099097
+[+] eps: 0.105->0.107 alpha: 0.052->0.053
+        
+[+] index [4, 6] reward 116 Qtable 96.17533717545327 delta 19.824662824546735 prevdelta 27.284339670102696 deltaDot -1.0 DELTA 0.07774377578253622
+[+] eps: 0.107->0.078 alpha: 0.053->0.039
+        
+[+] index [6, 4] reward 0 Qtable 16.521116559151448 delta 16.521116559151448 prevdelta 17.094072047725636 deltaDot -1.0 DELTA 0.06478869238882921
+[+] eps: 0.067->0.065 alpha: 0.034->0.032
+        
+[+] index [4, 6] reward 128 Qtable 96.94595924625123 delta 31.054040753748765 prevdelta 19.824662824546735 deltaDot 1.0 DELTA 0.12178055197548536
+[+] eps: 0.078->0.122 alpha: 0.039->0.061
+        
+[+] index [6, 5] reward 0 Qtable 16.436269655811493 delta 16.436269655811493 prevdelta 17.003146080591776 deltaDot -1.0 DELTA 0.06445595943455487
+[+] eps: 0.067->0.064 alpha: 0.033->0.032
+        
+[+] index [5, 8] reward 0 Qtable 7.865960652317877 delta 7.865960652317877 prevdelta 7.991174110482679 deltaDot -1.0 DELTA 0.030846904518893638
+[+] eps: 0.031->0.031 alpha: 0.016->0.015
+        
+[+] index [5, 8] reward 0 Qtable 7.744640383722166 delta 7.744640383722166 prevdelta 7.865960652317877 deltaDot -1.0 DELTA 0.030371138759694768
+[+] eps: 0.031->0.03 alpha: 0.015->0.015
+        
+[+] index [1, 3] reward 0 Qtable 5.663129505733586 delta 5.663129505733586 prevdelta 5.727450464203999 deltaDot -1.0 DELTA 0.022208351002876808
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [3, 24] reward 0 Qtable 16.570009337360958 delta 16.570009337360958 prevdelta 17.146483654443504 deltaDot -1.0 DELTA 0.06498042877396454
+[+] eps: 0.067->0.065 alpha: 0.034->0.032
+        
+[+] index [1, 4] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.9->0.0 alpha: 0.45->0.0
+        
+[+] index [6, 6] reward 0 Qtable 16.182680200131934 delta 16.182680200131934 prevdelta 16.731594419376044 deltaDot -1.0 DELTA 0.06346149098090954
+[+] eps: 0.066->0.063 alpha: 0.033->0.032
+        
+[+] index [1, 3] reward 0 Qtable 5.600245121814546 delta 5.600245121814546 prevdelta 5.663129505733586 deltaDot -1.0 DELTA 0.02196174557574332
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [6, 4] reward 0 Qtable 15.98592578981602 delta 15.98592578981602 prevdelta 16.521116559151448 deltaDot -1.0 DELTA 0.06268990505810204
+[+] eps: 0.065->0.063 alpha: 0.032->0.031
+        
+[+] index [1, 3] reward 0 Qtable 5.538749542551002 delta 5.538749542551002 prevdelta 5.600245121814546 deltaDot -1.0 DELTA 0.021720586441376477
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [3, 24] reward 0 Qtable 16.031646181595804 delta 16.031646181595804 prevdelta 16.570009337360958 deltaDot -1.0 DELTA 0.0628692007121404
+[+] eps: 0.065->0.063 alpha: 0.032->0.031
+        
+[+] index [1, 3] reward -1 Qtable 5.478597098442945 delta 6.478597098442945 prevdelta 5.538749542551002 deltaDot 1.0 DELTA 0.025406263131148805
+[+] eps: 0.022->0.025 alpha: 0.011->0.013
+        
+[+] index [1, 3] reward 0 Qtable 5.396298627141076 delta 5.396298627141076 prevdelta 6.478597098442945 deltaDot -1.0 DELTA 0.02116195540055324
+[+] eps: 0.025->0.021 alpha: 0.013->0.011
+        
+[+] index [4, 7] reward 28 Qtable 2.6843137254901963 delta 25.315686274509805 prevdelta 37.0 deltaDot -1.0 DELTA 0.09927720107650903
+[+] eps: 0.145->0.099 alpha: 0.073->0.05
+        
+[+] index [5, 8] reward 0 Qtable 7.627033609853185 delta 7.627033609853185 prevdelta 7.744640383722166 deltaDot -1.0 DELTA 0.02990993572491445
+[+] eps: 0.03->0.03 alpha: 0.015->0.015
+        
+[+] index [1, 3] reward 0 Qtable 5.339200511703263 delta 5.339200511703263 prevdelta 5.396298627141076 deltaDot -1.0 DELTA 0.020938041222365738
+[+] eps: 0.021->0.021 alpha: 0.011->0.01
+        
+[+] index [5, 8] reward 0 Qtable 7.51297156733195 delta 7.51297156733195 prevdelta 7.627033609853185 deltaDot -1.0 DELTA 0.029462633597380196
+[+] eps: 0.03->0.029 alpha: 0.015->0.015
+        
+[+] index [1, 3] reward 0 Qtable 5.283304311499003 delta 5.283304311499003 prevdelta 5.339200511703263 deltaDot -1.0 DELTA 0.02071884043725099
+[+] eps: 0.021->0.021 alpha: 0.01->0.01
+        
+[+] index [1, 3] reward 0 Qtable 5.228572341993309 delta 5.228572341993309 prevdelta 5.283304311499003 deltaDot -1.0 DELTA 0.020504205262718858
+[+] eps: 0.021->0.021 alpha: 0.01->0.01
+        
+[+] index [1, 3] reward 0 Qtable 5.174968481727706 delta 5.174968481727706 prevdelta 5.228572341993309 deltaDot -1.0 DELTA 0.020293994045991005
+[+] eps: 0.021->0.02 alpha: 0.01->0.01
+        
+[+] index [6, 5] reward 0 Qtable 15.906561890716297 delta 15.906561890716297 prevdelta 16.436269655811493 deltaDot -1.0 DELTA 0.06237867408124038
+[+] eps: 0.064->0.062 alpha: 0.032->0.031
+        
+[+] index [1, 3] reward 0 Qtable 5.12245809194952 delta 5.12245809194952 prevdelta 5.174968481727706 deltaDot -1.0 DELTA 0.020088070948821646
+[+] eps: 0.02->0.02 alpha: 0.01->0.01
+        
+[+] index [2, 27] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 7.402295603074031 delta 7.402295603074031 prevdelta 7.51297156733195 deltaDot -1.0 DELTA 0.029028610208133455
+[+] eps: 0.029->0.029 alpha: 0.015->0.015
+        
+[+] index [1, 3] reward 0 Qtable 5.071007941157796 delta 5.071007941157796 prevdelta 5.12245809194952 deltaDot -1.0 DELTA 0.019886305651599198
+[+] eps: 0.02->0.02 alpha: 0.01->0.01
+        
+[+] index [2, 14] reward 0 Qtable 14.382153831439446 delta 14.382153831439446 prevdelta 14.812361796103497 deltaDot -1.0 DELTA 0.05640060326054685
+[+] eps: 0.058->0.056 alpha: 0.029->0.028
+        
+[+] index [1, 3] reward 0 Qtable 5.0205861342180205 delta 5.0205861342180205 prevdelta 5.071007941157796 deltaDot -1.0 DELTA 0.019688573075364785
+[+] eps: 0.02->0.02 alpha: 0.01->0.01
+        
+[+] index [6, 6] reward 0 Qtable 15.669191693348125 delta 15.669191693348125 prevdelta 16.182680200131934 deltaDot -1.0 DELTA 0.06144781056214951
+[+] eps: 0.063->0.061 alpha: 0.032->0.031
+        
+[+] index [5, 8] reward 0 Qtable 7.294856426220523 delta 7.294856426220523 prevdelta 7.402295603074031 deltaDot -1.0 DELTA 0.02860728010282558
+[+] eps: 0.029->0.029 alpha: 0.015->0.014
+        
+[+] index [1, 3] reward 0 Qtable 4.971162045725663 delta 4.971162045725663 prevdelta 5.0205861342180205 deltaDot -1.0 DELTA 0.019494753120492796
+[+] eps: 0.02->0.019 alpha: 0.01->0.01
+        
+[+] index [6, 4] reward 0 Qtable 15.484847704801306 delta 15.484847704801306 prevdelta 15.98592578981602 deltaDot -1.0 DELTA 0.06072489296000512
+[+] eps: 0.063->0.061 alpha: 0.031->0.03
+        
+[+] index [6, 5] reward 0 Qtable 15.410446770749262 delta 15.410446770749262 prevdelta 15.906561890716297 deltaDot -1.0 DELTA 0.06043312459117358
+[+] eps: 0.062->0.06 alpha: 0.031->0.03
+        
+[+] index [5, 8] reward 0 Qtable 7.190513425673129 delta 7.190513425673129 prevdelta 7.294856426220523 deltaDot -1.0 DELTA 0.02819809186538482
+[+] eps: 0.029->0.028 alpha: 0.014->0.014
+        
+[+] index [6, 6] reward 0 Qtable 15.187772931930693 delta 15.187772931930693 prevdelta 15.669191693348125 deltaDot -1.0 DELTA 0.0595598938507086
+[+] eps: 0.061->0.06 alpha: 0.031->0.03
+        
+[+] index [1, 3] reward 0 Qtable 4.92270625732397 delta 4.92270625732397 prevdelta 4.971162045725663 deltaDot -1.0 DELTA 0.019304730420878314
+[+] eps: 0.019->0.019 alpha: 0.01->0.01
+        
+[+] index [4, 6] reward 120 Qtable 98.8368483582816 delta 21.1631516417184 prevdelta 31.054040753748765 deltaDot -1.0 DELTA 0.08299275153615059
+[+] eps: 0.122->0.083 alpha: 0.061->0.041
+        
+[+] index [6, 4] reward 0 Qtable 15.014689845113285 delta 15.014689845113285 prevdelta 15.484847704801306 deltaDot -1.0 DELTA 0.05888113664750308
+[+] eps: 0.061->0.059 alpha: 0.03->0.029
+        
+[+] index [2, 14] reward 0 Qtable 13.97657275529986 delta 13.97657275529986 prevdelta 14.382153831439446 deltaDot -1.0 DELTA 0.054810089236470044
+[+] eps: 0.056->0.055 alpha: 0.028->0.027
+        
+[+] index [2, 14] reward 0 Qtable 13.59354415533086 delta 13.59354415533086 prevdelta 13.97657275529986 deltaDot -1.0 DELTA 0.05330801629541514
+[+] eps: 0.055->0.053 alpha: 0.027->0.027
+        
+[+] index [5, 8] reward 0 Qtable 7.089134046604922 delta 7.089134046604922 prevdelta 7.190513425673129 deltaDot -1.0 DELTA 0.02780052567296048
+[+] eps: 0.028->0.028 alpha: 0.014->0.014
+        
+[+] index [1, 3] reward 0 Qtable 4.875190498704565 delta 4.875190498704565 prevdelta 4.92270625732397 deltaDot -1.0 DELTA 0.01911839411256692
+[+] eps: 0.019->0.019 alpha: 0.01->0.01
+        
+[+] index [6, 5] reward 0 Qtable 14.944796045898093 delta 14.944796045898093 prevdelta 15.410446770749262 deltaDot -1.0 DELTA 0.05860704331724742
+[+] eps: 0.06->0.059 alpha: 0.03->0.029
+        
+[+] index [1, 3] reward 0 Qtable 4.828587592040527 delta 4.828587592040527 prevdelta 4.875190498704565 deltaDot -1.0 DELTA 0.018935637615845203
+[+] eps: 0.019->0.019 alpha: 0.01->0.009
+        
+[+] index [2, 14] reward 0 Qtable 13.23122171865845 delta 13.23122171865845 prevdelta 13.59354415533086 deltaDot -1.0 DELTA 0.05188714399473902
+[+] eps: 0.053->0.052 alpha: 0.027->0.026
+        
+[+] index [2, 14] reward 0 Qtable 12.887956565387276 delta 12.887956565387276 prevdelta 13.23122171865845 deltaDot -1.0 DELTA 0.05054100613877363
+[+] eps: 0.052->0.051 alpha: 0.026->0.025
+        
+[+] index [2, 31] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 10] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 29] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 12.562271419443533 delta 12.562271419443533 prevdelta 12.887956565387276 deltaDot -1.0 DELTA 0.04926380948801386
+[+] eps: 0.051->0.049 alpha: 0.025->0.025
+        
+[+] index [3, 24] reward 0 Qtable 15.527697790827421 delta 15.527697790827421 prevdelta 16.031646181595804 deltaDot -1.0 DELTA 0.06089293251304871
+[+] eps: 0.063->0.061 alpha: 0.031->0.03
+        
+[+] index [2, 14] reward 0 Qtable 12.25283874647144 delta 12.25283874647144 prevdelta 12.562271419443533 deltaDot -1.0 DELTA 0.04805034802537819
+[+] eps: 0.049->0.048 alpha: 0.025->0.024
+        
+[+] index [6, 5] reward 0 Qtable 14.506860891283404 delta 14.506860891283404 prevdelta 14.944796045898093 deltaDot -1.0 DELTA 0.05688965055405257
+[+] eps: 0.059->0.057 alpha: 0.029->0.028
+        
+[+] index [1, 3] reward 0 Qtable 4.782871399620904 delta 4.782871399620904 prevdelta 4.828587592040527 deltaDot -1.0 DELTA 0.018756358429885895
+[+] eps: 0.019->0.019 alpha: 0.009->0.009
+        
+[+] index [1, 3] reward 0 Qtable 4.738016774473234 delta 4.738016774473234 prevdelta 4.782871399620904 deltaDot -1.0 DELTA 0.01858045793911072
+[+] eps: 0.019->0.019 alpha: 0.009->0.009
+        
+[+] index [5, 8] reward 0 Qtable 6.990593220074073 delta 6.990593220074073 prevdelta 7.089134046604922 deltaDot -1.0 DELTA 0.027414091059114014
+[+] eps: 0.028->0.027 alpha: 0.014->0.014
+        
+[+] index [3, 24] reward 0 Qtable 15.054934263997486 delta 15.054934263997486 prevdelta 15.527697790827421 deltaDot -1.0 DELTA 0.059038957898029355
+[+] eps: 0.061->0.059 alpha: 0.03->0.03
+        
+[+] index [6, 6] reward 0 Qtable 14.735481860103464 delta 14.735481860103464 prevdelta 15.187772931930693 deltaDot -1.0 DELTA 0.05778620337295476
+[+] eps: 0.06->0.058 alpha: 0.03->0.029
+        
+[+] index [6, 4] reward 0 Qtable 14.572648842868288 delta 14.572648842868288 prevdelta 15.014689845113285 deltaDot -1.0 DELTA 0.05714764252105211
+[+] eps: 0.059->0.057 alpha: 0.029->0.029
+        
+[+] index [2, 28] reward -1 Qtable -0.011650375121517781 delta 0.9883496248784822 prevdelta 0.9902724474671343 deltaDot -1.0 DELTA 0.003875880881876401
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 6] reward 124 Qtable 99.71504245124311 delta 24.284957548756893 prevdelta 21.1631516417184 deltaDot 1.0 DELTA 0.09523512764218389
+[+] eps: 0.083->0.095 alpha: 0.041->0.048
+        
+[+] index [6, 6] reward 0 Qtable 14.309728084320252 delta 14.309728084320252 prevdelta 14.735481860103464 deltaDot -1.0 DELTA 0.056116580722824515
+[+] eps: 0.058->0.056 alpha: 0.029->0.028
+        
+[+] index [5, 8] reward 0 Qtable 6.894772840527906 delta 6.894772840527906 prevdelta 6.990593220074073 deltaDot -1.0 DELTA 0.027038324864815316
+[+] eps: 0.027->0.027 alpha: 0.014->0.014
+        
+[+] index [5, 8] reward 0 Qtable 6.801561286562256 delta 6.801561286562256 prevdelta 6.894772840527906 deltaDot -1.0 DELTA 0.02667278935906767
+[+] eps: 0.027->0.027 alpha: 0.014->0.013
+        
+[+] index [1, 3] reward 0 Qtable 4.693999513776784 delta 4.693999513776784 prevdelta 4.738016774473234 deltaDot -1.0 DELTA 0.018407841230497192
+[+] eps: 0.019->0.018 alpha: 0.009->0.009
+        
+[+] index [5, 8] reward 0 Qtable 6.710852980807624 delta 6.710852980807624 prevdelta 6.801561286562256 deltaDot -1.0 DELTA 0.026317070512971073
+[+] eps: 0.027->0.026 alpha: 0.013->0.013
+        
+[+] index [6, 4] reward 0 Qtable 14.156252579539757 delta 14.156252579539757 prevdelta 14.572648842868288 deltaDot -1.0 DELTA 0.05551471599819512
+[+] eps: 0.057->0.056 alpha: 0.029->0.028
+        [+] average exploredAmount: 0.6484848484848484
+        
+[+] index [5, 8] reward 0 Qtable 6.622547985258575 delta 6.622547985258575 prevdelta 6.710852980807624 deltaDot -1.0 DELTA 0.025970776412778725
+[+] eps: 0.026->0.026 alpha: 0.013->0.013
+        
+[+] index [5, 8] reward 0 Qtable 6.536551628754551 delta 6.536551628754551 prevdelta 6.622547985258575 deltaDot -1.0 DELTA 0.025633535799037453
+[+] eps: 0.026->0.026 alpha: 0.013->0.013
+        
+[+] index [5, 8] reward 0 Qtable 6.452774163665583 delta 6.452774163665583 prevdelta 6.536551628754551 deltaDot -1.0 DELTA 0.025304996720257187
+[+] eps: 0.026->0.025 alpha: 0.013->0.013
+        
+[+] index [5, 8] reward 0 Qtable 6.371130449141524 delta 6.371130449141524 prevdelta 6.452774163665583 deltaDot -1.0 DELTA 0.024984825290751075
+[+] eps: 0.025->0.025 alpha: 0.013->0.012
+        
+[+] index [1, 3] reward 0 Qtable 4.650796314883967 delta 4.650796314883967 prevdelta 4.693999513776784 deltaDot -1.0 DELTA 0.018238416921113595
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [1, 3] reward 0 Qtable 4.608384733780951 delta 4.608384733780951 prevdelta 4.650796314883967 deltaDot -1.0 DELTA 0.018072096995219413
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 5] reward 0 Qtable 14.094215767912722 delta 14.094215767912722 prevdelta 14.506860891283404 deltaDot -1.0 DELTA 0.05527143438397146
+[+] eps: 0.057->0.055 alpha: 0.028->0.028
+        
+[+] index [1, 3] reward 0 Qtable 4.566743145830862 delta 4.566743145830862 prevdelta 4.608384733780951 deltaDot -1.0 DELTA 0.017908796650317107
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [2, 14] reward 0 Qtable 11.958462163438044 delta 11.958462163438044 prevdelta 12.25283874647144 deltaDot -1.0 DELTA 0.046895930052698216
+[+] eps: 0.048->0.047 alpha: 0.024->0.023
+        
+[+] index [1, 3] reward 0 Qtable 4.525850708654405 delta 4.525850708654405 prevdelta 4.566743145830862 deltaDot -1.0 DELTA 0.0177484341515859
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [5, 29] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 22] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 6] reward 126 Qtable 100.87143296721355 delta 25.12856703278645 prevdelta 24.284957548756893 deltaDot 1.0 DELTA 0.09854340012857431
+[+] eps: 0.095->0.099 alpha: 0.048->0.049
+        
+[+] index [5, 8] reward 0 Qtable 6.291539658553331 delta 6.291539658553331 prevdelta 6.371130449141524 deltaDot -1.0 DELTA 0.024672704543346396
+[+] eps: 0.025->0.025 alpha: 0.012->0.012
+        
+[+] index [1, 3] reward 0 Qtable 4.485687327013174 delta 4.485687327013174 prevdelta 4.525850708654405 deltaDot -1.0 DELTA 0.01759093069416931
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 6] reward 0 Qtable 13.908221578737539 delta 13.908221578737539 prevdelta 14.309728084320252 deltaDot -1.0 DELTA 0.05454204540681388
+[+] eps: 0.056->0.055 alpha: 0.028->0.027
+        
+[+] index [6, 5] reward 0 Qtable 13.70471200690786 delta 13.70471200690786 prevdelta 14.094215767912722 deltaDot -1.0 DELTA 0.053743968654540626
+[+] eps: 0.055->0.054 alpha: 0.028->0.027
+        
+[+] index [5, 8] reward 0 Qtable 6.213925008994215 delta 6.213925008994215 prevdelta 6.291539658553331 deltaDot -1.0 DELTA 0.024368333368604764
+[+] eps: 0.025->0.024 alpha: 0.012->0.012
+        
+[+] index [1, 12] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 7] reward 0 Qtable 4.479420795482942 delta 4.479420795482942 prevdelta 4.519471027579272 deltaDot -1.0 DELTA 0.01756635606071742
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [2, 14] reward 0 Qtable 11.67806056086083 delta 11.67806056086083 prevdelta 11.958462163438044 deltaDot -1.0 DELTA 0.04579631592494443
+[+] eps: 0.047->0.046 alpha: 0.023->0.023
+        
+[+] index [6, 1] reward 0 Qtable -0.001960754159758582 delta 0.001960754159758582 prevdelta 0.0019607616981633606 deltaDot -1.0 DELTA 7.689231999053263e-06
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 6.138213510920874 delta 6.138213510920874 prevdelta 6.213925008994215 deltaDot -1.0 DELTA 0.024071425533023036
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [6, 4] reward 0 Qtable 13.763312408763824 delta 13.763312408763824 prevdelta 14.156252579539757 deltaDot -1.0 DELTA 0.05397377415201499
+[+] eps: 0.056->0.054 alpha: 0.028->0.027
+        
+[+] index [6, 6] reward 0 Qtable 13.528930152299774 delta 13.528930152299774 prevdelta 13.908221578737539 deltaDot -1.0 DELTA 0.05305462804823441
+[+] eps: 0.055->0.053 alpha: 0.027->0.027
+        
+[+] index [6, 4] reward 0 Qtable 13.391883450996701 delta 13.391883450996701 prevdelta 13.763312408763824 deltaDot -1.0 DELTA 0.052517190003908636
+[+] eps: 0.054->0.053 alpha: 0.027->0.026
+        
+[+] index [2, 14] reward 0 Qtable 11.410654485442922 delta 11.410654485442922 prevdelta 11.67806056086083 deltaDot -1.0 DELTA 0.044747664648795774
+[+] eps: 0.046->0.045 alpha: 0.023->0.022
+        
+[+] index [1, 3] reward 0 Qtable 4.446233619570573 delta 4.446233619570573 prevdelta 4.485687327013174 deltaDot -1.0 DELTA 0.017436210272825776
+[+] eps: 0.018->0.017 alpha: 0.009->0.009
+        
+[+] index [4, 22] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward 0 Qtable 14.610520448912613 delta 14.610520448912613 prevdelta 15.054934263997486 deltaDot -1.0 DELTA 0.05729615862318672
+[+] eps: 0.059->0.057 alpha: 0.03->0.029
+        
+[+] index [1, 7] reward 0 Qtable 4.440077245163324 delta 4.440077245163324 prevdelta 4.479420795482942 deltaDot -1.0 DELTA 0.017412067628091468
+[+] eps: 0.018->0.017 alpha: 0.009->0.009
+        
+[+] index [1, 3] reward 0 Qtable 4.407470887414103 delta 4.407470887414103 prevdelta 4.446233619570573 deltaDot -1.0 DELTA 0.017284199558486677
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [6, 9] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 5] reward 0 Qtable 13.336439200648478 delta 13.336439200648478 prevdelta 13.70471200690786 deltaDot -1.0 DELTA 0.0522997615711705
+[+] eps: 0.054->0.052 alpha: 0.027->0.026
+        
+[+] index [4, 6] reward 124 Qtable 102.10956018509835 delta 21.890439814901654 prevdelta 25.12856703278645 deltaDot -1.0 DELTA 0.08584486201922217
+[+] eps: 0.099->0.086 alpha: 0.049->0.043
+        
+[+] index [4, 6] reward 126 Qtable 103.04915107782351 delta 22.95084892217649 prevdelta 21.890439814901654 deltaDot 1.0 DELTA 0.09000332910657448
+[+] eps: 0.086->0.09 alpha: 0.043->0.045
+        
+[+] index [2, 14] reward 0 Qtable 11.155354415273983 delta 11.155354415273983 prevdelta 11.410654485442922 deltaDot -1.0 DELTA 0.04374648790303523
+[+] eps: 0.045->0.044 alpha: 0.022->0.022
+        
+[+] index [2, 8] reward 22 Qtable 1.2254901960784315 delta 20.774509803921568 prevdelta 25.0 deltaDot -1.0 DELTA 0.08146866589773163
+[+] eps: 0.098->0.081 alpha: 0.049->0.041
+        
+[+] index [2, 14] reward 0 Qtable 10.911350626783056 delta 10.911350626783056 prevdelta 11.155354415273983 deltaDot -1.0 DELTA 0.042789610301110025
+[+] eps: 0.044->0.043 alpha: 0.022->0.021
+        
+[+] index [6, 21] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 6.06433573620391 delta 6.06433573620391 prevdelta 6.138213510920874 deltaDot -1.0 DELTA 0.023781708769427097
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [1, 7] reward 0 Qtable 4.401421782529957 delta 4.401421782529957 prevdelta 4.440077245163324 deltaDot -1.0 DELTA 0.01726047757854885
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [5, 1] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 6] reward 0 Qtable 13.17004397373937 delta 13.17004397373937 prevdelta 13.528930152299774 deltaDot -1.0 DELTA 0.051647231269566156
+[+] eps: 0.053->0.052 alpha: 0.027->0.026
+        
+[+] index [2, 20] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [3, 24] reward 0 Qtable 14.191957100308509 delta 14.191957100308509 prevdelta 14.610520448912613 deltaDot -1.0 DELTA 0.05565473372670003
+[+] eps: 0.057->0.056 alpha: 0.029->0.028
+        
+[+] index [1, 3] reward 0 Qtable 4.369381084230961 delta 4.369381084230961 prevdelta 4.407470887414103 deltaDot -1.0 DELTA 0.017134827781297886
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [1, 7] reward 0 Qtable 4.36343646153441 delta 4.36343646153441 prevdelta 4.401421782529957 deltaDot -1.0 DELTA 0.01711151553542906
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [4, 6] reward 124 Qtable 104.08197748223247 delta 19.918022517767525 prevdelta 22.95084892217649 deltaDot -1.0 DELTA 0.07810989222653932
+[+] eps: 0.09->0.078 alpha: 0.045->0.039
+        
+[+] index [1, 3] reward 0 Qtable 4.331946788036381 delta 4.331946788036381 prevdelta 4.369381084230961 deltaDot -1.0 DELTA 0.016988026619750515
+[+] eps: 0.017->0.017 alpha: 0.009->0.008
+        
+[+] index [6, 5] reward 0 Qtable 12.987692905447314 delta 12.987692905447314 prevdelta 13.336439200648478 deltaDot -1.0 DELTA 0.05093212904096986
+[+] eps: 0.052->0.051 alpha: 0.026->0.025
+        
+[+] index [4, 6] reward 120 Qtable 104.85987477834678 delta 15.140125221653221 prevdelta 19.918022517767525 deltaDot -1.0 DELTA 0.05937304008491459
+[+] eps: 0.078->0.059 alpha: 0.039->0.03
+        
+[+] index [4, 6] reward 118 Qtable 105.3093324091847 delta 12.690667590815295 prevdelta 15.140125221653221 deltaDot -1.0 DELTA 0.04976732388555018
+[+] eps: 0.059->0.05 alpha: 0.03->0.025
+        
+[+] index [2, 14] reward 0 Qtable 10.677904406193646 delta 10.677904406193646 prevdelta 10.911350626783056 deltaDot -1.0 DELTA 0.04187413492624959
+[+] eps: 0.043->0.042 alpha: 0.021->0.021
+        
+[+] index [4, 6] reward 130 Qtable 105.62512269134268 delta 24.374877308657318 prevdelta 12.690667590815295 deltaDot 1.0 DELTA 0.09558775415159733
+[+] eps: 0.05->0.096 alpha: 0.025->0.048
+        
+[+] index [1, 1] reward 0 Qtable -0.001960776775146814 delta 0.001960776775146814 prevdelta 0.00196078431372549 deltaDot -1.0 DELTA 7.689320686850251e-06
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 5.9922256030246945 delta 5.9922256030246945 prevdelta 6.06433573620391 deltaDot -1.0 DELTA 0.023498923933430175
+[+] eps: 0.024->0.023 alpha: 0.012->0.012
+        
+[+] index [1, 7] reward 0 Qtable 4.326103956134708 delta 4.326103956134708 prevdelta 4.36343646153441 deltaDot -1.0 DELTA 0.016965113553469444
+[+] eps: 0.017->0.017 alpha: 0.009->0.008
+        
+[+] index [4, 6] reward 118 Qtable 106.79009258117033 delta 11.209907418829673 prevdelta 24.374877308657318 deltaDot -1.0 DELTA 0.043960421250312444
+[+] eps: 0.096->0.044 alpha: 0.048->0.022
+        
+[+] index [5, 8] reward 0 Qtable 5.92182017620598 delta 5.92182017620598 prevdelta 5.9922256030246945 deltaDot -1.0 DELTA 0.02322282422041561
+[+] eps: 0.023->0.023 alpha: 0.012->0.012
+        
+[+] index [1, 3] reward 0 Qtable 4.295151174361129 delta 4.295151174361129 prevdelta 4.331946788036381 deltaDot -1.0 DELTA 0.01684373009553384
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [6, 4] reward 0 Qtable 13.040231407143605 delta 13.040231407143605 prevdelta 13.391883450996701 deltaDot -1.0 DELTA 0.05113816238095531
+[+] eps: 0.053->0.051 alpha: 0.026->0.026
+        
+[+] index [5, 8] reward 0 Qtable 5.853059481697509 delta 5.853059481697509 prevdelta 5.92182017620598 deltaDot -1.0 DELTA 0.022953174438029446
+[+] eps: 0.023->0.023 alpha: 0.012->0.011
+        
+[+] index [2, 14] reward 0 Qtable 10.454340401276372 delta 10.454340401276372 prevdelta 10.677904406193646 deltaDot -1.0 DELTA 0.040997413338338715
+[+] eps: 0.042->0.041 alpha: 0.021->0.02
+        
+[+] index [2, 14] reward 0 Qtable 10.240039943970961 delta 10.240039943970961 prevdelta 10.454340401276372 deltaDot -1.0 DELTA 0.04015701938812142
+[+] eps: 0.041->0.04 alpha: 0.02->0.02
+        
+[+] index [2, 14] reward 0 Qtable 10.034435202688371 delta 10.034435202688371 prevdelta 10.240039943970961 deltaDot -1.0 DELTA 0.039350726285052436
+[+] eps: 0.04->0.039 alpha: 0.02->0.02
+        
+[+] index [1, 7] reward 0 Qtable 4.289407533704739 delta 4.289407533704739 prevdelta 4.326103956134708 deltaDot -1.0 DELTA 0.016821206014528387
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [4, 6] reward 116 Qtable 107.03648870732471 delta 8.963511292675292 prevdelta 11.209907418829673 deltaDot -1.0 DELTA 0.035151024677158006
+[+] eps: 0.044->0.035 alpha: 0.022->0.018
+        
+[+] index [2, 14] reward 0 Qtable 9.83700404614533 delta 9.83700404614533 prevdelta 10.034435202688371 deltaDot -1.0 DELTA 0.03857648645547188
+[+] eps: 0.039->0.039 alpha: 0.02->0.019
+        
+[+] index [6, 6] reward 0 Qtable 12.829945820268334 delta 12.829945820268334 prevdelta 13.17004397373937 deltaDot -1.0 DELTA 0.05031351302066013
+[+] eps: 0.052->0.05 alpha: 0.026->0.025
+        
+[+] index [6, 4] reward 0 Qtable 12.706804671551733 delta 12.706804671551733 prevdelta 13.040231407143605 deltaDot -1.0 DELTA 0.04983060655510484
+[+] eps: 0.051->0.05 alpha: 0.026->0.025
+        
+[+] index [3, 24] reward 0 Qtable 13.7970323035693 delta 13.7970323035693 prevdelta 14.191957100308509 deltaDot -1.0 DELTA 0.054106009033605094
+[+] eps: 0.056->0.054 alpha: 0.028->0.027
+        
+[+] index [1, 3] reward 0 Qtable 4.258977990810902 delta 4.258977990810902 prevdelta 4.295151174361129 deltaDot -1.0 DELTA 0.016701874473768242
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [2, 14] reward 0 Qtable 9.647265519471055 delta 9.647265519471055 prevdelta 9.83700404614533 deltaDot -1.0 DELTA 0.03783241380184728
+[+] eps: 0.039->0.038 alpha: 0.019->0.019
+        
+[+] index [5, 8] reward 0 Qtable 5.785886334057726 delta 5.785886334057726 prevdelta 5.853059481697509 deltaDot -1.0 DELTA 0.02268975032963814
+[+] eps: 0.023->0.023 alpha: 0.011->0.011
+        
+[+] index [1, 7] reward 0 Qtable 4.25333102980238 delta 4.25333102980238 prevdelta 4.289407533704739 deltaDot -1.0 DELTA 0.016679729528636784
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [2, 14] reward 0 Qtable 9.464775848876595 delta 9.464775848876595 prevdelta 9.647265519471055 deltaDot -1.0 DELTA 0.03711676803481018
+[+] eps: 0.038->0.037 alpha: 0.019->0.019
+        
+[+] index [5, 1] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 5.720246175880009 delta 5.720246175880009 prevdelta 5.785886334057726 deltaDot -1.0 DELTA 0.022432337944627484
+[+] eps: 0.023->0.022 alpha: 0.011->0.011
+        
+[+] index [2, 14] reward 0 Qtable 9.289124904034482 delta 9.289124904034482 prevdelta 9.464775848876595 deltaDot -1.0 DELTA 0.03642794080013522
+[+] eps: 0.037->0.036 alpha: 0.019->0.018
+        
+[+] index [6, 5] reward 0 Qtable 12.656947479944948 delta 12.656947479944948 prevdelta 12.987692905447314 deltaDot -1.0 DELTA 0.049635088156646856
+[+] eps: 0.051->0.05 alpha: 0.025->0.025
+        
+[+] index [2, 15] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [3, 24] reward 0 Qtable 13.423781126342368 delta 13.423781126342368 prevdelta 13.7970323035693 deltaDot -1.0 DELTA 0.05264227892683281
+[+] eps: 0.054->0.053 alpha: 0.027->0.026
+        
+[+] index [6, 32] reward -1 Qtable -0.01926749855850297 delta 0.980732501441497 prevdelta 0.9826257433070061 deltaDot -1.0 DELTA 0.003846009809574498
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 1] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [2, 14] reward 0 Qtable 9.119933057989867 delta 9.119933057989867 prevdelta 9.289124904034482 deltaDot -1.0 DELTA 0.035764443364666144
+[+] eps: 0.036->0.036 alpha: 0.018->0.018
+        
+[+] index [6, 6] reward 0 Qtable 12.507185997227117 delta 12.507185997227117 prevdelta 12.829945820268334 deltaDot -1.0 DELTA 0.04904778822442007
+[+] eps: 0.05->0.049 alpha: 0.025->0.025
+        
+[+] index [1, 3] reward 0 Qtable 4.223411532916369 delta 4.223411532916369 prevdelta 4.258977990810902 deltaDot -1.0 DELTA 0.016562398168299488
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [6, 4] reward 0 Qtable 12.390210779471403 delta 12.390210779471403 prevdelta 12.706804671551733 deltaDot -1.0 DELTA 0.04858906188028001
+[+] eps: 0.05->0.049 alpha: 0.025->0.024
+        
+[+] index [2, 14] reward 0 Qtable 8.956848393318854 delta 8.956848393318854 prevdelta 9.119933057989867 deltaDot -1.0 DELTA 0.035124895660073936
+[+] eps: 0.036->0.035 alpha: 0.018->0.018
+        
+[+] index [6, 31] reward -1 Qtable -0.011650375121517781 delta 0.9883496248784822 prevdelta 0.9902724474671343 deltaDot -1.0 DELTA 0.003875880881876401
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        [+] average exploredAmount: 0.6564393939393939
+        
+[+] index [5, 8] reward 0 Qtable 5.656086928208107 delta 5.656086928208107 prevdelta 5.720246175880009 deltaDot -1.0 DELTA 0.0221807330517965
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [1, 7] reward 0 Qtable 4.217858824215949 delta 4.217858824215949 prevdelta 4.25333102980238 deltaDot -1.0 DELTA 0.016540622840062545
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [6, 5] reward 0 Qtable 12.34283312796439 delta 12.34283312796439 prevdelta 12.656947479944948 deltaDot -1.0 DELTA 0.04840326716848781
+[+] eps: 0.05->0.048 alpha: 0.025->0.024
+        
+[+] index [1, 3] reward 0 Qtable 4.188436621197995 delta 4.188436621197995 prevdelta 4.223411532916369 deltaDot -1.0 DELTA 0.016425241651756843
+[+] eps: 0.017->0.016 alpha: 0.008->0.008
+        
+[+] index [1, 7] reward 0 Qtable 4.182975818213957 delta 4.182975818213957 prevdelta 4.217858824215949 deltaDot -1.0 DELTA 0.01640382673809395
+[+] eps: 0.017->0.016 alpha: 0.008->0.008
+        
+[+] index [1, 3] reward 0 Qtable 4.154038579374872 delta 4.154038579374872 prevdelta 4.188436621197995 deltaDot -1.0 DELTA 0.01629034737009754
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [1, 7] reward 0 Qtable 4.148667412928147 delta 4.148667412928147 prevdelta 4.182975818213957 deltaDot -1.0 DELTA 0.016269283972267245
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [4, 6] reward 126 Qtable 107.19402701064611 delta 18.80597298935389 prevdelta 8.963511292675292 deltaDot 1.0 DELTA 0.07374891368374074
+[+] eps: 0.035->0.074 alpha: 0.018->0.037
+        
+[+] index [2, 5] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [1, 3] reward 0 Qtable 4.120203213651471 delta 4.120203213651471 prevdelta 4.154038579374872 deltaDot -1.0 DELTA 0.016157659661378318
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [3, 19] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 7] reward 0 Qtable 4.114919488804437 delta 4.114919488804437 prevdelta 4.148667412928147 deltaDot -1.0 DELTA 0.01613693917178211
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [4, 6] reward 126 Qtable 107.88748705001142 delta 18.112512949988584 prevdelta 18.80597298935389 deltaDot -1.0 DELTA 0.07102946254897484
+[+] eps: 0.074->0.071 alpha: 0.037->0.036
+        
+[+] index [5, 8] reward 0 Qtable 5.593358851071937 delta 5.593358851071937 prevdelta 5.656086928208107 deltaDot -1.0 DELTA 0.021934740592438967
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [5, 8] reward 0 Qtable 5.532014413352594 delta 5.532014413352594 prevdelta 5.593358851071937 deltaDot -1.0 DELTA 0.021694174170010173
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [3, 24] reward 0 Qtable 13.070451911189533 delta 13.070451911189533 prevdelta 13.423781126342368 deltaDot -1.0 DELTA 0.05125667416152758
+[+] eps: 0.053->0.051 alpha: 0.026->0.026
+        
+[+] index [6, 30] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 6] reward 0 Qtable 12.200461092189403 delta 12.200461092189403 prevdelta 12.507185997227117 deltaDot -1.0 DELTA 0.04784494545956629
+[+] eps: 0.049->0.048 alpha: 0.025->0.024
+        
+[+] index [1, 3] reward 0 Qtable 4.086916793020522 delta 4.086916793020522 prevdelta 4.120203213651471 deltaDot -1.0 DELTA 0.01602712467851185
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [3, 2] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [3, 24] reward 0 Qtable 12.735477963811654 delta 12.735477963811654 prevdelta 13.070451911189533 deltaDot -1.0 DELTA 0.049943050838477075
+[+] eps: 0.051->0.05 alpha: 0.026->0.025
+        
+[+] index [1, 11] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 7] reward 0 Qtable 4.081718386060628 delta 4.081718386060628 prevdelta 4.114919488804437 deltaDot -1.0 DELTA 0.01600673876886521
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [4, 6] reward 120 Qtable 108.53074808013594 delta 11.469251919864064 prevdelta 18.112512949988584 deltaDot -1.0 DELTA 0.04497745850927084
+[+] eps: 0.071->0.045 alpha: 0.036->0.022
+        
+[+] index [3, 21] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 16] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 5.472008171255455 delta 5.472008171255455 prevdelta 5.532014413352594 deltaDot -1.0 DELTA 0.021458855573550803
+[+] eps: 0.022->0.021 alpha: 0.011->0.011
+        
+[+] index [1, 3] reward 0 Qtable 4.0541660305243 delta 4.0541660305243 prevdelta 4.086916793020522 deltaDot -1.0 DELTA 0.015898690315781568
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [2, 14] reward 0 Qtable 8.79954421068964 delta 8.79954421068964 prevdelta 8.956848393318854 deltaDot -1.0 DELTA 0.03450801651250839
+[+] eps: 0.035->0.035 alpha: 0.018->0.017
+        
+[+] index [5, 8] reward 0 Qtable 5.413296654733324 delta 5.413296654733324 prevdelta 5.472008171255455 deltaDot -1.0 DELTA 0.021228614332287548
+[+] eps: 0.021->0.021 alpha: 0.011->0.011
+        
+[+] index [2, 14] reward 0 Qtable 8.647716802227128 delta 8.647716802227128 prevdelta 8.79954421068964 deltaDot -1.0 DELTA 0.03391261491069462
+[+] eps: 0.035->0.034 alpha: 0.017->0.017
+        
+[+] index [6, 25] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 5.355838261258526 delta 5.355838261258526 prevdelta 5.413296654733324 deltaDot -1.0 DELTA 0.021003287299053045
+[+] eps: 0.021->0.021 alpha: 0.011->0.011
+        
+[+] index [6, 4] reward 0 Qtable 12.089196420334678 delta 12.089196420334678 prevdelta 12.390210779471403 deltaDot -1.0 DELTA 0.04740861341307717
+[+] eps: 0.049->0.047 alpha: 0.024->0.024
+        
+[+] index [1, 7] reward 0 Qtable 4.049050886093755 delta 4.049050886093755 prevdelta 4.081718386060628 deltaDot -1.0 DELTA 0.015878630925857864
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [1, 3] reward 0 Qtable 4.021938065420266 delta 4.021938065420266 prevdelta 4.0541660305243 deltaDot -1.0 DELTA 0.015772306138903004
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [2, 14] reward 0 Qtable 8.501083457341792 delta 8.501083457341792 prevdelta 8.647716802227128 deltaDot -1.0 DELTA 0.03333758218565409
+[+] eps: 0.034->0.033 alpha: 0.017->0.017
+        
+[+] index [2, 6] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [1, 30] reward 56 Qtable 0.0 delta 56.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.2196078431372549
+[+] eps: 0.0->0.22 alpha: 0.0->0.11
+        
+[+] index [1, 30] reward 53 Qtable 6.149019607843137 delta 46.85098039215686 prevdelta 56.0 deltaDot -1.0 DELTA 0.18372933487120338
+[+] eps: 0.22->0.184 alpha: 0.11->0.092
+        
+[+] index [3, 16] reward 15 Qtable 0.0 delta 15.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.058823529411764705
+[+] eps: 0.0->0.059 alpha: 0.0->0.029
+        
+[+] index [4, 6] reward 130 Qtable 108.78867698131496 delta 21.211323018685036 prevdelta 11.469251919864064 deltaDot 1.0 DELTA 0.08318165889680407
+[+] eps: 0.045->0.083 alpha: 0.022->0.042
+        
+[+] index [6, 5] reward 0 Qtable 12.044116403209928 delta 12.044116403209928 prevdelta 12.34283312796439 deltaDot -1.0 DELTA 0.0472318290321958
+[+] eps: 0.048->0.047 alpha: 0.024->0.024
+        
+[+] index [6, 6] reward 0 Qtable 11.908595894420722 delta 11.908595894420722 prevdelta 12.200461092189403 deltaDot -1.0 DELTA 0.046700376056551855
+[+] eps: 0.048->0.047 alpha: 0.024->0.023
+        
+[+] index [5, 8] reward 0 Qtable 5.299593156394289 delta 5.299593156394289 prevdelta 5.355838261258526 deltaDot -1.0 DELTA 0.020782718260369763
+[+] eps: 0.021->0.021 alpha: 0.011->0.01
+        
+[+] index [2, 27] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 0] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward -1 Qtable 5.244523180662326 delta 6.244523180662326 prevdelta 5.299593156394289 deltaDot 1.0 DELTA 0.02448832619867579
+[+] eps: 0.021->0.024 alpha: 0.01->0.012
+        
+[+] index [5, 8] reward 0 Qtable 5.168064220360701 delta 5.168064220360701 prevdelta 6.244523180662326 deltaDot -1.0 DELTA 0.020266918511218434
+[+] eps: 0.024->0.02 alpha: 0.012->0.01
+        
+[+] index [3, 24] reward 0 Qtable 12.41745365211218 delta 12.41745365211218 prevdelta 12.735477963811654 deltaDot -1.0 DELTA 0.048695896674949724
+[+] eps: 0.05->0.049 alpha: 0.025->0.024
+        
+[+] index [6, 4] reward 0 Qtable 11.802630400551477 delta 11.802630400551477 prevdelta 12.089196420334678 deltaDot -1.0 DELTA 0.04628482510020187
+[+] eps: 0.047->0.046 alpha: 0.024->0.023
+        
+[+] index [2, 21] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 8.359380673128674 delta 8.359380673128674 prevdelta 8.501083457341792 deltaDot -1.0 DELTA 0.03278188499266147
+[+] eps: 0.033->0.033 alpha: 0.017->0.016
+        
+[+] index [6, 5] reward 0 Qtable 11.75968357980979 delta 11.75968357980979 prevdelta 12.044116403209928 deltaDot -1.0 DELTA 0.04611640619533251
+[+] eps: 0.047->0.046 alpha: 0.024->0.023
+        
+[+] index [5, 8] reward 0 Qtable 5.115693852153304 delta 5.115693852153304 prevdelta 5.168064220360701 deltaDot -1.0 DELTA 0.02006154451824825
+[+] eps: 0.02->0.02 alpha: 0.01->0.01
+        
+[+] index [6, 6] reward 0 Qtable 11.630527941133243 delta 11.630527941133243 prevdelta 11.908595894420722 deltaDot -1.0 DELTA 0.04560991349464017
+[+] eps: 0.047->0.046 alpha: 0.023->0.023
+        
+[+] index [5, 8] reward 0 Qtable 5.064379492174953 delta 5.064379492174953 prevdelta 5.115693852153304 deltaDot -1.0 DELTA 0.019860311734019424
+[+] eps: 0.02->0.02 alpha: 0.01->0.01
+        
+[+] index [6, 4] reward 0 Qtable 11.529489058645552 delta 11.529489058645552 prevdelta 11.802630400551477 deltaDot -1.0 DELTA 0.045213682582923735
+[+] eps: 0.046->0.045 alpha: 0.023->0.023
+        
+[+] index [5, 8] reward 0 Qtable 5.014089414447969 delta 5.014089414447969 prevdelta 5.064379492174953 deltaDot -1.0 DELTA 0.01966309574293321
+[+] eps: 0.02->0.02 alpha: 0.01->0.01
+        
+[+] index [6, 5] reward 0 Qtable 11.488526407462246 delta 11.488526407462246 prevdelta 11.75968357980979 deltaDot -1.0 DELTA 0.04505304473514606
+[+] eps: 0.046->0.045 alpha: 0.023->0.023
+        
+[+] index [6, 6] reward 0 Qtable 11.365294254487202 delta 11.365294254487202 prevdelta 11.630527941133243 deltaDot -1.0 DELTA 0.04456978139014589
+[+] eps: 0.046->0.045 alpha: 0.023->0.022
+        
+[+] index [1, 24] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 32] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 30] reward 56 Qtable 10.452969340600522 delta 45.54703065939948 prevdelta 46.85098039215686 deltaDot -1.0 DELTA 0.17861580650744896
+[+] eps: 0.184->0.179 alpha: 0.092->0.089
+        
+[+] index [4, 2] reward 0 Qtable -0.001960754159758582 delta 0.001960754159758582 prevdelta 0.0019607616981633606 deltaDot -1.0 DELTA 7.689231999053263e-06
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [4, 6] reward 134 Qtable 109.67087349936006 delta 24.329126500639944 prevdelta 21.211323018685036 deltaDot 1.0 DELTA 0.09540833921819586
+[+] eps: 0.083->0.095 alpha: 0.042->0.048
+        
+[+] index [4, 6] reward 116 Qtable 110.83147427638778 delta 5.16852572361222 prevdelta 24.329126500639944 deltaDot -1.0 DELTA 0.020268728327891058
+[+] eps: 0.095->0.02 alpha: 0.048->0.01
+        
+[+] index [4, 6] reward 132 Qtable 110.88385399826159 delta 21.116146001738414 prevdelta 5.16852572361222 deltaDot 1.0 DELTA 0.08280841569309182
+[+] eps: 0.02->0.083 alpha: 0.01->0.041
+        
+[+] index [4, 6] reward 130 Qtable 111.75815129623557 delta 18.241848703764433 prevdelta 21.116146001738414 deltaDot -1.0 DELTA 0.07153666158338993
+[+] eps: 0.083->0.072 alpha: 0.041->0.036
+        
+[+] index [1, 30] reward 53 Qtable 14.520679148224593 delta 38.479320851775405 prevdelta 45.54703065939948 deltaDot -1.0 DELTA 0.15089929745794275
+[+] eps: 0.179->0.151 alpha: 0.089->0.075
+        
+[+] index [5, 3] reward 19 Qtable 0.0 delta 19.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.07450980392156863
+[+] eps: 0.0->0.075 alpha: 0.0->0.037
+        
+[+] index [3, 22] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward -1 Qtable 12.115114132107564 delta 13.115114132107564 prevdelta 12.41745365211218 deltaDot 1.0 DELTA 0.05143182012591201
+[+] eps: 0.049->0.051 alpha: 0.024->0.026
+        
+[+] index [3, 22] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward 0 Qtable 11.777847036620884 delta 11.777847036620884 prevdelta 13.115114132107564 deltaDot -1.0 DELTA 0.046187635437728955
+[+] eps: 0.051->0.046 alpha: 0.026->0.023
+        
+[+] index [1, 26] reward -1 Qtable 0.0 delta 1.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.00392156862745098
+[+] eps: 0.9->0.004 alpha: 0.45->0.002
+        [+] average exploredAmount: 0.6651515151515153
+        
+[+] index [6, 4] reward 0 Qtable 11.268843729325106 delta 11.268843729325106 prevdelta 11.529489058645552 deltaDot -1.0 DELTA 0.04419154403656904
+[+] eps: 0.045->0.044 alpha: 0.023->0.022
+        
+[+] index [2, 14] reward 0 Qtable 8.222362545210483 delta 8.222362545210483 prevdelta 8.359380673128674 deltaDot -1.0 DELTA 0.03224455900082542
+[+] eps: 0.033->0.032 alpha: 0.016->0.016
+        
+[+] index [5, 4] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [3, 24] reward 0 Qtable 11.505851584036492 delta 11.505851584036492 prevdelta 11.777847036620884 deltaDot -1.0 DELTA 0.045120986604064675
+[+] eps: 0.046->0.045 alpha: 0.023->0.023
+        
+[+] index [2, 14] reward 0 Qtable 8.089799318102875 delta 8.089799318102875 prevdelta 8.222362545210483 deltaDot -1.0 DELTA 0.031724703208246566
+[+] eps: 0.032->0.032 alpha: 0.016->0.016
+        
+[+] index [1, 30] reward 55 Qtable 17.42393038982043 delta 37.57606961017957 prevdelta 38.479320851775405 deltaDot -1.0 DELTA 0.1473571357261944
+[+] eps: 0.151->0.147 alpha: 0.075->0.074
+        
+[+] index [4, 9] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [1, 9] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [2, 6] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [4, 6] reward 126 Qtable 112.41063177492387 delta 13.589368225076129 prevdelta 18.241848703764433 deltaDot -1.0 DELTA 0.05329164009833776
+[+] eps: 0.072->0.053 alpha: 0.036->0.027
+        
+[+] index [4, 6] reward 126 Qtable 112.77273163523114 delta 13.227268364768861 prevdelta 13.589368225076129 deltaDot -1.0 DELTA 0.0518716406461524
+[+] eps: 0.053->0.052 alpha: 0.027->0.026
+        
+[+] index [2, 14] reward 0 Qtable 7.96147607691233 delta 7.96147607691233 prevdelta 8.089799318102875 deltaDot -1.0 DELTA 0.031221474811420902
+[+] eps: 0.032->0.031 alpha: 0.016->0.016
+        
+[+] index [2, 14] reward 0 Qtable 7.837191564513806 delta 7.837191564513806 prevdelta 7.96147607691233 deltaDot -1.0 DELTA 0.030734084566720807
+[+] eps: 0.031->0.031 alpha: 0.016->0.015
+        
+[+] index [2, 11] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 5] reward 0 Qtable 11.229729860374094 delta 11.229729860374094 prevdelta 11.488526407462246 deltaDot -1.0 DELTA 0.04403815631519253
+[+] eps: 0.045->0.044 alpha: 0.023->0.022
+        
+[+] index [5, 0] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 23] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward 0 Qtable 11.246273896440659 delta 11.246273896440659 prevdelta 11.505851584036492 deltaDot -1.0 DELTA 0.04410303488800259
+[+] eps: 0.045->0.044 alpha: 0.023->0.022
+        
+[+] index [6, 6] reward 0 Qtable 11.112019914308613 delta 11.112019914308613 prevdelta 11.365294254487202 deltaDot -1.0 DELTA 0.043576548683563185
+[+] eps: 0.045->0.044 alpha: 0.022->0.022
+        
+[+] index [1, 30] reward 51 Qtable 20.19248138462251 delta 30.80751861537749 prevdelta 37.57606961017957 deltaDot -1.0 DELTA 0.12081379849167644
+[+] eps: 0.147->0.121 alpha: 0.074->0.06
+        
+[+] index [4, 6] reward 130 Qtable 113.1157916909049 delta 16.8842083090951 prevdelta 13.227268364768861 deltaDot 1.0 DELTA 0.06621258160429451
+[+] eps: 0.052->0.066 alpha: 0.026->0.033
+        
+[+] index [4, 6] reward 128 Qtable 113.67476520114984 delta 14.325234798850161 prevdelta 16.8842083090951 deltaDot -1.0 DELTA 0.05617739136803985
+[+] eps: 0.066->0.056 alpha: 0.033->0.028
+        
+[+] index [2, 14] reward 0 Qtable 7.716757110359127 delta 7.716757110359127 prevdelta 7.837191564513806 deltaDot -1.0 DELTA 0.030261792589643635
+[+] eps: 0.031->0.03 alpha: 0.015->0.015
+        
+[+] index [6, 4] reward -1 Qtable 11.019849927372263 delta 12.019849927372263 prevdelta 11.268843729325106 deltaDot 1.0 DELTA 0.047136666381852016
+[+] eps: 0.044->0.047 alpha: 0.022->0.024
+        
+[+] index [6, 5] reward 0 Qtable 10.982461560889824 delta 10.982461560889824 prevdelta 11.229729860374094 deltaDot -1.0 DELTA 0.04306847670937186
+[+] eps: 0.044->0.043 alpha: 0.022->0.022
+        
+[+] index [6, 26] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward 0 Qtable 10.998276491433282 delta 10.998276491433282 prevdelta 11.246273896440659 deltaDot -1.0 DELTA 0.0431304960448364
+[+] eps: 0.044->0.043 alpha: 0.022->0.022
+        
+[+] index [1, 30] reward 54 Qtable 22.053468057635904 delta 31.946531942364096 prevdelta 30.80751861537749 deltaDot 1.0 DELTA 0.12528051742103566
+[+] eps: 0.121->0.125 alpha: 0.06->0.063
+        
+[+] index [4, 13] reward -1 Qtable 0.0 delta 1.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.00392156862745098
+[+] eps: 0.9->0.004 alpha: 0.45->0.002
+        
+[+] index [4, 2] reward 0 Qtable -0.001960746621411768 delta 0.001960746621411768 prevdelta 0.001960754159758582 deltaDot -1.0 DELTA 7.689202436908894e-06
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [2, 6] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [2, 1] reward 0 Qtable -0.0019607692366261044 delta 0.0019607692366261044 prevdelta 0.001960776775146814 deltaDot -1.0 DELTA 7.68929112402394e-06
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 4.964793154338009 delta 4.964793154338009 prevdelta 5.014089414447969 deltaDot -1.0 DELTA 0.01946977707583533
+[+] eps: 0.02->0.019 alpha: 0.01->0.01
+        
+[+] index [1, 30] reward 51 Qtable 24.05460708340941 delta 26.94539291659059 prevdelta 31.946531942364096 deltaDot -1.0 DELTA 0.10566820751604153
+[+] eps: 0.125->0.106 alpha: 0.063->0.053
+        
+[+] index [5, 8] reward 0 Qtable 4.9164614463667125 delta 4.9164614463667125 prevdelta 4.964793154338009 deltaDot -1.0 DELTA 0.01928024096614397
+[+] eps: 0.019->0.019 alpha: 0.01->0.01
+        
+[+] index [2, 14] reward 0 Qtable 7.599995658789954 delta 7.599995658789954 prevdelta 7.716757110359127 deltaDot -1.0 DELTA 0.02980390454427433
+[+] eps: 0.03->0.03 alpha: 0.015->0.015
+        
+[+] index [4, 21] reward -1 Qtable 0.0 delta 1.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.00392156862745098
+[+] eps: 0.9->0.004 alpha: 0.45->0.002
+        
+[+] index [5, 11] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 21] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 32] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 4.869066165673359 delta 4.869066165673359 prevdelta 4.9164614463667125 deltaDot -1.0 DELTA 0.019094377120287682
+[+] eps: 0.019->0.019 alpha: 0.01->0.01
+        
+[+] index [6, 6] reward 0 Qtable 10.869908175924316 delta 10.869908175924316 prevdelta 11.112019914308613 deltaDot -1.0 DELTA 0.04262709088597771
+[+] eps: 0.044->0.043 alpha: 0.022->0.021
+        
+[+] index [3, 31] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 7.486740886214217 delta 7.486740886214217 prevdelta 7.599995658789954 deltaDot -1.0 DELTA 0.02935976818123222
+[+] eps: 0.03->0.029 alpha: 0.015->0.015
+        
+[+] index [2, 14] reward 0 Qtable 7.376836397788115 delta 7.376836397788115 prevdelta 7.486740886214217 deltaDot -1.0 DELTA 0.028928770187404373
+[+] eps: 0.029->0.029 alpha: 0.015->0.014
+        
+[+] index [3, 24] reward 0 Qtable 10.761095931076392 delta 10.761095931076392 prevdelta 10.998276491433282 deltaDot -1.0 DELTA 0.04220037620029957
+[+] eps: 0.043->0.042 alpha: 0.022->0.021
+        
+[+] index [6, 5] reward 0 Qtable 10.745962615916447 delta 10.745962615916447 prevdelta 10.982461560889824 deltaDot -1.0 DELTA 0.04214102986633901
+[+] eps: 0.043->0.042 alpha: 0.022->0.021
+        
+[+] index [3, 24] reward 0 Qtable 10.534034782766923 delta 10.534034782766923 prevdelta 10.761095931076392 deltaDot -1.0 DELTA 0.04130994032457617
+[+] eps: 0.042->0.041 alpha: 0.021->0.021
+        
+[+] index [3, 24] reward 0 Qtable 10.316454608640369 delta 10.316454608640369 prevdelta 10.534034782766923 deltaDot -1.0 DELTA 0.04045668473976615
+[+] eps: 0.041->0.04 alpha: 0.021->0.02
+        
+[+] index [1, 30] reward 53 Qtable 25.478242768565195 delta 27.521757231434805 prevdelta 26.94539291659059 deltaDot 1.0 DELTA 0.10792845973111688
+[+] eps: 0.106->0.108 alpha: 0.053->0.054
+        
+[+] index [6, 4] reward 0 Qtable 10.736562099379025 delta 10.736562099379025 prevdelta 12.019849927372263 deltaDot -1.0 DELTA 0.042104165095604024
+[+] eps: 0.047->0.042 alpha: 0.024->0.021
+        
+[+] index [1, 30] reward 53 Qtable 26.963433202106437 delta 26.036566797893563 prevdelta 27.521757231434805 deltaDot -1.0 DELTA 0.10210418352115123
+[+] eps: 0.108->0.102 alpha: 0.054->0.051
+        
+[+] index [3, 8] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [2, 14] reward 0 Qtable 7.270134995357269 delta 7.270134995357269 prevdelta 7.376836397788115 deltaDot -1.0 DELTA 0.028510333315126545
+[+] eps: 0.029->0.029 alpha: 0.014->0.014
+        
+[+] index [6, 6] reward 0 Qtable 10.638231894055636 delta 10.638231894055636 prevdelta 10.869908175924316 deltaDot -1.0 DELTA 0.041718556447277004
+[+] eps: 0.043->0.042 alpha: 0.021->0.021
+        
+[+] index [4, 32] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 4.822580272877858 delta 4.822580272877858 prevdelta 4.869066165673359 deltaDot -1.0 DELTA 0.0189120795014818
+[+] eps: 0.019->0.019 alpha: 0.01->0.009
+        
+[+] index [2, 14] reward 0 Qtable 7.166498009375468 delta 7.166498009375468 prevdelta 7.270134995357269 deltaDot -1.0 DELTA 0.028103913762256738
+[+] eps: 0.029->0.028 alpha: 0.014->0.014
+        
+[+] index [3, 24] reward 0 Qtable 10.107769832773434 delta 10.107769832773434 prevdelta 10.316454608640369 deltaDot -1.0 DELTA 0.03963831306969974
+[+] eps: 0.04->0.04 alpha: 0.02->0.02
+        
+[+] index [2, 14] reward 0 Qtable 7.0657946883590315 delta 7.0657946883590315 prevdelta 7.166498009375468 deltaDot -1.0 DELTA 0.027708998777878555
+[+] eps: 0.028->0.028 alpha: 0.014->0.014
+        
+[+] index [2, 9] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [3, 24] reward 0 Qtable 9.907442360239463 delta 9.907442360239463 prevdelta 10.107769832773434 deltaDot -1.0 DELTA 0.03885271513819397
+[+] eps: 0.04->0.039 alpha: 0.02->0.019
+        
+[+] index [6, 0] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 6] reward 134 Qtable 114.07714236201687 delta 19.922857637983128 prevdelta 14.325234798850161 deltaDot 1.0 DELTA 0.07812885348228678
+[+] eps: 0.056->0.078 alpha: 0.028->0.039
+        
+[+] index [3, 24] reward 0 Qtable 9.714976842354233 delta 9.714976842354233 prevdelta 9.907442360239463 deltaDot -1.0 DELTA 0.03809794840138915
+[+] eps: 0.039->0.038 alpha: 0.019->0.019
+        
+[+] index [6, 5] reward 0 Qtable 10.519539650146498 delta 10.519539650146498 prevdelta 10.745962615916447 deltaDot -1.0 DELTA 0.04125309666724117
+[+] eps: 0.042->0.041 alpha: 0.021->0.021
+        
+[+] index [1, 30] reward 53 Qtable 28.292654399402856 delta 24.707345600597144 prevdelta 26.036566797893563 deltaDot -1.0 DELTA 0.09689155137489076
+[+] eps: 0.102->0.097 alpha: 0.051->0.048
+        
+[+] index [4, 6] reward 134 Qtable 114.85541737469009 delta 19.14458262530991 prevdelta 19.922857637983128 deltaDot -1.0 DELTA 0.07507679460905846
+[+] eps: 0.078->0.075 alpha: 0.039->0.038
+        
+[+] index [2, 14] reward 0 Qtable 6.967901640166791 delta 6.967901640166791 prevdelta 7.0657946883590315 deltaDot -1.0 DELTA 0.02732510447124232
+[+] eps: 0.028->0.027 alpha: 0.014->0.014
+        
+[+] index [5, 8] reward 0 Qtable 4.7769777621163865 delta 4.7769777621163865 prevdelta 4.822580272877858 deltaDot -1.0 DELTA 0.018733246125946613
+[+] eps: 0.019->0.019 alpha: 0.009->0.009
+        
+[+] index [2, 14] reward 0 Qtable 6.872702320035342 delta 6.872702320035342 prevdelta 6.967901640166791 deltaDot -1.0 DELTA 0.026951773804060164
+[+] eps: 0.027->0.027 alpha: 0.014->0.013
+        
+[+] index [5, 8] reward 0 Qtable 4.732233612038437 delta 4.732233612038437 prevdelta 4.7769777621163865 deltaDot -1.0 DELTA 0.018557778870738968
+[+] eps: 0.019->0.019 alpha: 0.009->0.009
+        
+[+] index [2, 14] reward 0 Qtable 6.780086560859226 delta 6.780086560859226 prevdelta 6.872702320035342 deltaDot -1.0 DELTA 0.026588574748467552
+[+] eps: 0.027->0.027 alpha: 0.013->0.013
+        
+[+] index [1, 30] reward 51 Qtable 29.489620922201574 delta 21.510379077798426 prevdelta 24.707345600597144 deltaDot -1.0 DELTA 0.08435442775607226
+[+] eps: 0.097->0.084 alpha: 0.048->0.042
+        
+[+] index [4, 0] reward -1 Qtable -0.011650375121517781 delta 0.9883496248784822 prevdelta 0.9902724474671343 deltaDot -1.0 DELTA 0.003875880881876401
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 10] reward -1 Qtable 0.0 delta 1.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.00392156862745098
+[+] eps: 0.9->0.004 alpha: 0.45->0.002
+        [+] average exploredAmount: 0.6723484848484849
+        
+[+] index [6, 4] reward 0 Qtable 10.510535107783296 delta 10.510535107783296 prevdelta 10.736562099379025 deltaDot -1.0 DELTA 0.04121778473640508
+[+] eps: 0.042->0.041 alpha: 0.021->0.021
+        
+[+] index [1, 30] reward 54 Qtable 30.396868781163512 delta 23.603131218836488 prevdelta 21.510379077798426 deltaDot 1.0 DELTA 0.09256129889739799
+[+] eps: 0.084->0.093 alpha: 0.042->0.046
+        
+[+] index [6, 31] reward -1 Qtable -0.013565737829355893 delta 0.9864342621706441 prevdelta 0.9883496248784822 deltaDot -1.0 DELTA 0.0038683696555711533
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 6] reward 0 Qtable 10.416326055169945 delta 10.416326055169945 prevdelta 10.638231894055636 deltaDot -1.0 DELTA 0.040848337471254687
+[+] eps: 0.042->0.041 alpha: 0.021->0.02
+        
+[+] index [6, 11] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 4.688323739569993 delta 4.688323739569993 prevdelta 4.732233612038437 deltaDot -1.0 DELTA 0.018385583292431347
+[+] eps: 0.019->0.018 alpha: 0.009->0.009
+        
+[+] index [1, 10] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 5] reward 0 Qtable 10.302557857105313 delta 10.302557857105313 prevdelta 10.519539650146498 deltaDot -1.0 DELTA 0.0404021876749228
+[+] eps: 0.041->0.04 alpha: 0.021->0.02
+        
+[+] index [1, 26] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 8] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [4, 6] reward 120 Qtable 115.57407432350836 delta 4.425925676491644 prevdelta 19.14458262530991 deltaDot -1.0 DELTA 0.01735657128035939
+[+] eps: 0.075->0.017 alpha: 0.038->0.009
+        
+[+] index [4, 10] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 4.64522495626212 delta 4.64522495626212 prevdelta 4.688323739569993 deltaDot -1.0 DELTA 0.018216568455929883
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 4] reward 0 Qtable 10.293924621014776 delta 10.293924621014776 prevdelta 10.510535107783296 deltaDot -1.0 DELTA 0.040368331847116766
+[+] eps: 0.041->0.04 alpha: 0.021->0.02
+        
+[+] index [2, 14] reward 0 Qtable 6.689950141696983 delta 6.689950141696983 prevdelta 6.780086560859226 deltaDot -1.0 DELTA 0.02623509859489013
+[+] eps: 0.027->0.026 alpha: 0.013->0.013
+        
+[+] index [6, 6] reward 0 Qtable 10.203581254213843 delta 10.203581254213843 prevdelta 10.416326055169945 deltaDot -1.0 DELTA 0.04001404413417193
+[+] eps: 0.041->0.04 alpha: 0.02->0.02
+        
+[+] index [5, 8] reward 0 Qtable 4.602914927057649 delta 4.602914927057649 prevdelta 4.64522495626212 deltaDot -1.0 DELTA 0.018050646772775094
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [1, 30] reward 54 Qtable 31.48923702299413 delta 22.51076297700587 prevdelta 23.603131218836488 deltaDot -1.0 DELTA 0.08827750187061126
+[+] eps: 0.093->0.088 alpha: 0.046->0.044
+        
+[+] index [3, 9] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 23] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 25] reward -1 Qtable -0.011650375121517781 delta 0.9883496248784822 prevdelta 0.9902724474671343 deltaDot -1.0 DELTA 0.003875880881876401
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 6.602194390915823 delta 6.602194390915823 prevdelta 6.689950141696983 deltaDot -1.0 DELTA 0.025890958395748325
+[+] eps: 0.026->0.026 alpha: 0.013->0.013
+        
+[+] index [6, 5] reward 0 Qtable 10.094434919068053 delta 10.094434919068053 prevdelta 10.302557857105313 deltaDot -1.0 DELTA 0.03958601929046295
+[+] eps: 0.04->0.04 alpha: 0.02->0.02
+        
+[+] index [4, 6] reward 120 Qtable 115.61248377075115 delta 4.387516229248845 prevdelta 4.425925676491644 deltaDot -1.0 DELTA 0.017205945997054297
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [1, 30] reward 53 Qtable 32.48283398339989 delta 20.517166016600108 prevdelta 22.51076297700587 deltaDot -1.0 DELTA 0.08045947457490238
+[+] eps: 0.088->0.08 alpha: 0.044->0.04
+        
+[+] index [2, 14] reward 0 Qtable 6.516725820767901 delta 6.516725820767901 prevdelta 6.602194390915823 deltaDot -1.0 DELTA 0.02555578753242314
+[+] eps: 0.026->0.026 alpha: 0.013->0.013
+        
+[+] index [1, 30] reward 56 Qtable 33.30823418213074 delta 22.69176581786926 prevdelta 20.517166016600108 deltaDot 1.0 DELTA 0.08898731693282062
+[+] eps: 0.08->0.089 alpha: 0.04->0.044
+        
+[+] index [3, 22] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 24] reward 0 Qtable 9.529916499123882 delta 9.529916499123882 prevdelta 9.714976842354233 deltaDot -1.0 DELTA 0.037372221565191696
+[+] eps: 0.038->0.037 alpha: 0.019->0.019
+        
+[+] index [2, 14] reward 0 Qtable 6.433455790526601 delta 6.433455790526601 prevdelta 6.516725820767901 deltaDot -1.0 DELTA 0.025229238394221965
+[+] eps: 0.026->0.025 alpha: 0.013->0.013
+        
+[+] index [4, 6] reward 136 Qtable 115.65022945440198 delta 20.34977054559802 prevdelta 4.387516229248845 deltaDot 1.0 DELTA 0.07980302174744322
+[+] eps: 0.017->0.08 alpha: 0.009->0.04
+        
+[+] index [4, 32] reward -1 Qtable -0.011650375121517781 delta 0.9883496248784822 prevdelta 0.9902724474671343 deltaDot -1.0 DELTA 0.003875880881876401
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 18] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 4.561372131320923 delta 4.561372131320923 prevdelta 4.602914927057649 deltaDot -1.0 DELTA 0.017887733848317343
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 4] reward 0 Qtable 10.08615033845961 delta 10.08615033845961 prevdelta 10.293924621014776 deltaDot -1.0 DELTA 0.0395535307390573
+[+] eps: 0.04->0.04 alpha: 0.02->0.02
+        
+[+] index [2, 14] reward 0 Qtable 6.3523001956076595 delta 6.3523001956076595 prevdelta 6.433455790526601 deltaDot -1.0 DELTA 0.024910981159245723
+[+] eps: 0.025->0.025 alpha: 0.013->0.012
+        
+[+] index [6, 6] reward 0 Qtable 9.99943797889748 delta 9.99943797889748 prevdelta 10.203581254213843 deltaDot -1.0 DELTA 0.0392134822701862
+[+] eps: 0.04->0.039 alpha: 0.02->0.02
+        
+[+] index [1, 30] reward -1 Qtable 34.31787386043078 delta 35.31787386043078 prevdelta 22.69176581786926 deltaDot 1.0 DELTA 0.1385014661193364
+[+] eps: 0.089->0.139 alpha: 0.044->0.069
+        
+[+] index [1, 30] reward 53 Qtable 31.872085205487053 delta 21.127914794512947 prevdelta 35.31787386043078 deltaDot -1.0 DELTA 0.0828545678216194
+[+] eps: 0.139->0.083 alpha: 0.069->0.041
+        
+[+] index [3, 5] reward 198 Qtable 0.0 delta 198.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.7764705882352941
+[+] eps: 0.0->0.776 alpha: 0.0->0.388
+        
+[+] index [3, 5] reward 196 Qtable 76.87058823529412 delta 119.12941176470588 prevdelta 198.0 deltaDot -1.0 DELTA 0.4671741637831603
+[+] eps: 0.776->0.467 alpha: 0.388->0.234
+        
+[+] index [3, 5] reward 206 Qtable 104.69767989687224 delta 101.30232010312776 prevdelta 119.12941176470588 deltaDot -1.0 DELTA 0.39726400040442256
+[+] eps: 0.467->0.397 alpha: 0.234->0.199
+        
+[+] index [6, 5] reward 0 Qtable 9.894635671351779 delta 9.894635671351779 prevdelta 10.094434919068053 deltaDot -1.0 DELTA 0.038802492828830505
+[+] eps: 0.04->0.039 alpha: 0.02->0.019
+        
+[+] index [3, 5] reward 202 Qtable 124.8195623640812 delta 77.1804376359188 prevdelta 101.30232010312776 deltaDot -1.0 DELTA 0.3026683828859561
+[+] eps: 0.397->0.303 alpha: 0.199->0.151
+        
+[+] index [6, 19] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 30] reward 54 Qtable 32.74735733012274 delta 21.25264266987726 prevdelta 21.127914794512947 deltaDot 1.0 DELTA 0.08334369674461671
+[+] eps: 0.083->0.083 alpha: 0.041->0.042
+        
+[+] index [3, 5] reward 194 Qtable 136.49960148892816 delta 57.500398511071836 prevdelta 77.1804376359188 deltaDot -1.0 DELTA 0.2254917588669484
+[+] eps: 0.303->0.225 alpha: 0.151->0.113
+        
+[+] index [2, 14] reward 0 Qtable 6.273179180362332 delta 6.273179180362332 prevdelta 6.3523001956076595 deltaDot -1.0 DELTA 0.024600702668087577
+[+] eps: 0.025->0.025 alpha: 0.012->0.012
+        
+[+] index [4, 20] reward 0 Qtable 8.787829745428319 delta 8.787829745428319 prevdelta 8.944707779264464 deltaDot -1.0 DELTA 0.03446207743305223
+[+] eps: 0.035->0.034 alpha: 0.018->0.017
+        
+[+] index [2, 10] reward -1 Qtable 0.0 delta 1.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.00392156862745098
+[+] eps: 0.9->0.004 alpha: 0.45->0.002
+        
+[+] index [2, 14] reward 0 Qtable 6.196016872462467 delta 6.196016872462467 prevdelta 6.273179180362332 deltaDot -1.0 DELTA 0.024298105382205754
+[+] eps: 0.025->0.024 alpha: 0.012->0.012
+        
+[+] index [6, 4] reward 0 Qtable 9.886678909734103 delta 9.886678909734103 prevdelta 10.08615033845961 deltaDot -1.0 DELTA 0.03877128984209452
+[+] eps: 0.04->0.039 alpha: 0.02->0.019
+        
+[+] index [6, 11] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 8] reward 0 Qtable 4.520575825986822 delta 4.520575825986822 prevdelta 4.561372131320923 deltaDot -1.0 DELTA 0.017727748337203225
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 6] reward 0 Qtable 9.80338158694882 delta 9.80338158694882 prevdelta 9.99943797889748 deltaDot -1.0 DELTA 0.0384446336743091
+[+] eps: 0.039->0.038 alpha: 0.02->0.019
+        
+[+] index [1, 30] reward 53 Qtable 33.63299423297271 delta 19.367005767027287 prevdelta 21.25264266987726 deltaDot -1.0 DELTA 0.07594904222363642
+[+] eps: 0.083->0.076 alpha: 0.042->0.038
+        
+[+] index [5, 8] reward 0 Qtable 4.4805060106956525 delta 4.4805060106956525 prevdelta 4.520575825986822 deltaDot -1.0 DELTA 0.01757061180664962
+[+] eps: 0.018->0.018 alpha: 0.009->0.009
+        
+[+] index [6, 5] reward 0 Qtable 9.70266740651102 delta 9.70266740651102 prevdelta 9.894635671351779 deltaDot -1.0 DELTA 0.038049676103964786
+[+] eps: 0.039->0.038 alpha: 0.019->0.019
+        
+[+] index [3, 19] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 6.120741137003958 delta 6.120741137003958 prevdelta 6.196016872462467 deltaDot -1.0 DELTA 0.024002906419623365
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [6, 4] reward 0 Qtable 9.69501926294159 delta 9.69501926294159 prevdelta 9.886678909734103 deltaDot -1.0 DELTA 0.038019683384084665
+[+] eps: 0.039->0.038 alpha: 0.019->0.019
+        
+[+] index [2, 14] reward 0 Qtable 6.047283348638835 delta 6.047283348638835 prevdelta 6.120741137003958 deltaDot -1.0 DELTA 0.023714836661328766
+[+] eps: 0.024->0.024 alpha: 0.012->0.012
+        
+[+] index [4, 30] reward 0 Qtable -0.00196078431372549 delta 0.00196078431372549 prevdelta 1.0 deltaDot -1.0 DELTA 7.689350249903882e-06
+[+] eps: 0.004->0.0 alpha: 0.002->0.0
+        
+[+] index [5, 8] reward 0 Qtable 4.441143394790005 delta 4.441143394790005 prevdelta 4.4805060106956525 deltaDot -1.0 DELTA 0.017416248607019628
+[+] eps: 0.018->0.017 alpha: 0.009->0.009
+        [+] average exploredAmount: 0.6791666666666666
+        
+[+] index [2, 14] reward 0 Qtable 5.975578180209964 delta 5.975578180209964 prevdelta 6.047283348638835 deltaDot -1.0 DELTA 0.023433639922392016
+[+] eps: 0.024->0.023 alpha: 0.012->0.012
+        
+[+] index [2, 14] reward 0 Qtable 5.905563406508392 delta 5.905563406508392 prevdelta 5.975578180209964 deltaDot -1.0 DELTA 0.023159072182385852
+[+] eps: 0.023->0.023 alpha: 0.012->0.012
+        
+[+] index [6, 28] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 14] reward 0 Qtable 5.8371797219039 delta 5.8371797219039 prevdelta 5.905563406508392 deltaDot -1.0 DELTA 0.022890900870211374
+[+] eps: 0.023->0.023 alpha: 0.012->0.011
+        
+[+] index [6, 6] reward 0 Qtable 9.614937880008963 delta 9.614937880008963 prevdelta 9.80338158694882 deltaDot -1.0 DELTA 0.03770563874513319
+[+] eps: 0.038->0.038 alpha: 0.019->0.019
+        
+[+] index [5, 8] reward 0 Qtable 4.402469366058463 delta 4.402469366058463 prevdelta 4.441143394790005 deltaDot -1.0 DELTA 0.017264585749248874
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [3, 31] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 10] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 5] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 5] reward 0 Qtable 9.5180757304299 delta 9.5180757304299 prevdelta 9.70266740651102 deltaDot -1.0 DELTA 0.03732578717815647
+[+] eps: 0.038->0.037 alpha: 0.019->0.019
+        
+[+] index [1, 26] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [1, 30] reward 53 Qtable 34.3684470023454 delta 18.6315529976546 prevdelta 19.367005767027287 deltaDot -1.0 DELTA 0.07306491371629256
+[+] eps: 0.076->0.073 alpha: 0.038->0.037
+        
+[+] index [3, 32] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [3, 5] reward 204 Qtable 142.9825344868342 delta 61.0174655131658 prevdelta 57.500398511071836 deltaDot 1.0 DELTA 0.23928417848300315
+[+] eps: 0.225->0.239 alpha: 0.113->0.12
+        
+[+] index [2, 14] reward 0 Qtable 5.770370570716045 delta 5.770370570716045 prevdelta 5.8371797219039 deltaDot -1.0 DELTA 0.02262890419888645
+[+] eps: 0.023->0.023 alpha: 0.011->0.011
+        
+[+] index [2, 14] reward 0 Qtable 5.705081989297641 delta 5.705081989297641 prevdelta 5.770370570716045 deltaDot -1.0 DELTA 0.02237287054626526
+[+] eps: 0.023->0.022 alpha: 0.011->0.011
+        
+[+] index [6, 4] reward 0 Qtable 9.51071848155177 delta 9.51071848155177 prevdelta 9.69501926294159 deltaDot -1.0 DELTA 0.037296935221771646
+[+] eps: 0.038->0.037 alpha: 0.019->0.019
+        
+[+] index [2, 4] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 6] reward -1 Qtable 9.433669192878705 delta 10.433669192878705 prevdelta 9.614937880008963 deltaDot 1.0 DELTA 0.04091634977599492
+[+] eps: 0.038->0.041 alpha: 0.019->0.02
+        
+[+] index [6, 5] reward -1 Qtable 9.340440895900098 delta 10.340440895900098 prevdelta 9.5180757304299 deltaDot 1.0 DELTA 0.040550748611372936
+[+] eps: 0.037->0.041 alpha: 0.019->0.02
+        
+[+] index [6, 4] reward 0 Qtable 9.333358155992299 delta 9.333358155992299 prevdelta 9.51071848155177 deltaDot -1.0 DELTA 0.036601404533303135
+[+] eps: 0.037->0.037 alpha: 0.019->0.018
+        
+[+] index [5, 8] reward 0 Qtable 4.364465961119084 delta 4.364465961119084 prevdelta 4.402469366058463 deltaDot -1.0 DELTA 0.01711555278870229
+[+] eps: 0.017->0.017 alpha: 0.009->0.009
+        
+[+] index [6, 6] reward 0 Qtable 9.22021536380728 delta 9.22021536380728 prevdelta 10.433669192878705 deltaDot -1.0 DELTA 0.03615770730904816
+[+] eps: 0.041->0.036 alpha: 0.02->0.018
+        
+[+] index [3, 7] reward 33 Qtable 0.0 delta 33.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.12941176470588237
+[+] eps: 0.0->0.129 alpha: 0.0->0.065
+        
+[+] index [4, 6] reward 134 Qtable 116.4622160451049 delta 17.537783954895104 prevdelta 20.34977054559802 deltaDot -1.0 DELTA 0.06877562335252982
+[+] eps: 0.08->0.069 alpha: 0.04->0.034
+        
+[+] index [4, 6] reward 114 Qtable 117.06530205696485 delta 3.0653020569648533 prevdelta 17.537783954895104 deltaDot -1.0 DELTA 0.012020792380254327
+[+] eps: 0.069->0.012 alpha: 0.034->0.006
+        
+[+] index [5, 8] reward 0 Qtable 4.32711583734307 delta 4.32711583734307 prevdelta 4.364465961119084 deltaDot -1.0 DELTA 0.01696908171507086
+[+] eps: 0.017->0.017 alpha: 0.009->0.008
+        
+[+] index [6, 4] reward 0 Qtable 9.16255114723146 delta 9.16255114723146 prevdelta 9.333358155992299 deltaDot -1.0 DELTA 0.03593157312639788
+[+] eps: 0.037->0.036 alpha: 0.018->0.018
+        
+[+] index [2, 0] reward -1 Qtable -0.0077972263681544965 delta 0.9922027736318455 prevdelta 0.9941406474099488 deltaDot -1.0 DELTA 0.003890991269144492
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [5, 32] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 5] reward 0 Qtable 9.130784586249895 delta 9.130784586249895 prevdelta 10.340440895900098 deltaDot -1.0 DELTA 0.03580699837745057
+[+] eps: 0.041->0.036 alpha: 0.02->0.018
+        
+[+] index [1, 30] reward 56 Qtable 35.04910340843248 delta 20.95089659156752 prevdelta 18.6315529976546 deltaDot 1.0 DELTA 0.08216037879046087
+[+] eps: 0.073->0.082 alpha: 0.037->0.041
+        
+[+] index [3, 28] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 0] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [6, 6] reward 0 Qtable 9.053524439581814 delta 9.053524439581814 prevdelta 9.22021536380728 deltaDot -1.0 DELTA 0.03550401741012476
+[+] eps: 0.036->0.036 alpha: 0.018->0.018
+        
+[+] index [1, 7] reward 0 Qtable 4.0169041937836045 delta 4.0169041937836045 prevdelta 4.049050886093755 deltaDot -1.0 DELTA 0.015752565465818057
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [5, 8] reward 0 Qtable 4.2904022462258435 delta 4.2904022462258435 prevdelta 4.32711583734307 deltaDot -1.0 DELTA 0.016825106847944485
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [5, 8] reward 0 Qtable 4.254309008119138 delta 4.254309008119138 prevdelta 4.2904022462258435 deltaDot -1.0 DELTA 0.01668356473772211
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [5, 8] reward 0 Qtable 4.218820488243523 delta 4.218820488243523 prevdelta 4.254309008119138 deltaDot -1.0 DELTA 0.016544394071543227
+[+] eps: 0.017->0.017 alpha: 0.008->0.008
+        
+[+] index [1, 30] reward 50 Qtable 35.90977020841396 delta 14.09022979158604 prevdelta 20.95089659156752 deltaDot -1.0 DELTA 0.05525580310425898
+[+] eps: 0.082->0.055 alpha: 0.041->0.028
+        
+[+] index [4, 6] reward 120 Qtable 117.04687837716008 delta 2.953121622839916 prevdelta 3.0653020569648533 deltaDot -1.0 DELTA 0.011580869109176141
+[+] eps: 0.012->0.012 alpha: 0.006->0.006
+        
+[+] index [6, 2] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [5, 8] reward 0 Qtable 4.183921573906223 delta 4.183921573906223 prevdelta 4.218820488243523 deltaDot -1.0 DELTA 0.016407535583945972
+[+] eps: 0.017->0.016 alpha: 0.008->0.008
+        
+[+] index [6, 4] reward 0 Qtable 8.997938708945906 delta 8.997938708945906 prevdelta 9.16255114723146 deltaDot -1.0 DELTA 0.035286034152729046
+[+] eps: 0.036->0.035 alpha: 0.018->0.018
+        
+[+] index [2, 26] reward -1 Qtable -0.005859352590051218 delta 0.9941406474099488 prevdelta 0.9960861131842202 deltaDot -1.0 DELTA 0.003898590774156662
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [2, 32] reward -1 Qtable -0.003913886815779753 delta 0.9960861131842202 prevdelta 0.9980392156862745 deltaDot -1.0 DELTA 0.0039062200517028245
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 6] reward 132 Qtable 117.06397823464887 delta 14.936021765351128 prevdelta 2.953121622839916 deltaDot 1.0 DELTA 0.05857263437392599
+[+] eps: 0.012->0.059 alpha: 0.006->0.029
+        
+[+] index [2, 12] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 5] reward 0 Qtable 8.967311591817545 delta 8.967311591817545 prevdelta 9.130784586249895 deltaDot -1.0 DELTA 0.03516592781104919
+[+] eps: 0.036->0.035 alpha: 0.018->0.018
+        
+[+] index [1, 30] reward 53 Qtable 36.29905368994278 delta 16.70094631005722 prevdelta 14.09022979158604 deltaDot 1.0 DELTA 0.06549390709826361
+[+] eps: 0.055->0.065 alpha: 0.028->0.033
+        
+[+] index [3, 18] reward -1 Qtable -0.00196078431372549 delta 0.9980392156862745 prevdelta 1.0 deltaDot -1.0 DELTA 0.003913879277201077
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 6] reward 134 Qtable 117.50139930558032 delta 16.49860069441968 prevdelta 14.936021765351128 deltaDot 1.0 DELTA 0.06470039488007717
+[+] eps: 0.059->0.065 alpha: 0.029->0.032
+        
+[+] index [5, 8] reward 0 Qtable 4.14959765285407 delta 4.14959765285407 prevdelta 4.183921573906223 deltaDot -1.0 DELTA 0.016272931971976747
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [5, 8] reward 0 Qtable 4.115834592696086 delta 4.115834592696086 prevdelta 4.14959765285407 deltaDot -1.0 DELTA 0.016140527814494456
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [3, 2] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 4] reward 0 Qtable 8.839187922651892 delta 8.839187922651892 prevdelta 8.997938708945906 deltaDot -1.0 DELTA 0.03466348204961526
+[+] eps: 0.035->0.035 alpha: 0.018->0.017
+        
+[+] index [4, 6] reward 134 Qtable 118.03513229552915 delta 15.964867704470848 prevdelta 16.49860069441968 deltaDot -1.0 DELTA 0.06260732433125822
+[+] eps: 0.065->0.063 alpha: 0.032->0.031
+        
+[+] index [4, 6] reward 132 Qtable 118.53489112066887 delta 13.465108879331126 prevdelta 15.964867704470848 deltaDot -1.0 DELTA 0.052804348546396575
+[+] eps: 0.063->0.053 alpha: 0.031->0.026
+        
+[+] index [2, 14] reward 0 Qtable 5.641262458896448 delta 5.641262458896448 prevdelta 5.705081989297641 deltaDot -1.0 DELTA 0.02212259787802529
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [1, 16] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [6, 6] reward 0 Qtable 8.892806194918862 delta 8.892806194918862 prevdelta 9.053524439581814 deltaDot -1.0 DELTA 0.03487374978399554
+[+] eps: 0.036->0.035 alpha: 0.018->0.017
+        
+[+] index [6, 5] reward 0 Qtable 8.809639675769025 delta 8.809639675769025 prevdelta 8.967311591817545 deltaDot -1.0 DELTA 0.034547606571643234
+[+] eps: 0.035->0.035 alpha: 0.018->0.017
+        
+[+] index [6, 3] reward 0 Qtable 1.6383902451579424 delta 1.6383902451579424 prevdelta 1.643687714378331 deltaDot -1.0 DELTA 0.0064250597849331076
+[+] eps: 0.006->0.006 alpha: 0.003->0.003
+        
+[+] index [6, 6] reward 0 Qtable 8.737743445859278 delta 8.737743445859278 prevdelta 8.892806194918862 deltaDot -1.0 DELTA 0.03426566057199717
+[+] eps: 0.035->0.034 alpha: 0.017->0.017
+        
+[+] index [5, 7] reward 0 Qtable 2.039888475040013 delta 2.039888475040013 prevdelta 17.56507602656595 deltaDot -1.0 DELTA 0.007999562647215738
+[+] eps: 0.069->0.008 alpha: 0.034->0.004
+        
+[+] index [1, 30] reward 54 Qtable 36.84595880298477 delta 17.154041197015232 prevdelta 16.70094631005722 deltaDot 1.0 DELTA 0.0672707497922166
+[+] eps: 0.065->0.067 alpha: 0.033->0.034
+        
+[+] index [2, 14] reward 0 Qtable 5.578862768445165 delta 5.578862768445165 prevdelta 5.641262458896448 deltaDot -1.0 DELTA 0.021877893209588883
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [4, 6] reward 114 Qtable 118.89039927190856 delta 4.890399271908564 prevdelta 13.465108879331126 deltaDot -1.0 DELTA 0.01917803636042574
+[+] eps: 0.053->0.019 alpha: 0.026->0.01
+        
+[+] index [4, 6] reward 116 Qtable 118.84350514438174 delta 2.843505144381737 prevdelta 4.890399271908564 deltaDot -1.0 DELTA 0.011151000566202891
+[+] eps: 0.019->0.011 alpha: 0.01->0.006
+        
+[+] index [2, 13] reward -1 Qtable 0.0 delta 1.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.00392156862745098
+[+] eps: 0.0->0.004 alpha: 0.0->0.002
+        
+[+] index [5, 8] reward 0 Qtable 4.082618721334452 delta 4.082618721334452 prevdelta 4.115834592696086 deltaDot -1.0 DELTA 0.016010269495429223
+[+] eps: 0.016->0.016 alpha: 0.008->0.008
+        
+[+] index [4, 22] reward -1 Qtable -0.009727552532865726 delta 0.9902724474671343 prevdelta 0.9922027736318455 deltaDot -1.0 DELTA 0.003883421362616213
+[+] eps: 0.004->0.004 alpha: 0.002->0.002
+        
+[+] index [4, 6] reward 134 Qtable 118.82765118064424 delta 15.172348819355761 prevdelta 2.843505144381737 deltaDot 1.0 DELTA 0.059499407134728476
+[+] eps: 0.011->0.059 alpha: 0.006->0.03
+        
+[+] index [2, 14] reward 0 Qtable 5.517835886505668 delta 5.517835886505668 prevdelta 5.578862768445165 deltaDot -1.0 DELTA 0.021638572103943796
+[+] eps: 0.022->0.022 alpha: 0.011->0.011
+        
+[+] index [6, 2] reward 0 Qtable 0.0 delta 0.0 prevdelta 0.0 deltaDot 1.0 DELTA 0.0
+[+] eps: 0.0->0.0 alpha: 0.0->0.0
+        
+[+] index [2, 14] reward 0 Qtable 5.458136841661727 delta 5.458136841661727 prevdelta 5.517835886505668 deltaDot -1.0 DELTA 0.021404458202595008
+[+] eps: 0.022->0.021 alpha: 0.011->0.011
+        
+[+] index [2, 14] reward 0 Qtable 5.39972261071603 delta 5.39972261071603 prevdelta 5.458136841661727 deltaDot -1.0 DELTA 0.021175382787121687
+[+] eps: 0.021->0.021 alpha: 0.011->0.011
+        [+] average exploredAmount: 0.6806818181818182
+[+] goodbye
