@@ -9,7 +9,9 @@ import os
 import shutil
 import signal
 from varname import nameof
-import pickle
+# import pickle
+import dill as pickle
+
 from termcolor import colored 
 from subprocess import call 
 from itertools import combinations  as comb
@@ -121,6 +123,7 @@ class SUPERVISOR:
         self.globalQ=globalQ
         self.allnodes=np.array(list(comb(np.arange(0,self.ROBN),2)))
         self.crowdThresh= 5
+        self.funcX=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
 
 # sharedParams ...............................................................................................................................
     def sharedParams(self):
@@ -332,7 +335,11 @@ class SUPERVISOR:
             # func=np.vectorize(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position))
             
 
-            dists=np.array(list(map(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position),self.allnodes)))
+            # dists=np.array(list(map(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position),self.allnodes)))
+            Xs=self.funcX(self.allnodes[:,0])
+            Ys=self.funcX(self.allnodes[:,1])
+            dists=np.vstack(Xs-Ys)
+            dists=dist(dists)
             indexes=np.where(dists<=self.collisionDetectDist)
             if np.size(indexes)>0:
                 indexes=indexes[0]
