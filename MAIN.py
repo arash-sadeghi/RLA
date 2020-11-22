@@ -38,14 +38,14 @@ if __name__ == "__main__" or True:
     Ly=4
     cueRaduis=0.7
     visibleRaduis=0.3
-    iteration=1#5 # caviat
+    iteration=5 
     samplingPeriodSmall=10
-    FinalTime=11600#116000*10#3 # caviat
+    FinalTime=116000*10#3 
     HalfTime=FinalTime//2
     dynamic=True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10#10
-    paramReductionMethod='adaptive shut' # possible values= 'adaptive' , 'classic' , 'adaptive united'
+    paramReductionMethod='classic' # possible values= 'adaptive' , 'classic' , 'adaptive united'
     print(colored('[+] adaptive shut with modofication','green'))
     vizFlag=not True
     globalQ=not True
