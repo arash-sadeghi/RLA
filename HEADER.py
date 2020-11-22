@@ -9,8 +9,8 @@ import os
 import shutil
 import signal
 from varname import nameof
-# import pickle
-import dill as pickle
+import pickle
+# import dill as pickle
 
 from termcolor import colored 
 from subprocess import call 
@@ -77,6 +77,7 @@ def saturate(x):
 # ------------------------------------------------------------------------------------------------------------------------------
 def quadratic(x):
     return saturate(x**2)
+# ------------------------------------------------------------------------------------------------------------------------------
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -87,6 +88,7 @@ class SUPERVISOR:
         self.cueRaduis=m2px(cueRaduis)
         self.visibleRaduis=m2px(visibleRaduis)
         self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRaduis,self.visibleRaduis)
+        self.codeBeginTime=codeBeginTime
         self.sharedParams()
         self.vizFlag=vizFlag
         self.fps=int(self.timeStep*1000)//50
@@ -123,7 +125,6 @@ class SUPERVISOR:
         self.globalQ=globalQ
         self.allnodes=np.array(list(comb(np.arange(0,self.ROBN),2)))
         self.crowdThresh= 5
-        self.funcX=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
 
 # sharedParams ...............................................................................................................................
     def sharedParams(self):
@@ -135,7 +136,7 @@ class SUPERVISOR:
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
-        self.EpsilonDampRatio=0.999 #######
+        self.EpsilonDampRatio=0.9 #######
 
         angles=np.arange(0,180+18,18)
         maxlen=int(16*512/9.2) # 14
@@ -145,7 +146,11 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":0.9,"alpha":0.9/2,"sensitivity":10,"maxdiff":255}
+        self.RLparams={"epsilon":1,"alpha":1,"sensitivity":10,"maxdiff":255}
+        if not hasattr(self,'robotName'): # if caller of this function is supervisor
+            with open(self.codeBeginTime+DirLocManage()+'params.txt','a') as paramfile :
+                paramDict={"RLparams":self.RLparams,"EpsilonDampRatio":self.EpsilonDampRatio}
+                paramfile.write(str(paramDict))
         self.velocity=14
         self.timeStep=512*0.001
         self.printFlag=not True # print flag for robot 0 # caviat
@@ -336,8 +341,8 @@ class SUPERVISOR:
             
 
             # dists=np.array(list(map(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position),self.allnodes)))
-            Xs=self.funcX(self.allnodes[:,0])
-            Ys=self.funcX(self.allnodes[:,1])
+            Xs=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])(self.allnodes[:,0])
+            Ys=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])(self.allnodes[:,1])
             dists=np.vstack(Xs-Ys)
             dists=dist(dists)
             indexes=np.where(dists<=self.collisionDetectDist)
