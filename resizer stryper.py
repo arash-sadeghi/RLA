@@ -28,10 +28,12 @@ for folder in all_folders:
     print('[+] processing ', folder)
     for imN in ims: 
         im=cv.imread(folder+'/'+imN)
-        indx=np.arange(0,im.shape[1])%2==1
-        im[0,indx]=255-im[0,indx]
-        dim=(im.shape[1]*20,im.shape[0]*20)
-        im=cv.resize(im,dim)
+        if im.shape[1] < 100: # resizer acts second time on image
+            if (np.all(im[0]==0) or np.all(im[0]==255)):   # if stryping done in simulator then pass 
+                indx=np.arange(0,im.shape[1])%2==1
+                im[0,indx]=255-im[0,indx]
+            dim=(im.shape[1]*20,im.shape[0]*20)
+            im=cv.resize(im,dim)
         cv.imwrite(folder+'/'+imN,im)
 
 print('[+] have a nice day')
