@@ -52,7 +52,13 @@ for count,file_ in enumerate(allFiles):
         datas.append(np.load(_,allow_pickle=True))
         ''' storing number of datas for each iteration for each file '''
         datasLen.append(np.shape(datas[count])[-1]) 
- 
+
+'''this piece of code takes the file name and what 
+ever is after character x puts it as the legend for that file'''
+label=list(map(lambda x: os.path.splitext(x)[0],allFiles))
+for c,v in enumerate(label):
+    label[c]=v[v.find('x')+1:]
+
 for count,file_ in enumerate(allFiles):
     '''
     structure hieracrchy of datas:
@@ -60,14 +66,14 @@ for count,file_ in enumerate(allFiles):
     '''
     data=datas[count][0,:,0] # file,iteration,sample,robot
     
-    '''accumulate data'''
-    for i in range(len(data)):
-        if i==0:
-            data[i]=data[i]
-        else:
-            data[i]=data[i-1]+data[i]
+    # '''accumulate data'''
+    # for i in range(len(data)):
+    #     if i==0:
+    #         data[i]=data[i]
+    #     else:
+    #         data[i]=data[i-1]+data[i]
 
-    window=10 # average each 'window' data and represent it as one point
+    window=1000 # average each 'window' data and represent it as one point
     pointN=len(data)//window
     averagedData=np.zeros((1,len(data)//window))[0]
     j=0
@@ -75,43 +81,33 @@ for count,file_ in enumerate(allFiles):
         averagedData[i]=np.mean(data[j:j+window])
         j+=window
 
-    plt.plot(averagedData,color=palete[count],label=file_+' robot 0') # plot for only robot 0
+    plt.plot(averagedData,color=palete[count],label=label[count]) # plot for only robot 0
 
-'''
-for count,file_ in enumerate(allFiles):
-    data=datas[count]
-    averagedData=np.zeros((len(data),pointN))
-    window=np.shape(data)[1]//pointN # 1000 is the number of points that i want to see in plot
-    for k in range(len(data)):
-        j=0
-        for i in range(pointN):
-            averagedData[k,i]=np.mean(data[k,j:j+window])
-            j+=window
-    
-    averagedDataMean=np.zeros((1,pointN+1))[0]
-    averagedDataQ1=np.zeros((1,pointN+1))[0]
-    averagedDataQ2=np.zeros((1,pointN+1))[0]
+# ''' indicator of when the env has changed '''
+# ''' np.max(plt.yticks(fontsize=12)[0]) gives the maximum y tick'''
+# plt.vlines(len(averagedData)//2,-0.1,np.max(plt.yticks()[0]),color="black",linestyles='--',label='when env has changed',linewidth=2)
 
-    for i in range(pointN):
-        averagedDataMean[1+i]=np.percentile(averagedData[:,i],50)
-        averagedDataQ1[1+i]=np.percentile(averagedData[:,i],25)
-        averagedDataQ2[1+i]=np.percentile(averagedData[:,i],75)
+# ''' 10 cheated'''
+# devisionScale=window*10
+# xt=plt.xticks()[0][1:-1]
+# xt=np.linspace(int(min(xt)),int(max(xt)),int(max(xt)//10))
+# # plt.xticks(plt.xticks()[0][1:-1],(plt.xticks()[0][1:-1]//10).astype(int),fontsize=12)
+# plt.xticks(xt,(xt//10).astype(int),fontsize=12)
+devisionScale=100000
+''' cheated by knowing the last tick value '''
+# xt=np.linspace(0,1200000,13)
+xt=plt.xticks()[0][-2]
+xt=np.arange(0,xt+10,10)
+plt.xticks(xt,(xt//10).astype(int))
 
-    x=np.arange(0,len(averagedDataMean))*((samplingPeriod*datasLen[count])/len(averagedDataMean))
-    # plt.plot(x,averagedDataMean,color=palete[count],label=label[count])
-    plt.plot(x,averagedDataMean,color=palete[count],label=file_)
-
-
-    plt.fill_between(x,averagedDataMean,averagedDataQ2,color=palete[count],alpha=0.25)
-    plt.fill_between(x,averagedDataQ1,averagedDataMean,color=palete[count],alpha=0.25)
-
-'''
+''' indicator of when the env has changed 
+np.max(plt.yticks(fontsize=12)[0]) gives the maximum y tick
+cheated knowing the mid time 
+10 is the sampling period'''
+plt.vlines(580/10,-0.1,np.max(plt.yticks()[0]),color="black",linestyles='--',label='when env has changed',linewidth=2)
 
 
-devisionScale=100
 plt.yticks(fontsize=12)
-# plt.ylim(-0.1,1.1)
-# plt.xlim(-0.1,)
 plt.legend(fontsize=12.5,loc=1)
 plt.xlabel('Time [s] / '+str(devisionScale),fontsize=15,fontweight='bold')
 plt.ylabel('reward',fontsize=15,fontweight='bold')

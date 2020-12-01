@@ -5,16 +5,16 @@ def saveData():
     dataType='process data'
     QtableMem[it,:,:,:]=sup.getQtables()
     data2Bsaved=[NAS,log,QtableMem,reward,eps,alpha]
-    fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+paramReductionMethod+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' '
+    fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' '
     for i in range(len(data2Bsaved)):
-        with open(fileName+data2BsavedStr[i]+'.npy','wb') as f:
+        with open(fileName+data2BsavedStr[i]+commentDividerChar+comment+'.npy','wb') as f:
             np.save(f,data2Bsaved[i])
-    with open(fileName+' sup class.sup', 'wb') as supSaver:
+    with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
         pickle.dump(sup, supSaver)
 #...............................................................................................................................
 def keyboardInterruptHandler(signal, frame):
     saveData()
-    print('[+] half data saved')
+    print(colored('[+] half data saved. Time: '+str(sup.getTime()),'red'))
     ans=input('\t[+] continue/quit? [c/q]')
     if ans=='q': exit(0)
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
@@ -42,11 +42,11 @@ if __name__ == "__main__" or True:
     samplingPeriodSmall=10
     FinalTime=116000*10#3 
     HalfTime=FinalTime//2
-    dynamic=True
+    dynamic= True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10#10
     paramReductionMethod='classic' # possible values= 'adaptive' , 'classic' , 'adaptive united'
-    print(colored('[+] adaptive shut with modofication','green'))
+    commentDividerChar=' x '
     vizFlag=not True
     globalQ=not True
     communicate=not True
@@ -54,7 +54,9 @@ if __name__ == "__main__" or True:
         raise NameError('[-] what do you want?')
     record=False
     method='RL'
-    comment='_'
+    comment='alpha 0.5 damp ratio 0.9' 
+    ''' <><><<><><><><><><><<><><><<> '''
+    print(colored('[+] '+comment,'green'))
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
 
     ''' preparing dirs '''
@@ -63,7 +65,7 @@ if __name__ == "__main__" or True:
 
     ''' for saving image of mats '''
     os.makedirs(codeBeginTime+dirChangeCharacter+'ims') 
-    imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck"]
+    imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck","QtableRob0"]
     for _ in imsName:
         if _=="DELTA" and os.name=='nt': _+='_' # in windows this wierd thing happens
         os.makedirs(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+_)
@@ -120,7 +122,9 @@ if __name__ == "__main__" or True:
                     deltaDotTemp=np.copy(sup.swarm[0].deltaDot)
                     deltaDotTemp[deltaDotTemp>=0]=0 # positives will be white
                     deltaDotTemp[deltaDotTemp<0]=255 # negative will be black
-                    imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255]
+                    QtableRob0=sup.getQtables()[0]
+                    imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
+
                     for count_,v in enumerate(imsMat):
                         cv.imwrite(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+imsName[count_]+dirChangeCharacter+str(sup.getTime())+'.png',255-v)
                 ''' dont forget the effect of state 0'''

@@ -30,7 +30,7 @@ goToScriptDir()
 allFiles=os.listdir()
 tobeDeleted=[]
 for files in allFiles:
-    if os.path.splitext(files)[1]!='.hi':
+    if os.path.splitext(files)[1]!='.sup':
         tobeDeleted.append(files)
 
 for i in tobeDeleted:

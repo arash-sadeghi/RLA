@@ -62,7 +62,7 @@ def DirLocManage():
         if dirChangeCharacter in scriptLoc[-i-2:-i]: # in debuging
             scriptLoc=scriptLoc[0:-i-2]
             break
-    print('[+] code path',scriptLoc)
+    # print('[+] code path',scriptLoc)
     os.chdir(scriptLoc)
     return dirChangeCharacter
     ''' done '''
@@ -146,7 +146,7 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":1,"alpha":1,"sensitivity":10,"maxdiff":255}
+        self.RLparams={"epsilon":1,"alpha":0.5,"sensitivity":10,"maxdiff":255}
         if not hasattr(self,'robotName'): # if caller of this function is supervisor
             with open(self.codeBeginTime+DirLocManage()+'params.txt','a') as paramfile :
                 paramDict={"RLparams":self.RLparams,"EpsilonDampRatio":self.EpsilonDampRatio}
@@ -414,7 +414,7 @@ class SUPERVISOR:
                 tobesharedRobots=np.where(self.flagsR[i])[0]
                 for j in tobesharedRobots:
                     temp=TableCompare(self.swarm[i].Qtable,self.swarm[j].Qtable)
-                    if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),end=' ')
+                    if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable))
                     self.swarm[i].Qtable=np.copy(temp)
                     self.swarm[j].Qtable=np.copy(temp)
                     if self.vizFlag : print(np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),\
