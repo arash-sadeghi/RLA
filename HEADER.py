@@ -207,6 +207,7 @@ class SUPERVISOR:
                 else: self.swarm[i].Qtable=tmp
 
         self.pos_getter=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
+        self.rot_getter=np.vectorize(lambda x: RotStandard(self.swarm[x].rotation),otypes=[np.ndarray])
 
 # visualize ...............................................................................................................................
     def visualize(self):
@@ -305,36 +306,37 @@ class SUPERVISOR:
 
 # checkCollision ...............................................................................................................................
     def checkCollision(self,specific=False,robotNum=None):
-        ''' optimized '''
         ''' flagsR is always numerical not boolien'''
         if specific==False:
-            for i in range(0,self.ROBN):
-                Xcond1=self.swarm[i].position[0]>=self.Ylen-self.robotSenseRad 
-                Xcond2=self.swarm[i].position[0]<=0+self.robotSenseRad
-                Ycond1=self.swarm[i].position[1]>=self.Xlen-self.robotSenseRad 
-                Ycond2=self.swarm[i].position[1]<=0+self.robotSenseRad
-                ''' vital change '''
-                if Ycond1 or Xcond1 or Ycond2 or Xcond2:
-                    if Xcond1:# >|
-                        if 0<=self.swarm[i].rotation<=180:
-                            self.swarm[i].rotation2B=rnd.randint(180,360)
-                    if Xcond2:
-                        if 180<=self.swarm[i].rotation<=360:
-                            self.swarm[i].rotation2B=rnd.randint(0,180)# |<
-                    if Ycond1:
-                        if 270<=self.swarm[i].rotation<=360 or 0<=self.swarm[i].rotation<=90:
-                            self.swarm[i].rotation2B=rnd.randint(90,270)# _
-                    if Ycond2:
-                        if 90<=self.swarm[i].rotation<=270:
-                            self.swarm[i].rotation2B=rnd.randint(270,360+90)# -
+            all_poses=np.vstack(self.pos_getter(np.arange(0,self.ROBN)))
+            all_rots=self.rot_getter(np.arange(0,self.ROBN))
+            '''list order: 1 >| , 2 |< , 3 _ , 4 - '''
+            loc_conds=[np.where( all_poses[:,0]>=self.Ylen-self.robotSenseRad)[0],\
+                np.where(all_poses[:,0]<=self.robotSenseRad)[0],\
+                np.where(all_poses[:,1]>=self.Xlen-self.robotSenseRad)[0],\
+                np.where(all_poses[:,1]<=self.robotSenseRad)[0] ]
 
-                    self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
-                    if self.swarm[i].inAction==True:
-                        self.swarm[i].actAndReward(-1) 
+            rot_conds=[ np.where(np.logical_and(all_rots<=180,all_rots>=0))[0],\
+                np.where(np.logical_and(all_rots<=360,all_rots>=180))[0],\
+                np.where(np.logical_or(np.logical_and(all_rots<=360,all_rots>=270),np.logical_and(all_rots<=90,all_rots>=0)))[0],\
+                np.where(np.logical_and(all_rots<=270,all_rots>=90))[0]]
 
-            Xs=self.pos_getter(self.allnodes[:,0])
-            Ys=self.pos_getter(self.allnodes[:,1])
-            dists=np.vstack(Xs-Ys)
+            ranges=[(180,360),(0,180),(90,270),(270,360+90)]
+
+            if np.size(loc_conds)>0:
+                for i in range(len(loc_conds)):
+                    if np.size(loc_conds[i])>0:
+                        for j in loc_conds[i]:
+                            if self.swarm[j].inAction==True:
+                                self.swarm[j].actAndReward(-1) 
+                            if j in rot_conds[i]:
+                                self.swarm[j].rotation2B=RotStandard(rnd.randint(ranges[i][0],ranges[i][1]))
+
+
+
+            Robot1=all_poses[self.allnodes[:,0]]
+            Robot2=all_poses[self.allnodes[:,1]]
+            dists=Robot1-Robot2
             dists=dist(dists)
             indexes=np.where(dists<=self.collisionDetectDist+self.velocity*self.timeStep) ##############
             if np.size(indexes)>0:

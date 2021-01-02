@@ -21,6 +21,7 @@ def saveData(caller=None):
                 sup wont record and thus wont have video recorder
                 '''
                 del sup.pos_getter
+                del sup.rot_getter
                 pickle.dump(sup, supSaver)
             except Exception as E: 
                 print(colored('[-] error in saving class: '+str(E),'red'))
@@ -40,7 +41,7 @@ def keyboardInterruptHandler(signal, frame):
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 #...............................................................................................................................
 def clearTerminal(): 
-    # check and make call for specific operating system 
+    ''' check and make call for specific operating system '''
     # call('clear' if os.name =='posix' else 'cls')
     if os.name=='nt':os.system('cls')
     else:os.system('clear')
@@ -61,18 +62,16 @@ if __name__ == "__main__" or True:
     iteration=5
     samplingPeriodSmall=10
     FinalTime=116000*10#3 
-    # FinalTime=1160 
-
     HalfTime=FinalTime//2
     dynamic= not True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10#10
     paramReductionMethod='classic' # possible values= 'adaptive' , 'classic' , 'adaptive united'
     commentDividerChar=' x '
-    vizFlag=True
+    vizFlag=not True
     globalQ=not True
     communicate=not True
-    record=True
+    record=not True
     method='RL'
     comment='test2 with alpha 0.5 eps damp 0.999 static' 
     save_csv=True
@@ -87,13 +86,7 @@ if __name__ == "__main__" or True:
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
 
     imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck","QtableRob0"]
-    ''' for saving image of mats 
-    os.makedirs(codeBeginTime+dirChangeCharacter+'ims') 
-    for _ in imsName:
-        if _=="DELTA" and os.name=='nt': _+='_' # in windows this wierd thing happens
-        os.makedirs(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+_)
-    '''
-    
+
     ''' save parameters into a file '''
     paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
         'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'vizFlag':vizFlag , 'globalQ':globalQ , \
@@ -116,11 +109,10 @@ if __name__ == "__main__" or True:
     alpha=np.zeros((iteration,sampledDataNum,ROBN))
     reward=np.zeros((iteration,sampledDataNum,ROBN))
     NAS=np.zeros((iteration,sampledDataNum))
-    strip=np.arange(0,44) ##### caviat
+    strip=np.arange(0,44) ##### caviat: table dimentions pre known
     strip[strip%2==0]=0
     strip[strip%2==1]=255
-    tableImSize=(7*20,44*20)[::-1] ##### caviat
-    # tableImSize=(7,44)[::-1] ##### caviat
+    tableImSize=(7*20,44*20)[::-1] ##### caviat: table dimentions pre known
 
     fourcc = cv.VideoWriter_fourcc(*'mp4v')
     FPS=1
@@ -153,6 +145,7 @@ if __name__ == "__main__" or True:
                 if dynamic:
                     sup.changeGround()
 
+            # sup.visualize() # for debug
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
                 if it==0: # save these in the first iteration only
                     sup.visualize() # moved for less file size
@@ -163,14 +156,11 @@ if __name__ == "__main__" or True:
                         QtableRob0=sup.getQtables()[0]
                         if save_csv:
                             np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
-                        # imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
                         imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
 
                         for count_,v in enumerate(imsMat):
                             v=np.minimum(v,np.ones(v.shape)*255)
-                            # v=np
                             v[0]=strip
-                            # videoList[count_].write(cv.resize(255-v,tableImSize))
                             im=255-v
                             im.astype(int)
                             canvas=np.zeros((im.shape[0],im.shape[1],3))
@@ -184,7 +174,7 @@ if __name__ == "__main__" or True:
                         for _ in range(len(videoList)):
                             videoList[_].release()
                         record=False
-                        sup.video.release()
+                        if hasattr(sup,'video'): sup.video.release()
                         SAR=np.stack(sup.swarm[0].SAR)
                         with open(codeBeginTime+dirChangeCharacter+'SAR_robot0.npy','wb') as SAR_f:
                             np.save(SAR_f,SAR)
