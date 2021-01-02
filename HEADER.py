@@ -14,7 +14,8 @@ import pickle
 
 from termcolor import colored 
 from subprocess import call 
-from itertools import combinations  as comb
+from itertools import combinations  as comb , product
+np.random.seed(0)
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -50,20 +51,21 @@ def dist(delta):
 def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
 # ------------------------------------------------------------------------------------------------------------------------------
-def DirLocManage():
+def DirLocManage(returnchar=False):
     ''' with this segment code is callable from any folder '''
     if os.name=='nt':
         dirChangeCharacter='\\'
     else:
         dirChangeCharacter='/'
-    scriptLoc=__file__
-    for i in range(len(scriptLoc)):
-        # if '/' in scriptLoc[-i-2:-i]: # in running
-        if dirChangeCharacter in scriptLoc[-i-2:-i]: # in debuging
-            scriptLoc=scriptLoc[0:-i-2]
-            break
-    # print('[+] code path',scriptLoc)
-    os.chdir(scriptLoc)
+    if returnchar==False:
+        scriptLoc=__file__
+        for i in range(len(scriptLoc)):
+            # if '/' in scriptLoc[-i-2:-i]: # in running
+            if dirChangeCharacter in scriptLoc[-i-2:-i]: # in debuging
+                scriptLoc=scriptLoc[0:-i-2]
+                break
+        # print('[+] code path',scriptLoc)
+        os.chdir(scriptLoc)
     return dirChangeCharacter
     ''' done '''
 # ------------------------------------------------------------------------------------------------------------------------------
@@ -78,6 +80,7 @@ def saturate(x):
 def quadratic(x):
     return saturate(x**2)
 # ------------------------------------------------------------------------------------------------------------------------------
+
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -91,7 +94,7 @@ class SUPERVISOR:
         self.codeBeginTime=codeBeginTime
         self.sharedParams()
         self.vizFlag=vizFlag
-        self.fps=int(self.timeStep*1000)//50
+        self.fps=int(self.timeStep*10)
         self.ROBN=ROBN
         self.collisionDist=m2px(0.05)
         self.swarm=[0]*self.ROBN
@@ -112,14 +115,15 @@ class SUPERVISOR:
         self.record=record
         videoRecordTime=ctime(TIME()).replace(':','_')
         capture_rate=5
-        FPS=20
+        FPS=5
+        '''
         size=(self.Xlen,self.Ylen)
+        this wont work you must inverse it. an empty video will be saved
+        '''
+        size=(self.Ylen,self.Xlen)
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
         if self.record:
-            if os.name=='nt':
-                self.video = cv.VideoWriter(codeBeginTime+'\\'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
-            else:
-                self.video = cv.VideoWriter(codeBeginTime+'/'+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+            self.video = cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+videoRecordTime+'.mp4',fourcc, FPS, size,True)
         
         self.globalQ=globalQ
         self.globalQ=globalQ
@@ -136,7 +140,7 @@ class SUPERVISOR:
         self.Xlen=np.shape(self.ground)[0]  
         self.Ylen=np.shape(self.ground)[1]  
         self.cueRadius=m2px(0.7)   
-        self.EpsilonDampRatio=0.9 #######
+        self.EpsilonDampRatio=0.999 #######
 
         angles=np.arange(0,180+18,18)
         maxlen=int(16*512/9.2) # 14
@@ -146,9 +150,9 @@ class SUPERVISOR:
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
 
-        self.RLparams={"epsilon":1,"alpha":0.5,"sensitivity":10,"maxdiff":255}
+        self.RLparams={"epsilon":1,"alpha":1,"sensitivity":10,"maxdiff":255}
         if not hasattr(self,'robotName'): # if caller of this function is supervisor
-            with open(self.codeBeginTime+DirLocManage()+'params.txt','a') as paramfile :
+            with open(self.codeBeginTime+DirLocManage(returnchar=True)+'params.txt','a') as paramfile :
                 paramDict={"RLparams":self.RLparams,"EpsilonDampRatio":self.EpsilonDampRatio}
                 paramfile.write(str(paramDict))
         self.velocity=14
@@ -181,20 +185,29 @@ class SUPERVISOR:
         return cv.imread("BackgroundGeneratedBySim.png")
 # generateRobots ...............................................................................................................................
     def generateRobots(self):
-        margin=m2px(self.robotRad)*5
-        possibleY=np.linspace(0+margin,self.Xlen-margin,int(self.Xlen//2*self.robotSenseRad))
-        possibleX=np.linspace(0+margin,self.Ylen-margin,int(self.Ylen//2*self.robotSenseRad))
+        ''' vital change '''
+        margin=self.collisionDetectDist*2
+        # possibleY=np.linspace(0+margin,self.Xlen-margin,int(self.Xlen//2*self.robotSenseRad))
+        # possibleX=np.linspace(0+margin,self.Ylen-margin,int(self.Ylen//2*self.robotSenseRad))
+        possibleY=np.arange(0+margin,self.Xlen-margin,margin)
+        possibleX=np.arange(0+margin,self.Ylen-margin,margin)
+        possiblePos=list(product(possibleX,possibleY))
         possibleRot=np.linspace(0,360,10)
         for i in range(self.ROBN):
             self.swarm[i]=ROBOT(self,str(i))
-            self.swarm[i].position=np.array([rnd.sample(list(possibleX),1)[0],rnd.sample(list(possibleY),1)[0]])
+            chosen=rnd.sample(possiblePos,1)[0]
+            possiblePos.remove(chosen) # delete the selected position from all posible poses
+            self.swarm[i].position=np.ravel(np.array(chosen))
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
             self.swarm[i].ground=self.ground # sharing ground image among robots
-
-            # sharing the Qtable addres for all robots
+            
+            ''' sharing the Qtable addres for all robots'''
             if self.globalQ:
                 if i==0: tmp=self.swarm[i].Qtable
                 else: self.swarm[i].Qtable=tmp
+
+        self.pos_getter=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
+
 # visualize ...............................................................................................................................
     def visualize(self):
         if self.vizFlag:
@@ -233,15 +246,21 @@ class SUPERVISOR:
 
             cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
-            # AllEpsilons=np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
-            AllEpsilons=np.array([np.mean(self.swarm[_].epsilon) for _ in range(self.ROBN)])
+            if self.paramReductionMethod=='classic':
+                AllEpsilons= np.mean([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
+                EpsilonAverage=round(np.mean(AllEpsilons),3)
+                cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
+            else:
+                AllEpsilons=np.array([np.mean(self.swarm[_].epsilon[1:]) for _ in range(self.ROBN)]) # 1: is for disolving the effect of state 0
+                EpsilonAverage=round(np.mean(AllEpsilons),3)
+                cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
-            EpsilonAverage=round(np.mean(AllEpsilons),3)
-            cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
+            if self.record: self.video.write(background)
+            else:
+                cv.imshow("background",background)
+                cv.waitKey(self.fps)
+                # cv.imwrite(self.codeBeginTime+DirLocManage(returnchar=True)+str(self.getTime())+'.png',background)
 
-            cv.imshow("background",background)
-            cv.waitKey(self.fps)
-        if self.record: self.video.write(background)
 # moveAll ...............................................................................................................................
     def moveAll(self):
         for i in range(self.ROBN):
@@ -250,34 +269,11 @@ class SUPERVISOR:
             else :
                 self.swarm[i].waitingTime-=self.timeStep
                 if self.swarm[i].waitingTime<=0:
-                    self.swarm[i].delayFlag=False
-                    # if not self.crowded(i):
-                    #     self.swarm[i].crowd+=1
-                    # if self.swarm[i].crowd>self.crowdThresh:
-                    #     self.swarm[i].crowd=0
-                    #     self.checkCollision(specific=True,robotNum=i)            
-                    #     self.swarm[i].move()
                     self.checkCollision(specific=True,robotNum=i)            
+                    self.swarm[i].delayFlag=False
                     self.swarm[i].move()
 
         self.time+=self.timeStep
-# crowded ...............................................................................................................................
-    def crowded(self,i):
-            temp=np.zeros((self.ROBN,2),dtype=int)
-            temp[:,0]+=i
-            temp[:,1]+=np.arange(0,self.ROBN)
-            dists=np.array(list(map(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position),temp)))
-            indexes=np.where(dists<=self.collisionDetectDist)
-            if np.size(indexes)>0:
-                indexes=indexes[0]
-                colliders=temp[indexes]
-                colliders1d=np.reshape(colliders,(1,np.size(colliders)))[0]
-                unique, counts = np.unique(colliders1d, return_counts=True)
-                counts=np.array(list(counts))
-                unique=np.array(list(unique))
-                if np.any(counts>3): return True
-                else: return False
-            else : return False
 # avoid ...............................................................................................................................
     def avoid(self,cols,specific=False):
         if specific==False:
@@ -317,35 +313,30 @@ class SUPERVISOR:
                 Xcond2=self.swarm[i].position[0]<=0+self.robotSenseRad
                 Ycond1=self.swarm[i].position[1]>=self.Xlen-self.robotSenseRad 
                 Ycond2=self.swarm[i].position[1]<=0+self.robotSenseRad
-
+                ''' vital change '''
                 if Ycond1 or Xcond1 or Ycond2 or Xcond2:
                     if Xcond1:# >|
                         if 0<=self.swarm[i].rotation<=180:
                             self.swarm[i].rotation2B=rnd.randint(180,360)
-                    elif Xcond2:
+                    if Xcond2:
                         if 180<=self.swarm[i].rotation<=360:
                             self.swarm[i].rotation2B=rnd.randint(0,180)# |<
-                    elif Ycond1:
+                    if Ycond1:
                         if 270<=self.swarm[i].rotation<=360 or 0<=self.swarm[i].rotation<=90:
                             self.swarm[i].rotation2B=rnd.randint(90,270)# _
-                    elif Ycond2:
+                    if Ycond2:
                         if 90<=self.swarm[i].rotation<=270:
                             self.swarm[i].rotation2B=rnd.randint(270,360+90)# -
 
                     self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                     if self.swarm[i].inAction==True:
-                        self.swarm[i].actAndReward(-1) ########3
-                        # self.swarm[i].actAndReward(0)
-            #.........................
-            # func=np.vectorize(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position))
-            
+                        self.swarm[i].actAndReward(-1) 
 
-            # dists=np.array(list(map(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position),self.allnodes)))
-            Xs=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])(self.allnodes[:,0])
-            Ys=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])(self.allnodes[:,1])
+            Xs=self.pos_getter(self.allnodes[:,0])
+            Ys=self.pos_getter(self.allnodes[:,1])
             dists=np.vstack(Xs-Ys)
             dists=dist(dists)
-            indexes=np.where(dists<=self.collisionDetectDist)
+            indexes=np.where(dists<=self.collisionDetectDist+self.velocity*self.timeStep) ##############
             if np.size(indexes)>0:
                 indexes=indexes[0]
                 colliders=self.allnodes[indexes]
@@ -353,12 +344,6 @@ class SUPERVISOR:
                 colliders=colliders[flags] # i want flags to choose form collider_filterer
                 self.avoid(colliders)
                 ''' if collided with more than one robot '''
-                # colliders1d=np.reshape(colliders,(1,np.size(colliders)))[0]
-                # unique, counts = numpy.unique(colliders1d, return_counts=True)
-                # # counts=np.array(list(counts))
-                # # unique=np.array(list(unique))
-                # # ultraColRobots=unique[counts>1]
-
 
 
             cond=self.flagsR==1
@@ -374,18 +359,20 @@ class SUPERVISOR:
             temp[:,0]+=robotNum
             yaxis=np.arange(0,self.ROBN)
             temp[:,1]+=yaxis[yaxis!=robotNum]
-            dists=np.array(list(map(lambda x: dist(self.swarm[x[0]].position-self.swarm[x[1]].position),temp)))
-            indexes=np.where(dists<=self.collisionDetectDist)
+
+            Xs=self.pos_getter(temp[:,0])
+            Ys=self.pos_getter(temp[:,1])
+            dists=np.vstack(Xs-Ys)
+            dists=dist(dists)
+
+            
+            indexes=np.where(dists<=self.collisionDetectDist+self.velocity*self.timeStep) #################
             if np.size(indexes)>0:
                 indexes=indexes[0]
                 colliders=temp[indexes]
                 flags=self.flagsR[colliders[:,0],colliders[:,1]]==0 # i want collider to choose from flagsR
                 colliders=colliders[flags] # i want flags to choose form collider_filterer
                 self.avoid(colliders,specific)
-# getGroundSensors ...............................................................................................................................
-    def getGroundSensors(self):
-        for i in range(self.ROBN):
-            self.swarm[i].groundSense()
 # aggregateSwarm ...............................................................................................................................
     def aggregateSwarm(self):
         for i in range(self.ROBN):
@@ -471,6 +458,7 @@ class ROBOT(SUPERVISOR):
         self.rotation=0
         self.rotation2B=0
         self.position=[0,0]
+        self.position2B=[0,0]
         self.groundSensorValue=0
         self.waitingTime=0
         self.delayFlag=False
@@ -506,17 +494,52 @@ class ROBOT(SUPERVISOR):
         self.epsilon[0,x%2==0]=255
 
         self.printFlag=True if self.robotName=='0' and self.printFlag else False # only robot 0 will talk 
+        self.SAR=[]
 # move ...............................................................................................................................  
     def move(self):
+            ''' rotation must be changed in any cond '''
             self.rotation=self.rotation2B
-            self.position[0]=self.position[0]+self.velocity*sin(np.radians(self.rotation))*self.timeStep
-            self.position[1]=self.position[1]+self.velocity*cos(np.radians(self.rotation))*self.timeStep
 
-            self.position[0]=min(self.position[0],self.Ylen-1)
-            self.position[1]=min(self.position[1],self.Xlen-1)
+            ''' assume you are gone/ 2* is that we want the robot to move two times
+            to avoid repititive cols '''
+            self.position2B[0]=self.position[0]+self.velocity*sin(np.radians(self.rotation))*self.timeStep
+            self.position2B[1]=self.position[1]+self.velocity*cos(np.radians(self.rotation))*self.timeStep
 
-            self.position[0]=max(self.position[0],0+1)
-            self.position[1]=max(self.position[1],0+1)
+            self.position2B[0]=min(self.position2B[0],self.Ylen-1)
+            self.position2B[1]=min(self.position2B[1],self.Xlen-1)
+
+            self.position2B[0]=max(self.position2B[0],0+1)
+            self.position2B[1]=max(self.position2B[1],0+1)
+
+            ''' check col with 2B poses'''
+            temp=np.zeros((self.SUPERVISOR.ROBN-1,2),dtype=int)
+            robotNum=int(self.robotName)
+            temp[:,0]+=robotNum
+            yaxis=np.arange(0,self.SUPERVISOR.ROBN)
+            temp[:,1]+=yaxis[yaxis!=robotNum]
+
+            Ys=self.SUPERVISOR.pos_getter(temp[:,1])
+            Ys=np.vstack(Ys)
+            Xs=np.zeros(Ys.shape)
+            Xs[:]=self.position2B
+            dists=np.vstack(Xs-Ys)
+            dists=dist(dists)
+
+            dists=np.array(list(map(lambda x: dist(self.position2B-self.SUPERVISOR.swarm[x[1]].position),temp)))
+
+            indexes=np.where(dists<=self.SUPERVISOR.collisionDetectDist)
+            if np.size(indexes)>0:
+                ''' cant leave the aggregation with this angle '''
+                self.aggregate(forced=True)
+
+
+            else:
+                ''' easily leave the aggregation ''' 
+                self.position=np.copy(self.position2B)
+
+
+
+
 # groundSense ...............................................................................................................................
     def groundSense(self):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
@@ -527,10 +550,12 @@ class ROBOT(SUPERVISOR):
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
 # aggregate ...............................................................................................................................
-    def aggregate(self):
-        if any(self.SUPERVISOR.flagsR[int(self.robotName)]) and self.groundSensorValue>0 and not self.delayFlag :
+    def aggregate(self,forced=False):
+        self.groundSense()
+        if ( any(self.SUPERVISOR.flagsR[int(self.robotName)]) and self.groundSensorValue>0 and not self.delayFlag ) or forced:
             self.waitingTime=self.SUPERVISOR.Wmax*((self.groundSensorValue**2)/((self.groundSensorValue**2) + 5000))
             self.delayFlag=True
+            forced=False
 # detectQR ...............................................................................................................................
     def detectQR(self):
         for QRpos in self.QRloc:
@@ -622,6 +647,8 @@ class ROBOT(SUPERVISOR):
 
 
             self.rewardMemory.append(self.reward)
+            if self.robotName=='0':
+                self.SAR.append(np.array([x,y,self.reward]))
 # updateRLparameters ...............................................................................................................................
     def updateRLparameters(self):
         if self.paramReductionMethod=='classic':

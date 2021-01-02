@@ -1,6 +1,7 @@
 from HEADER import *
 #...............................................................................................................................
-def saveData():
+def saveData(caller=None):
+    print(colored("[+] data saved ",'yellow'))
     data2BsavedStr=["NAS","log","Qtable","rewards","eps","alpha"]
     dataType='process data'
     QtableMem[it,:,:,:]=sup.getQtables()
@@ -9,11 +10,30 @@ def saveData():
     for i in range(len(data2Bsaved)):
         with open(fileName+data2BsavedStr[i]+commentDividerChar+comment+'.npy','wb') as f:
             np.save(f,data2Bsaved[i])
-    with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
-        pickle.dump(sup, supSaver)
+
+    if caller=='itDone':
+
+        with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
+            try:
+                '''
+                del sup.video
+                this is not needed since in iterations other than it=0,
+                sup wont record and thus wont have video recorder
+                '''
+                del sup.pos_getter
+                pickle.dump(sup, supSaver)
+            except Exception as E: 
+                print(colored('[-] error in saving class: '+str(E),'red'))
+    elif caller=='interupt':
+        with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
+            try:
+                pickle.dump(sup, supSaver)
+            except Exception as E: 
+                print(colored('[-] error in saving class: '+str(E),'red'))
+
 #...............................................................................................................................
 def keyboardInterruptHandler(signal, frame):
-    saveData()
+    saveData('interupt')
     print(colored('[+] half data saved. Time: '+str(sup.getTime()),'red'))
     ans=input('\t[+] continue/quit? [c/q]')
     if ans=='q': exit(0)
@@ -38,38 +58,42 @@ if __name__ == "__main__" or True:
     Ly=4
     cueRaduis=0.7
     visibleRaduis=0.3
-    iteration=5 
+    iteration=5
     samplingPeriodSmall=10
     FinalTime=116000*10#3 
+    # FinalTime=1160 
+
     HalfTime=FinalTime//2
-    dynamic= True
+    dynamic= not True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10#10
     paramReductionMethod='classic' # possible values= 'adaptive' , 'classic' , 'adaptive united'
     commentDividerChar=' x '
-    vizFlag=not True
+    vizFlag=True
     globalQ=not True
     communicate=not True
-    if globalQ and communicate:
-        raise NameError('[-] what do you want?')
-    record=False
+    record=True
     method='RL'
-    comment='alpha 0.5 damp ratio 0.9' 
+    comment='test2 with alpha 0.5 eps damp 0.999 static' 
+    save_csv=True
     ''' <><><<><><><><><><><<><><><<> '''
     print(colored('[+] '+comment,'green'))
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
+    if globalQ and communicate:
+        raise NameError('[-] what do you want?')
 
     ''' preparing dirs '''
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
 
-    ''' for saving image of mats '''
-    os.makedirs(codeBeginTime+dirChangeCharacter+'ims') 
     imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck","QtableRob0"]
+    ''' for saving image of mats 
+    os.makedirs(codeBeginTime+dirChangeCharacter+'ims') 
     for _ in imsName:
         if _=="DELTA" and os.name=='nt': _+='_' # in windows this wierd thing happens
         os.makedirs(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+_)
-
+    '''
+    
     ''' save parameters into a file '''
     paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
         'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'vizFlag':vizFlag , 'globalQ':globalQ , \
@@ -77,19 +101,32 @@ if __name__ == "__main__" or True:
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
         paramfile.write(str(paramDict))
 
+    ''' for saving csvs '''
+    os.makedirs(codeBeginTime+dirChangeCharacter+'csvs') 
+
 
     ''' initilization '''
     sampledDataNum=FinalTime//samplingPeriodSmall
     saved=0
     print(colored('[+] '+method,'green'))
     print(colored('[+] press ctrl+c for saving data asynchronously','green'))
-    QtableMem=np.zeros((iteration,ROBN,7,44)) ###
+    QtableMem=np.zeros((iteration,ROBN,7,44)) ##### caviat
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
     eps=np.zeros((iteration,sampledDataNum,ROBN))
     alpha=np.zeros((iteration,sampledDataNum,ROBN))
     reward=np.zeros((iteration,sampledDataNum,ROBN))
     NAS=np.zeros((iteration,sampledDataNum))
+    strip=np.arange(0,44) ##### caviat
+    strip[strip%2==0]=0
+    strip[strip%2==1]=255
+    tableImSize=(7*20,44*20)[::-1] ##### caviat
+    # tableImSize=(7,44)[::-1] ##### caviat
 
+    fourcc = cv.VideoWriter_fourcc(*'mp4v')
+    FPS=1
+    videoList=[]
+    for _ in range(len(imsName)):
+        videoList.append(cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+imsName[_]+'.mp4',fourcc, FPS, tableImSize,True))
 
 
     for it in range(iteration):
@@ -102,7 +139,6 @@ if __name__ == "__main__" or True:
         checkHealth()
         while sup.getTime()<=FinalTime:
             sup.checkCollision()
-            sup.getGroundSensors()
             sup.aggregateSwarm()
             if method=='RL':
                 sup.getQRs()
@@ -110,26 +146,6 @@ if __name__ == "__main__" or True:
                 if communicate==True:
                     sup.talk()
             sup.moveAll()
-            sup.visualize()
-
-            if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
-                NAS[it,sampled]=sup.getNAS()
-                log[it,sampled,:,:]=sup.getLog()
-                eps[it,sampled,:]=sup.getEps()
-                alpha[it,sampled,:]=sup.getAlpha()
-                reward[it,sampled,:]=sup.getReward()
-                if it==0 and sampled % 100==0:
-                    deltaDotTemp=np.copy(sup.swarm[0].deltaDot)
-                    deltaDotTemp[deltaDotTemp>=0]=0 # positives will be white
-                    deltaDotTemp[deltaDotTemp<0]=255 # negative will be black
-                    QtableRob0=sup.getQtables()[0]
-                    imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
-
-                    for count_,v in enumerate(imsMat):
-                        cv.imwrite(codeBeginTime+dirChangeCharacter+'ims'+dirChangeCharacter+imsName[count_]+dirChangeCharacter+str(sup.getTime())+'.png',255-v)
-                ''' dont forget the effect of state 0'''
-                sampled+=1
-                t=sup.getTime()
 
             if abs(HalfTime-sup.getTime())<1 and GroundChanged==False:
                 GroundChanged=True
@@ -137,10 +153,56 @@ if __name__ == "__main__" or True:
                 if dynamic:
                     sup.changeGround()
 
+            if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
+                if it==0: # save these in the first iteration only
+                    sup.visualize() # moved for less file size
+                    if sampled % 100==0:
+                        deltaDotTemp=np.copy(sup.swarm[0].deltaDot)
+                        deltaDotTemp[deltaDotTemp>=0]=0 # positives will be white
+                        deltaDotTemp[deltaDotTemp<0]=255 # negative will be black
+                        QtableRob0=sup.getQtables()[0]
+                        if save_csv:
+                            np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
+                        # imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
+                        imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
+
+                        for count_,v in enumerate(imsMat):
+                            v=np.minimum(v,np.ones(v.shape)*255)
+                            # v=np
+                            v[0]=strip
+                            # videoList[count_].write(cv.resize(255-v,tableImSize))
+                            im=255-v
+                            im.astype(int)
+                            canvas=np.zeros((im.shape[0],im.shape[1],3))
+                            canvas[:,:,0]=im
+                            canvas[:,:,1]=im
+                            canvas[:,:,2]=im
+                            canvas=cv.resize(canvas,tableImSize)
+                            videoList[count_].write(np.uint8(canvas))
+
+                    elif abs(FinalTime-sup.getTime())<1:
+                        for _ in range(len(videoList)):
+                            videoList[_].release()
+                        record=False
+                        sup.video.release()
+                        SAR=np.stack(sup.swarm[0].SAR)
+                        with open(codeBeginTime+dirChangeCharacter+'SAR_robot0.npy','wb') as SAR_f:
+                            np.save(SAR_f,SAR)
+                        np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
+
+                NAS[it,sampled]=sup.getNAS()
+                log[it,sampled,:,:]=sup.getLog()
+                eps[it,sampled,:]=sup.getEps()
+                alpha[it,sampled,:]=sup.getAlpha()
+                reward[it,sampled,:]=sup.getReward()
+                sampled+=1
+                t=sup.getTime()
+
+
+
         
         QtableMem[it,:,:,:]=sup.getQtables()
-        if record: sup.video.release()
-        saveData()
+        if it==iteration-1: saveData("itDone") # -1 is for that it at max will be iteration-1
         del sup
     print('duration',TIME()-t1_)
     print('[+] goodbye')
