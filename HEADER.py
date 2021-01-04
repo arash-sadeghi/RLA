@@ -41,7 +41,6 @@ def RotStandard(inp):
     if inp>360: inp-=360
     return inp
 # ------------------------------------------------------------------------------------------------------------------------------
-''' optimized '''
 def dist(delta):
     if np.size(delta)>2:
         return np.sqrt(np.square(delta[:,0])+np.square(delta[:,1]))
@@ -124,11 +123,17 @@ class SUPERVISOR:
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
         if self.record:
             self.video = cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+videoRecordTime+'.mp4',fourcc, FPS, size,True)
-        
+
+        self.allRobotIndx=np.arange(0,self.ROBN)
         self.globalQ=globalQ
         self.globalQ=globalQ
-        self.allnodes=np.array(list(comb(np.arange(0,self.ROBN),2)))
+        self.allnodes=np.array(list(comb(self.allRobotIndx,2)))
         self.crowdThresh= 5
+        self.colliders=[]
+        self.all_poses=[]
+        self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
+        self.QRpos_ar=np.array(list(self.QRloc.values()))
+        self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
 
 # sharedParams ...............................................................................................................................
     def sharedParams(self):
@@ -138,7 +143,10 @@ class SUPERVISOR:
         supervisor and robots
         """
         self.Xlen=np.shape(self.ground)[0]  
-        self.Ylen=np.shape(self.ground)[1]  
+        self.Ylen=np.shape(self.ground)[1]
+        ''' places of Xlen and Ylen must been changed but dont 
+        touch it. now Xlen=1024>Ylen=512 but is should have been 
+        other way. any way! '''  
         self.cueRadius=m2px(0.7)   
         self.EpsilonDampRatio=0.999 #######
 
@@ -149,16 +157,21 @@ class SUPERVISOR:
 
         self.numberOfStates=7
         self.NumberOfActions=len(self.actionSpace)
-
+        
+        '''self.RLparams:  start value of parameters'''
         self.RLparams={"epsilon":1,"alpha":1,"sensitivity":10,"maxdiff":255}
-        if not hasattr(self,'robotName'): # if caller of this function is supervisor
+        
+        ''' if supervisor is executing this method, add two parameters to params file'''
+        if not hasattr(self,'robotName'):
             with open(self.codeBeginTime+DirLocManage(returnchar=True)+'params.txt','a') as paramfile :
                 paramDict={"RLparams":self.RLparams,"EpsilonDampRatio":self.EpsilonDampRatio}
                 paramfile.write(str(paramDict))
         self.velocity=14
         self.timeStep=512*0.001
         self.printFlag=not True # print flag for robot 0 # caviat
+        '''self.debug: in debugging mode Wmax will be zero and robot 0 will be indicated with green color in visualize'''
         self.debug=not True ##########
+        '''location of QR-codes '''
         self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
             'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
         self.QRdetectableArea=m2px(0.3)      
@@ -181,14 +194,14 @@ class SUPERVISOR:
             cv.circle(im,i,10,(255,255,255),-1)
             cv.circle(im,i,visibleRaduis,(255,255,255),1)
         im=255-255*im
+        '''writing and reading back the image to have a 3 channel image with pixels between 0-255'''
         cv.imwrite("BackgroundGeneratedBySim.png",im)
-        return cv.imread("BackgroundGeneratedBySim.png")
+        im=cv.imread("BackgroundGeneratedBySim.png")
+        im=cv.rectangle(im,(0,0),(Lxpx,Lypx),(0,255,0),3)
+        return im
 # generateRobots ...............................................................................................................................
     def generateRobots(self):
-        ''' vital change '''
         margin=self.collisionDetectDist*2
-        # possibleY=np.linspace(0+margin,self.Xlen-margin,int(self.Xlen//2*self.robotSenseRad))
-        # possibleX=np.linspace(0+margin,self.Ylen-margin,int(self.Ylen//2*self.robotSenseRad))
         possibleY=np.arange(0+margin,self.Xlen-margin,margin)
         possibleX=np.arange(0+margin,self.Ylen-margin,margin)
         possiblePos=list(product(possibleX,possibleY))
@@ -196,34 +209,34 @@ class SUPERVISOR:
         for i in range(self.ROBN):
             self.swarm[i]=ROBOT(self,str(i))
             chosen=rnd.sample(possiblePos,1)[0]
-            possiblePos.remove(chosen) # delete the selected position from all posible poses
+            '''  delete the selected position from all posible poses ''' 
+            possiblePos.remove(chosen) 
             self.swarm[i].position=np.ravel(np.array(chosen))
             self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
-            self.swarm[i].ground=self.ground # sharing ground image among robots
+            ''' all robots share the same arena texture. if one changes sth, the arena will 
+            be changed in every one. equalled by address'''
+            self.swarm[i].ground=self.ground 
             
             ''' sharing the Qtable addres for all robots'''
             if self.globalQ:
                 if i==0: tmp=self.swarm[i].Qtable
                 else: self.swarm[i].Qtable=tmp
 
+        '''vectorized functions to get position and rotation of all robots'''
         self.pos_getter=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
         self.rot_getter=np.vectorize(lambda x: RotStandard(self.swarm[x].rotation),otypes=[np.ndarray])
-
 # visualize ...............................................................................................................................
-    def visualize(self):
+    def visualize(self,forceShow=False):
         if self.vizFlag:
             background=np.copy(self.ground)
             for i in range(self.ROBN):
                 if self.swarm[i].inAction== True:
                     I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
                     E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
-                    C=tuple(map(lambda x: int(round(x)),self.swarm[i].position))
                     Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
                     cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
-                    # cv.arrowedLine(background,I,C,(255,0,0),2) # motion trajectory
                     cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
                     cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
-                
                 vizPos=[]
                 for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
 
@@ -260,8 +273,11 @@ class SUPERVISOR:
             else:
                 cv.imshow("background",background)
                 cv.waitKey(self.fps)
-                # cv.imwrite(self.codeBeginTime+DirLocManage(returnchar=True)+str(self.getTime())+'.png',background)
-
+                ''' for saving all images in a directory without putting them in a video:
+                cv.imwrite(self.codeBeginTime+DirLocManage(returnchar=True)+str(self.getTime())+'.png',background)'''
+            if forceShow:
+                cv.imshow("background",background)
+                cv.waitKey(self.fps)
 # moveAll ...............................................................................................................................
     def moveAll(self):
         for i in range(self.ROBN):
@@ -303,18 +319,19 @@ class SUPERVISOR:
                 self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
                 self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                 self.flagsR[i,j]=0
-
 # checkCollision ...............................................................................................................................
     def checkCollision(self,specific=False,robotNum=None):
         ''' flagsR is always numerical not boolien'''
+        '''specific: if collision avoidence is forced. this onle happens when you want
+        to leave aggregation '''
         if specific==False:
-            all_poses=np.vstack(self.pos_getter(np.arange(0,self.ROBN)))
-            all_rots=self.rot_getter(np.arange(0,self.ROBN))
+            self.all_poses=np.vstack(self.pos_getter(self.allRobotIndx))
+            all_rots=self.rot_getter(self.allRobotIndx)
             '''list order: 1 >| , 2 |< , 3 _ , 4 - '''
-            loc_conds=[np.where( all_poses[:,0]>=self.Ylen-self.robotSenseRad)[0],\
-                np.where(all_poses[:,0]<=self.robotSenseRad)[0],\
-                np.where(all_poses[:,1]>=self.Xlen-self.robotSenseRad)[0],\
-                np.where(all_poses[:,1]<=self.robotSenseRad)[0] ]
+            loc_conds=[np.where( self.all_poses[:,0]>=self.Ylen-self.robotSenseRad)[0],\
+                np.where(self.all_poses[:,0]<=self.robotSenseRad)[0],\
+                np.where(self.all_poses[:,1]>=self.Xlen-self.robotSenseRad)[0],\
+                np.where(self.all_poses[:,1]<=self.robotSenseRad)[0] ]
 
             rot_conds=[ np.where(np.logical_and(all_rots<=180,all_rots>=0))[0],\
                 np.where(np.logical_and(all_rots<=360,all_rots>=180))[0],\
@@ -327,56 +344,73 @@ class SUPERVISOR:
                 for i in range(len(loc_conds)):
                     if np.size(loc_conds[i])>0:
                         for j in loc_conds[i]:
-                            if self.swarm[j].inAction==True:
-                                self.swarm[j].actAndReward(-1) 
                             if j in rot_conds[i]:
                                 self.swarm[j].rotation2B=RotStandard(rnd.randint(ranges[i][0],ranges[i][1]))
+                                if self.swarm[j].inAction==True:
+                                    self.swarm[j].actAndReward(-1) 
+                                    y=self.swarm[j].actionIndx
+                                    x=self.swarm[j].state
+                                    if y<10 and y>0 :
+                                        print('catched',j,self.getTime(),x,y)
 
 
-
-            Robot1=all_poses[self.allnodes[:,0]]
-            Robot2=all_poses[self.allnodes[:,1]]
+            Robot1=self.all_poses[self.allnodes[:,0]]
+            Robot2=self.all_poses[self.allnodes[:,1]]
             dists=Robot1-Robot2
             dists=dist(dists)
             indexes=np.where(dists<=self.collisionDetectDist+self.velocity*self.timeStep) ##############
+            colliders=[]
             if np.size(indexes)>0:
                 indexes=indexes[0]
                 colliders=self.allnodes[indexes]
-                flags=self.flagsR[colliders[:,0],colliders[:,1]]==0 # i want collider to choose from flagsR
-                colliders=colliders[flags] # i want flags to choose form collider_filterer
+                '''i want collider to choose from flagsR '''
+                flags=self.flagsR[colliders[:,0],colliders[:,1]]==0
+                '''i want flags to choose form collider_filterer '''
+                colliders=colliders[flags]
                 self.avoid(colliders)
-                ''' if collided with more than one robot '''
+                self.colliders=colliders
 
 
             cond=self.flagsR==1
-            if np.size(indexes)>0: # if any collision has happend dont touch theri matrices
-                cond[colliders[:,0],colliders[:,1]]=False # dont touch the recently decided ones            
-                cond[colliders[:,1],colliders[:,0]]=False # also reverse of tuple
+            '''if any collision has happend dont touch their matrices'''
+            if np.size(indexes)>0: 
+                '''dont touch the recently decided ones'''
+                cond[colliders[:,0],colliders[:,1]]=False
+                '''also reverse of tuple  since matrix is symmetric'''
+                cond[colliders[:,1],colliders[:,0]]=False
             self.counterR[cond]+=1
             self.flagsR[self.counterR>=self.collisionDelay]=0
             self.counterR[self.counterR>=self.collisionDelay]=0
-            #.........................
+
         else:
+            ''' here collision avoidence is forced with a known robot name: robotNum '''
             temp=np.zeros((self.ROBN-1,2),dtype=int)
             temp[:,0]+=robotNum
-            yaxis=np.arange(0,self.ROBN)
+            yaxis=self.allRobotIndx
             temp[:,1]+=yaxis[yaxis!=robotNum]
-
-            Xs=self.pos_getter(temp[:,0])
-            Ys=self.pos_getter(temp[:,1])
-            dists=np.vstack(Xs-Ys)
+            self.all_poses=np.vstack(self.pos_getter(self.allRobotIndx))
+            Robot1=self.all_poses[temp[:,0]]
+            Robot2=self.all_poses[temp[:,1]]
+            dists=Robot1-Robot2
             dists=dist(dists)
-
-            
             indexes=np.where(dists<=self.collisionDetectDist+self.velocity*self.timeStep) #################
             if np.size(indexes)>0:
                 indexes=indexes[0]
                 colliders=temp[indexes]
-                flags=self.flagsR[colliders[:,0],colliders[:,1]]==0 # i want collider to choose from flagsR
-                colliders=colliders[flags] # i want flags to choose form collider_filterer
+                '''i want collider to choose from flags'''
+                flags=self.flagsR[colliders[:,0],colliders[:,1]]==0 
+                '''i want flags to choose form collider_filterer'''
+                colliders=colliders[flags] 
                 self.avoid(colliders,specific)
 # aggregateSwarm ...............................................................................................................................
     def aggregateSwarm(self):
+        '''
+        a try to vectorized here but better not since some other 
+        functions also use the aggregate method of each robot
+        y=self.all_poses.astype(int)
+        y[:,0],y[:,1]=np.copy(y[:,1]),np.copy(y[:,0])
+        groundValues=255-self.ground[y]
+        '''
         for i in range(self.ROBN):
             self.swarm[i].aggregate()
 # getTime ...............................................................................................................................
@@ -384,17 +418,34 @@ class SUPERVISOR:
         return int(self.time)
 # getNAS ...............................................................................................................................
     def getNAS(self):
-        f=np.vectorize(lambda x: x.groundSensorValue)
-        inCue=np.count_nonzero(f(self.swarm))
+        inCue=np.count_nonzero(self.NASfunction(self.swarm))
         return inCue/self.ROBN
 # getQRs ...............................................................................................................................
     def getQRs(self):
+        '''
+        old fashion non vectorized way:
         for i in range(self.ROBN):
             self.swarm[i].detectQR()
+        '''
+        robots=self.all_poses[self.allRobotQRs[:,0]]
+        QRs=self.QRpos_ar[self.allRobotQRs[:,1]]
+        dists=dist(robots-QRs)
+        indx=np.where(dists<=self.QRdetectableArea)
+        detects=self.allRobotQRs[indx]
+        allRobotIndx=np.copy(self.allRobotIndx)
+        if len(detects)>0:
+            for i,j in detects:
+                self.swarm[i].detectedQR='QR'+str(j+1)
+                allRobotIndx=np.delete(allRobotIndx,allRobotIndx==i)
+            
+        for i in allRobotIndx:
+            self.swarm[i].detectedQR='QR0'
 # swarmRL ...............................................................................................................................
     def swarmRL(self):
         for i in range(self.ROBN):
-            if self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True:
+            '''first you must not recently collided. scond you must be either doing an action >or< you must be out of QR area
+            the first part is to avoid a bug which happens when robots collide inside QR-code'''
+            if (not i in self.colliders) and (self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True)  :
                 self.swarm[i].RL()
 # talk ...............................................................................................................................
     def talk(self): ##### print must be fixed ####### epsilon sharing policy must be changed
@@ -485,17 +536,19 @@ class ROBOT(SUPERVISOR):
         self.DELTA=np.zeros(np.shape(self.Qtable))
 
 
-        ''' start from full eaxploration and complete learning '''
+        ''' start with the predetermined initial values '''
         self.epsilon=np.zeros(np.shape(self.Qtable))+self.RLparams['epsilon']
         self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
 
         x=np.arange(0,len(self.delta[0]))
+        ''' making first row striped'''
         self.delta[0,x%2==0]=255
         self.deltaDot[0,x%2==0]=255
         self.DELTA[0,x%2==0]=255
         self.epsilon[0,x%2==0]=255
 
-        self.printFlag=True if self.robotName=='0' and self.printFlag else False # only robot 0 will talk 
+        ''' only robot 0 will talk '''
+        self.printFlag=True if self.robotName=='0' and self.printFlag else False 
         self.SAR=[]
 # move ...............................................................................................................................  
     def move(self):
@@ -538,16 +591,13 @@ class ROBOT(SUPERVISOR):
             else:
                 ''' easily leave the aggregation ''' 
                 self.position=np.copy(self.position2B)
-
-
-
-
 # groundSense ...............................................................................................................................
     def groundSense(self):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
         ''' if dist(self.position,[self.Xlen//4,self.Ylen//2])<=self.cueRadius: '''
         ''' for dynamic env, x condition is deleted ''' ####
-        if self.position[0]<= self.Ylen-self.SUPERVISOR.visibleRaduis and self.position[0]>= self.SUPERVISOR.visibleRaduis:
+        if self.position[0]<= self.Ylen-self.SUPERVISOR.visibleRaduis and self.position[0]>= self.SUPERVISOR.visibleRaduis\
+            and self.position[1]>=self.SUPERVISOR.visibleRaduis and self.position[1]<=self.Xlen-self.SUPERVISOR.visibleRaduis:
 
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
@@ -558,14 +608,6 @@ class ROBOT(SUPERVISOR):
             self.waitingTime=self.SUPERVISOR.Wmax*((self.groundSensorValue**2)/((self.groundSensorValue**2) + 5000))
             self.delayFlag=True
             forced=False
-# detectQR ...............................................................................................................................
-    def detectQR(self):
-        for QRpos in self.QRloc:
-            if dist(self.position-np.array(self.QRloc[QRpos]))<=self.QRdetectableArea :
-                self.detectedQR=QRpos
-                break
-            else:
-                self.detectedQR='QR0'
 # RL ...............................................................................................................................
     def RL(self):
         if self.inAction==False :
@@ -651,6 +693,10 @@ class ROBOT(SUPERVISOR):
             self.rewardMemory.append(self.reward)
             if self.robotName=='0':
                 self.SAR.append(np.array([x,y,self.reward]))
+
+            ''' for debugging alpha effect '''
+            if y<10 and y>0 and self.reward==-1:
+                print('catched',self.robotName,self.SUPERVISOR.getTime(),x,y,self.reward)
 # updateRLparameters ...............................................................................................................................
     def updateRLparameters(self):
         if self.paramReductionMethod=='classic':

@@ -1,7 +1,7 @@
 from HEADER import *
 #...............................................................................................................................
 def saveData(caller=None):
-    print(colored("[+] data saved ",'yellow'))
+    print(colored("\n\t\t[+] data saved ",'yellow'))
     data2BsavedStr=["NAS","log","Qtable","rewards","eps","alpha"]
     dataType='process data'
     QtableMem[it,:,:,:]=sup.getQtables()
@@ -11,7 +11,7 @@ def saveData(caller=None):
         with open(fileName+data2BsavedStr[i]+commentDividerChar+comment+'.npy','wb') as f:
             np.save(f,data2Bsaved[i])
 
-    if caller=='itDone':
+    if caller=='iterationDone':
 
         with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
             try:
@@ -24,20 +24,21 @@ def saveData(caller=None):
                 del sup.rot_getter
                 pickle.dump(sup, supSaver)
             except Exception as E: 
-                print(colored('[-] error in saving class: '+str(E),'red'))
+                print(colored('\t\t[-] error in saving class: '+str(E),'red'))
     elif caller=='interupt':
         with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
             try:
                 pickle.dump(sup, supSaver)
             except Exception as E: 
-                print(colored('[-] error in saving class: '+str(E),'red'))
+                print(colored('\t\t[-] error in saving class: '+str(E),'red'))
 
 #...............................................................................................................................
 def keyboardInterruptHandler(signal, frame):
     saveData('interupt')
-    print(colored('[+] half data saved. Time: '+str(sup.getTime()),'red'))
-    ans=input('\t[+] continue/quit? [c/q]')
+    print(colored('\t\t[+] half data saved. Time: '+str(sup.getTime())+', ratio '+str(int(sup.getTime()/FinalTime*100))+'%','green'))
+    ans=input(colored('\t\t[+] continue/quit? [c/q]','green'))
     if ans=='q': exit(0)
+    else:print(colored('\t\t[+] continuing','green'))
 signal.signal(signal.SIGINT, keyboardInterruptHandler)                  
 #...............................................................................................................................
 def clearTerminal(): 
@@ -59,26 +60,46 @@ if __name__ == "__main__" or True:
     Ly=4
     cueRaduis=0.7
     visibleRaduis=0.3
-    iteration=5
+    iteration=1#5
     samplingPeriodSmall=10
-    FinalTime=116000*10#3 
+    FinalTime=1160000
     HalfTime=FinalTime//2
     dynamic= not True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
-    ROBN=10#10
-    paramReductionMethod='classic' # possible values= 'adaptive' , 'classic' , 'adaptive united'
+    ROBN=10
+
+    '''paramReductionMethod: possible values= 'adaptive' , 'classic' , 'adaptive united' , 'VDBE' '''
+    paramReductionMethod='classic'#'VDBE' 
+    
+    '''commentDividerChar: plotter code will take legend what ever is after this char'''
     commentDividerChar=' x '
-    vizFlag=not True
+    
+    '''vizFlag: whether the visualization computation will happen or not. if it is True,
+    cod will either record arena or show you scene '''
+    vizFlag=True
+    
+    '''globalQ: whether all robots will share one Q-table '''
     globalQ=not True
+    
+    '''communicate: flag for local communication '''
     communicate=not True
-    record=not True
+    
+    '''record: if set True, you will get video of first iteration '''
+    record=True
+    
+    '''Method: RL , BEECLUST '''
     method='RL'
-    comment='test2 with alpha 0.5 eps damp 0.999 static' 
+    
+    '''comment: comment to apear in file name '''
+    comment='alpha check'#'alpha 0.1 VDBE sigma 1' 
+    
+    '''save_csv: whether tables will be saved as csv or not '''
     save_csv=True
-    ''' <><><<><><><><><><><<><><><<> '''
+
     print(colored('[+] '+comment,'green'))
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
     if globalQ and communicate:
+        '''local and global communication cant be toghether '''
         raise NameError('[-] what do you want?')
 
     ''' preparing dirs '''
@@ -94,7 +115,7 @@ if __name__ == "__main__" or True:
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
         paramfile.write(str(paramDict))
 
-    ''' for saving csvs '''
+    ''' for saving csvs which is Q-table of robot 0 for iteration 0 '''
     os.makedirs(codeBeginTime+dirChangeCharacter+'csvs') 
 
 
@@ -122,6 +143,7 @@ if __name__ == "__main__" or True:
 
 
     for it in range(iteration):
+        iteration_duration=TIME()
         print(colored("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
         sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
@@ -130,6 +152,7 @@ if __name__ == "__main__" or True:
         GroundChanged=False # to make sure ground is changed only once in each iteration
         checkHealth()
         while sup.getTime()<=FinalTime:
+            ''' start of main loop '''
             sup.checkCollision()
             sup.aggregateSwarm()
             if method=='RL':
@@ -138,15 +161,19 @@ if __name__ == "__main__" or True:
                 if communicate==True:
                     sup.talk()
             sup.moveAll()
+            ''' end of main loop. rest is logging '''
 
+            '''check half time and change ground if env is dynamic'''
             if abs(HalfTime-sup.getTime())<1 and GroundChanged==False:
                 GroundChanged=True
                 print(colored('\t[+] half time reached','green'))
                 if dynamic:
                     sup.changeGround()
 
-            # sup.visualize() # for debug
+            # sup.visualize(True) # for debug
+            ''' main logger '''
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
+                '''logs specail for first iteration'''
                 if it==0: # save these in the first iteration only
                     sup.visualize() # moved for less file size
                     if sampled % 100==0:
@@ -171,6 +198,8 @@ if __name__ == "__main__" or True:
                             videoList[count_].write(np.uint8(canvas))
 
                     elif abs(FinalTime-sup.getTime())<1:
+                        '''iteration 0 is about to end. so release the video and turn of record
+                        flag so we dont have any video attribute afterwards and save SARs as npy ans csv '''
                         for _ in range(len(videoList)):
                             videoList[_].release()
                         record=False
@@ -180,6 +209,7 @@ if __name__ == "__main__" or True:
                             np.save(SAR_f,SAR)
                         np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
 
+                ''' in every iteration, log the vital performance indexes with frequency of samplingPeriodSmall''' 
                 NAS[it,sampled]=sup.getNAS()
                 log[it,sampled,:,:]=sup.getLog()
                 eps[it,sampled,:]=sup.getEps()
@@ -192,9 +222,11 @@ if __name__ == "__main__" or True:
 
         
         QtableMem[it,:,:,:]=sup.getQtables()
-        if it==iteration-1: saveData("itDone") # -1 is for that it at max will be iteration-1
+        '''V: -1 is for that 'it' at max will be iteration-1 and after that code will exit the loop'''
+        if it==iteration-1: saveData("iterationDone") 
         del sup
-    print('duration',TIME()-t1_)
-    print('[+] goodbye')
+        print(colored("\t[+] iteration duration: ",'blue'),int(TIME()-iteration_duration))
+    print(colored('[+] duration','green'),int(TIME()-t1_))
+    print(colored('[+] goodbye',"green"))
 
 
