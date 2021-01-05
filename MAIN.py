@@ -31,7 +31,6 @@ def saveData(caller=None):
                 pickle.dump(sup, supSaver)
             except Exception as E: 
                 print(colored('\t\t[-] error in saving class: '+str(E),'red'))
-
 #...............................................................................................................................
 def keyboardInterruptHandler(signal, frame):
     saveData('interupt')
@@ -47,7 +46,6 @@ def clearTerminal():
     if os.name=='nt':os.system('cls')
     else:os.system('clear')
 #...............................................................................................................................
-
 if __name__ == "__main__" or True:
     t1_=TIME()
     # clearTerminal()
@@ -62,21 +60,21 @@ if __name__ == "__main__" or True:
     visibleRaduis=0.3
     iteration=1#5
     samplingPeriodSmall=10
-    FinalTime=1160000
+    FinalTime=1160000 ### alert
     HalfTime=FinalTime//2
     dynamic= not True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10
 
-    '''paramReductionMethod: possible values= 'adaptive' , 'classic' , 'adaptive united' , 'VDBE' '''
-    paramReductionMethod='classic'#'VDBE' 
+    '''paramReductionMethod: possible values= 'myAdaptive' , 'classic' , 'adaptive united' , 'VDBE' '''
+    paramReductionMethod='VDBE'#'classic'# 
     
     '''commentDividerChar: plotter code will take legend what ever is after this char'''
     commentDividerChar=' x '
     
     '''vizFlag: whether the visualization computation will happen or not. if it is True,
     cod will either record arena or show you scene '''
-    vizFlag=True
+    vizFlag=not True
     
     '''globalQ: whether all robots will share one Q-table '''
     globalQ=not True
@@ -85,16 +83,16 @@ if __name__ == "__main__" or True:
     communicate=not True
     
     '''record: if set True, you will get video of first iteration '''
-    record=True
+    record=not True
     
     '''Method: RL , BEECLUST '''
     method='RL'
     
     '''comment: comment to apear in file name '''
-    comment='alpha check'#'alpha 0.1 VDBE sigma 1' 
+    comment='VDBE test sigma 50 delta 0.02'#'alpha 0.1 VDBE sigma 1' 
     
     '''save_csv: whether tables will be saved as csv or not '''
-    save_csv=True
+    save_csv=not True
 
     print(colored('[+] '+comment,'green'))
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
@@ -116,7 +114,7 @@ if __name__ == "__main__" or True:
         paramfile.write(str(paramDict))
 
     ''' for saving csvs which is Q-table of robot 0 for iteration 0 '''
-    os.makedirs(codeBeginTime+dirChangeCharacter+'csvs') 
+    if save_csv: os.makedirs(codeBeginTime+dirChangeCharacter+'csvs') 
 
 
     ''' initilization '''
@@ -126,7 +124,7 @@ if __name__ == "__main__" or True:
     print(colored('[+] press ctrl+c for saving data asynchronously','green'))
     QtableMem=np.zeros((iteration,ROBN,7,44)) ##### caviat
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
-    eps=np.zeros((iteration,sampledDataNum,ROBN))
+    eps=np.zeros((iteration,sampledDataNum,ROBN,7))##### caviat
     alpha=np.zeros((iteration,sampledDataNum,ROBN))
     reward=np.zeros((iteration,sampledDataNum,ROBN))
     NAS=np.zeros((iteration,sampledDataNum))

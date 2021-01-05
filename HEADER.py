@@ -79,7 +79,6 @@ def saturate(x):
 def quadratic(x):
     return saturate(x**2)
 # ------------------------------------------------------------------------------------------------------------------------------
-
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -134,7 +133,10 @@ class SUPERVISOR:
         self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
         self.QRpos_ar=np.array(list(self.QRloc.values()))
         self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
-
+        if self.vizFlag and self.record==False:
+            ''' positioning window to make it easier to watch '''
+            cv.namedWindow('background')
+            cv.moveWindow('background',1000,0)
 # sharedParams ...............................................................................................................................
     def sharedParams(self):
         """
@@ -159,7 +161,7 @@ class SUPERVISOR:
         self.NumberOfActions=len(self.actionSpace)
         
         '''self.RLparams:  start value of parameters'''
-        self.RLparams={"epsilon":1,"alpha":1,"sensitivity":10,"maxdiff":255}
+        self.RLparams={"epsilon":1,"alpha":0.1}
         
         ''' if supervisor is executing this method, add two parameters to params file'''
         if not hasattr(self,'robotName'):
@@ -168,7 +170,8 @@ class SUPERVISOR:
                 paramfile.write(str(paramDict))
         self.velocity=14
         self.timeStep=512*0.001
-        self.printFlag=not True # print flag for robot 0 # caviat
+        ''' printFlag: True: robot0 will print content False: No one will print any shit  '''
+        self.printFlag= not True 
         '''self.debug: in debugging mode Wmax will be zero and robot 0 will be indicated with green color in visualize'''
         self.debug=not True ##########
         '''location of QR-codes '''
@@ -350,6 +353,7 @@ class SUPERVISOR:
                                     self.swarm[j].actAndReward(-1) 
                                     y=self.swarm[j].actionIndx
                                     x=self.swarm[j].state
+                                    '''V to catch alpha=1 bug if it happens again '''
                                     if y<10 and y>0 :
                                         print('catched',j,self.getTime(),x,y)
 
@@ -479,14 +483,13 @@ class SUPERVISOR:
         return np.array(Qtables)
 # getReward ...............................................................................................................................
     def getReward(self):
-            return np.array([self.swarm[_].rewardMemory[-1] if len(self.swarm[_].rewardMemory)>0 else 0\
-                 for _ in range(self.ROBN)]) 
+            return np.array([self.swarm[_].rewardMemory[-1] if len(self.swarm[_].rewardMemory)>0 else 0 for _ in range(self.ROBN)]) 
 # getEps ...............................................................................................................................
     def getEps(self):
         if self.paramReductionMethod=='classic':
             return np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)]) 
-        else:
-            return np.array([np.mean(self.swarm[_].epsilon[1:]) for _ in range(self.ROBN)]) #[1:] is because discarding state 0
+        elif self.paramReductionMethod=='VDBE':
+            return np.array([self.swarm[_].eps_1d for _ in range(self.ROBN)]) #[1:] is because discarding state 0
 # getAlpha ...............................................................................................................................
     def getAlpha(self):
         return np.array([np.mean(self.swarm[_].alpha) for _ in range(self.ROBN)]) 
@@ -505,7 +508,6 @@ class ROBOT(SUPERVISOR):
         self.SUPERVISOR=SUPERVISOR # address of supervisor hass passed here
         self.ground=self.SUPERVISOR.ground # grounds will also have same address since it is array
         self.robotName=name
-        self.paramReductionMethod=self.SUPERVISOR.paramReductionMethod
         super().sharedParams()
         self.ground=0 # initilizing for robots
         self.rotation=0
@@ -518,6 +520,7 @@ class ROBOT(SUPERVISOR):
         self.detectedQR=' '
         self.lastdetectedQR=' '
         self.Qtable=np.zeros((self.numberOfStates,self.NumberOfActions))
+        self.prevQtable=np.zeros((self.numberOfStates,self.NumberOfActions))
         self.QtableCheck=np.zeros((self.numberOfStates,self.NumberOfActions))
         self.exploredAmount=0
         self.inAction=False
@@ -529,7 +532,6 @@ class ROBOT(SUPERVISOR):
         self.sudoVec=0
         self.ExploreExploit=''
         self.actionIndx=0
-
         self.delta=np.zeros(np.shape(self.Qtable))
         self.deltaDot=np.zeros(np.shape(self.Qtable))
         self.prevdelta=np.zeros(np.shape(self.Qtable))
@@ -539,9 +541,11 @@ class ROBOT(SUPERVISOR):
         ''' start with the predetermined initial values '''
         self.epsilon=np.zeros(np.shape(self.Qtable))+self.RLparams['epsilon']
         self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
+        self.eps_1d=np.zeros((np.shape(self.Qtable)[0],))+self.RLparams['epsilon']
+        self.prev_eps_1d=np.zeros((np.shape(self.Qtable)[0],))+self.RLparams['epsilon']
 
-        x=np.arange(0,len(self.delta[0]))
         ''' making first row striped'''
+        x=np.arange(0,len(self.delta[0]))
         self.delta[0,x%2==0]=255
         self.deltaDot[0,x%2==0]=255
         self.DELTA[0,x%2==0]=255
@@ -612,12 +616,10 @@ class ROBOT(SUPERVISOR):
     def RL(self):
         if self.inAction==False :
             self.state=int(self.detectedQR[-1])
-            if self.paramReductionMethod=='classic':
+            if self.SUPERVISOR.paramReductionMethod=='classic':
                 eps=self.RLparams['epsilon']
-            elif self.paramReductionMethod=='adaptive' or self.paramReductionMethod=='adaptive shut':
-                eps=np.mean(self.epsilon[self.state]) #########
-            elif self.paramReductionMethod=='adaptive united':
-                eps=np.mean(self.epsilon[1:]) # shared eps. state 0 discarded
+            elif self.SUPERVISOR.paramReductionMethod=='VDBE':
+                eps=self.eps_1d[self.state]
             else: raise NameError('[-] method could not be found')
 
             
@@ -628,9 +630,7 @@ class ROBOT(SUPERVISOR):
                 actionIndx=np.argmax(self.Qtable[self.state,:])
                 self.action=self.actionSpace[actionIndx]
                 self.ExploreExploit='Exploit'
-            self.actAndReward()
-        else:
-            self.actAndReward()
+        self.actAndReward()
 # actAndReward ...............................................................................................................................
     def actAndReward(self,rewardInp=None):
         if self.inAction==False:
@@ -655,69 +655,74 @@ class ROBOT(SUPERVISOR):
             if rewardInp==None:
                 self.groundSense()
                 self.reward=self.groundSensorValue
-                # if self.reward==0:self.reward-=1 #######
             else: self.reward=rewardInp
-            # if self.printFlag: print("\t [+] REWARD::",self.reward)
             self.actionIndx=self.actionSpace.index(self.action)
             x=self.state
             y=self.actionIndx
 
-            ''' parameter adaptation '''
-            self.delta[x,y]=abs(self.reward-self.Qtable[x,y])
-            self.deltaDot[x,y]=self.delta[x,y]-self.prevdelta[x,y]
-            # self.deltaDot[x,y]=np.sign(self.deltaDot[x,y])
-            # self.deltaDot[x,y] = self.deltaDot[x,y] if self.deltaDot[x,y]!=0 else 1
-            self.DELTA[x,y]=self.delta[x,y]/self.RLparams['maxdiff']
-            if self.printFlag and self.paramReductionMethod!='classic':
-                print(colored('\t[+] time {} index {} reward {} Qtable {} delta {} prevdelta {} deltaDot {} DELTA {}','white')\
-                    .format(self.SUPERVISOR.getTime(),[x,y],self.reward,self.Qtable[x,y],\
-                        self.delta[x,y],self.prevdelta[x,y],self.deltaDot[x,y],self.DELTA[x,y]))
-            self.prevdelta[x,y]=self.delta[x,y]
-            self.updateRLparameters()
+            self.prevQtable[x,y]=self.Qtable[x,y]
 
-            ''' update rule '''
-            if self.paramReductionMethod=='classic':
-                self.Qtable[x,y]+=self.RLparams['alpha']*(self.reward-self.Qtable[x,y]) ########################
-            elif self.paramReductionMethod=='adaptive':
-                self.Qtable[x,y]+=self.alpha[x,y]*(self.reward-self.Qtable[x,y]) ########################
-            elif self.paramReductionMethod=='adaptive united' or self.paramReductionMethod=='adaptive shut':
-                # self.Qtable[x,y]+=np.mean(self.alpha[x,y])*(self.reward-self.Qtable[x,y]) ########################
-                self.Qtable[x,y]+=self.alpha[x,y]*(self.reward-self.Qtable[x,y]) ########################
+            ''' update rule: bellman '''
+            self.Qtable[x,y]+=self.RLparams['alpha']*(self.reward-self.Qtable[x,y]) ########################
 
-
+            self.updateRLparameters(x,y)
 
             self.QtableCheck[x,y]=1
             self.exploredAmount=(self.QtableCheck==1).sum()/np.size(self.Qtable[1:]) # discarding data of state 0
 
-
+            ''' logging reward and SAR '''
             self.rewardMemory.append(self.reward)
             if self.robotName=='0':
                 self.SAR.append(np.array([x,y,self.reward]))
 
-            ''' for debugging alpha effect '''
+            '''for debugging alpha effect
             if y<10 and y>0 and self.reward==-1:
-                print('catched',self.robotName,self.SUPERVISOR.getTime(),x,y,self.reward)
+                print('catched',self.robotName,self.SUPERVISOR.getTime(),x,y,self.reward)'''
 # updateRLparameters ...............................................................................................................................
-    def updateRLparameters(self):
-        if self.paramReductionMethod=='classic':
+    def updateRLparameters(self,x=None,y=None):
+        if self.SUPERVISOR.paramReductionMethod=='classic':
             self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
+        elif self.SUPERVISOR.paramReductionMethod=='VDBE':
+            ''' assuming sigma=1'''
+            # sigma=1
+            # sigma=0.2
+            # sigma=3
+            # sigma=10
+            sigma=10*5
+
+            delta=1/44 # caviat: inverse of number of actions. number of actions is known so cheated
+            ''' less delta means slower updates so small delta will change eps slowly '''
+            comm_term=np.exp(-np.abs(self.Qtable[x,y]-self.prevQtable[x,y])/sigma)
+            f=(1-comm_term)/(1+comm_term)
+            self.prev_eps_1d[x]=self.eps_1d[x]
+            self.eps_1d[x]=delta*f+(1-delta)*self.eps_1d[x]
+
+            if self.printFlag:
+                print('\t\t[+] state {} f {:2.2f} comm_term {:2.2f} Qtable {:2.2f} prevQtable {:2.2f} \n\t\t prev_eps {:2.2f} new_eps {:2.2f}'\
+                    .format(x,f,comm_term,self.Qtable[x,y],self.prevQtable[x,y],self.prev_eps_1d[x],self.eps_1d[x]))
+            
+
+
+
+
+
+        '''
         else :
-            if self.paramReductionMethod=='adaptive':
+            if self.SUPERVISOR.paramReductionMethod=='myAdaptive':
                 beforeEps=self.epsilon[self.state,self.actionIndx]
                 beforeAlpha=self.alpha[self.state,self.actionIndx]
-            elif self.paramReductionMethod=='adaptive united':
+            elif self.SUPERVISOR.paramReductionMethod=='adaptive united':
                 beforeEps=np.mean(self.epsilon)
                 beforeAlpha=np.mean(self.alpha)
-            elif self.paramReductionMethod=='adaptive shut':
+            elif self.SUPERVISOR.paramReductionMethod=='adaptive shut':
                 beforeEps=np.mean(self.epsilon[self.state])
                 beforeAlpha=np.mean(self.alpha[self.state])
 
-            ''' sensitivity must be multiplied not divided '''
-
-            if self.paramReductionMethod=='adaptive' or self.paramReductionMethod=='adaptive united':
+            # sensitivity must be multiplied not divided 
+            if self.SUPERVISOR.paramReductionMethod=='adaptive' or self.SUPERVISOR.paramReductionMethod=='adaptive united':
                 self.epsilon[self.state,self.actionIndx]=saturate(self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
                 self.alpha[self.state,self.actionIndx]=self.epsilon[self.state,self.actionIndx]/2 ####
-            elif self.paramReductionMethod=='adaptive shut':
+            elif self.SUPERVISOR.paramReductionMethod=='adaptive shut':
                 # if np.any(self.deltaDot[self.state]>0): # does delta of any action for a specific state increases?
                 if self.deltaDot[self.state,self.actionIndx]>0: # does delta of any action for a specific state increases?
                     # self.epsilon[self.state]=1 # all values of epsilon for all actions for this specific state will be one 
@@ -732,15 +737,16 @@ class ROBOT(SUPERVISOR):
                     shut=False
                     if self.printFlag:  # for debugging
                         print()
+            # printing how parameters are changed 
             if self.printFlag:
-                if self.paramReductionMethod=='adaptive':
+                if self.SUPERVISOR.paramReductionMethod=='adaptive':
                     print('\t[+] eps: {}->{} alpha: {}->{}\n'\
                     .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3)))
-                elif self.paramReductionMethod=='adaptive united':
+                elif self.SUPERVISOR.paramReductionMethod=='adaptive united':
                     print('\t[+] eps: {}->{} alpha: {}->{}\n'\
                     .format(round(beforeEps,3),round(np.mean(self.epsilon),3),round(beforeAlpha,3),round(np.mean(self.alpha),3)))
-                elif self.paramReductionMethod=='adaptive shut':
+                elif self.SUPERVISOR.paramReductionMethod=='adaptive shut':
                     print('\t[+] eps: {}->{} alpha: {}->{} shut {}\n'\
                     # .format(round(beforeEps,3),round(np.mean(self.epsilon[self.state]),3),round(beforeAlpha,3),round(np.mean(self.alpha[self.state]),3),shut))
                     .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3),shut))
-
+        '''
