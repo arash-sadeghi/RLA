@@ -1,3 +1,4 @@
+# jan 16 2021
 from HEADER import *
 #...............................................................................................................................
 def saveData(caller=None):
@@ -58,16 +59,20 @@ if __name__ == "__main__" or True:
     Ly=4
     cueRaduis=0.7
     visibleRaduis=0.3
-    iteration=1#5
+    iteration=1
     samplingPeriodSmall=10
     FinalTime=1160000 ### alert
+    # FinalTime=116000 ### alert
     HalfTime=FinalTime//2
-    dynamic= not True
+    dynamic=not True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10
 
-    '''paramReductionMethod: possible values= 'myAdaptive' , 'classic' , 'adaptive united' , 'VDBE' '''
-    paramReductionMethod='VDBE'#'classic'# 
+    '''comment: comment to apear in file name '''
+    comment='no noise sanity test'#'alpha 0.1 VDBE sigma 1'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>... 
+
+    '''paramReductionMethod: possible values= 'classic' , 'VDBE' , 'cyclical' '''
+    paramReductionMethod='cyclical'
     
     '''commentDividerChar: plotter code will take legend what ever is after this char'''
     commentDividerChar=' x '
@@ -83,16 +88,16 @@ if __name__ == "__main__" or True:
     communicate=not True
     
     '''record: if set True, you will get video of first iteration '''
-    record=not True
+    record=True
     
     '''Method: RL , BEECLUST '''
     method='RL'
     
-    '''comment: comment to apear in file name '''
-    comment='VDBE test sigma 50 delta 0.02'#'alpha 0.1 VDBE sigma 1' 
-    
     '''save_csv: whether tables will be saved as csv or not '''
     save_csv=not True
+
+    '''save_tables_videos: whether tables will be saved as videos or not '''
+    save_tables_videos=False
 
     print(colored('[+] '+comment,'green'))
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
@@ -104,7 +109,8 @@ if __name__ == "__main__" or True:
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
 
-    imsName=["delta","deltaDot","DELTA","epsilon","QtableCheck","QtableRob0"]
+    save_tables_videos=False
+    imsName=["epsilon","QtableCheck","QtableRob0"]
 
     ''' save parameters into a file '''
     paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
@@ -124,7 +130,11 @@ if __name__ == "__main__" or True:
     print(colored('[+] press ctrl+c for saving data asynchronously','green'))
     QtableMem=np.zeros((iteration,ROBN,7,44)) ##### caviat
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
-    eps=np.zeros((iteration,sampledDataNum,ROBN,7))##### caviat
+    if paramReductionMethod=='classical' or paramReductionMethod=='cyclical':
+        eps=np.zeros((iteration,sampledDataNum,ROBN))##### caviat
+    elif paramReductionMethod=='VDBE':
+        eps=np.zeros((iteration,sampledDataNum,ROBN,7))##### caviat
+
     alpha=np.zeros((iteration,sampledDataNum,ROBN))
     reward=np.zeros((iteration,sampledDataNum,ROBN))
     NAS=np.zeros((iteration,sampledDataNum))
@@ -133,11 +143,12 @@ if __name__ == "__main__" or True:
     strip[strip%2==1]=255
     tableImSize=(7*20,44*20)[::-1] ##### caviat: table dimentions pre known
 
-    fourcc = cv.VideoWriter_fourcc(*'mp4v')
-    FPS=1
-    videoList=[]
-    for _ in range(len(imsName)):
-        videoList.append(cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+imsName[_]+'.mp4',fourcc, FPS, tableImSize,True))
+    if save_tables_videos:
+        fourcc = cv.VideoWriter_fourcc(*'mp4v')
+        FPS=1
+        videoList=[]
+        for _ in range(len(imsName)):
+            videoList.append(cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+imsName[_]+'.mp4',fourcc, FPS, tableImSize,True))
 
 
     for it in range(iteration):
@@ -169,19 +180,17 @@ if __name__ == "__main__" or True:
                     sup.changeGround()
 
             # sup.visualize(True) # for debug
+            # sup.visualize() 
             ''' main logger '''
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
                 '''logs specail for first iteration'''
                 if it==0: # save these in the first iteration only
-                    sup.visualize() # moved for less file size
-                    if sampled % 100==0:
-                        deltaDotTemp=np.copy(sup.swarm[0].deltaDot)
-                        deltaDotTemp[deltaDotTemp>=0]=0 # positives will be white
-                        deltaDotTemp[deltaDotTemp<0]=255 # negative will be black
+                    sup.visualize() # moved for less file size >>>>>>>>>>>>>> alert
+                    if sampled % 100==0 and save_tables_videos:
                         QtableRob0=sup.getQtables()[0]
                         if save_csv:
                             np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
-                        imsMat=[sup.swarm[0].delta*255,deltaDotTemp,sup.swarm[0].DELTA*255,sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
+                        imsMat=[sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
 
                         for count_,v in enumerate(imsMat):
                             v=np.minimum(v,np.ones(v.shape)*255)
@@ -198,10 +207,12 @@ if __name__ == "__main__" or True:
                     elif abs(FinalTime-sup.getTime())<1:
                         '''iteration 0 is about to end. so release the video and turn of record
                         flag so we dont have any video attribute afterwards and save SARs as npy ans csv '''
-                        for _ in range(len(videoList)):
-                            videoList[_].release()
+                        if save_tables_videos:
+                            for _ in range(len(videoList)):
+                                videoList[_].release()
                         record=False
                         if hasattr(sup,'video'): sup.video.release()
+                        ''' save SAR '''
                         SAR=np.stack(sup.swarm[0].SAR)
                         with open(codeBeginTime+dirChangeCharacter+'SAR_robot0.npy','wb') as SAR_f:
                             np.save(SAR_f,SAR)

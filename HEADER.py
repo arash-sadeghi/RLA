@@ -1,3 +1,4 @@
+# jan 16 2021
 import cv2 as cv
 import numpy as np
 import random as rnd
@@ -15,7 +16,9 @@ import pickle
 from termcolor import colored 
 from subprocess import call 
 from itertools import combinations  as comb , product
-np.random.seed(0)
+''' np random is not used so seed rnd module '''
+# np.random.seed(0)
+rnd.seed(0)
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -137,7 +140,7 @@ class SUPERVISOR:
             ''' positioning window to make it easier to watch '''
             cv.namedWindow('background')
             cv.moveWindow('background',1000,0)
-# sharedParams ...............................................................................................................................
+# sharedParams .................................................................................................................
     def sharedParams(self):
         """
         These parameters are constant
@@ -178,7 +181,9 @@ class SUPERVISOR:
         self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
             'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
         self.QRdetectableArea=m2px(0.3)      
-# generateBackground ...............................................................................................................................
+        '''self.desiredPosDistpx the radius of a circle in which I say desired point has reached '''
+        self.desiredPosDistpx=20
+# generateBackground ...........................................................................................................
     def generateBackground(self,Lx,Ly,cueRaduis,visibleRaduis):
         Lxpx=Lx
         Lypx=Ly
@@ -202,7 +207,7 @@ class SUPERVISOR:
         im=cv.imread("BackgroundGeneratedBySim.png")
         im=cv.rectangle(im,(0,0),(Lxpx,Lypx),(0,255,0),3)
         return im
-# generateRobots ...............................................................................................................................
+# generateRobots ...............................................................................................................
     def generateRobots(self):
         margin=self.collisionDetectDist*2
         possibleY=np.arange(0+margin,self.Xlen-margin,margin)
@@ -228,7 +233,7 @@ class SUPERVISOR:
         '''vectorized functions to get position and rotation of all robots'''
         self.pos_getter=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
         self.rot_getter=np.vectorize(lambda x: RotStandard(self.swarm[x].rotation),otypes=[np.ndarray])
-# visualize ...............................................................................................................................
+# visualize ....................................................................................................................
     def visualize(self,forceShow=False):
         if self.vizFlag:
             background=np.copy(self.ground)
@@ -248,12 +253,16 @@ class SUPERVISOR:
                 if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
                     RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
 
-                if self.debug and i==0:
+                # if self.debug and i==0:
+                #     cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
+                #     cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
+                # else:
+                #     cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
+                #     cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
+
+                if i==0:
                     cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
                     cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
-                else:
-                    cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
-                    cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
 
                 direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
                     , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
@@ -281,7 +290,7 @@ class SUPERVISOR:
             if forceShow:
                 cv.imshow("background",background)
                 cv.waitKey(self.fps)
-# moveAll ...............................................................................................................................
+# moveAll ......................................................................................................................
     def moveAll(self):
         for i in range(self.ROBN):
             if self.swarm[i].delayFlag==False:
@@ -294,7 +303,7 @@ class SUPERVISOR:
                     self.swarm[i].move()
 
         self.time+=self.timeStep
-# avoid ...............................................................................................................................
+# avoid ........................................................................................................................
     def avoid(self,cols,specific=False):
         if specific==False:
             c=np.reshape(cols,(np.size(cols)//2,2))
@@ -322,7 +331,7 @@ class SUPERVISOR:
                 self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
                 self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                 self.flagsR[i,j]=0
-# checkCollision ...............................................................................................................................
+# checkCollision ...............................................................................................................
     def checkCollision(self,specific=False,robotNum=None):
         ''' flagsR is always numerical not boolien'''
         '''specific: if collision avoidence is forced. this onle happens when you want
@@ -406,7 +415,7 @@ class SUPERVISOR:
                 '''i want flags to choose form collider_filterer'''
                 colliders=colliders[flags] 
                 self.avoid(colliders,specific)
-# aggregateSwarm ...............................................................................................................................
+# aggregateSwarm ...............................................................................................................
     def aggregateSwarm(self):
         '''
         a try to vectorized here but better not since some other 
@@ -417,14 +426,14 @@ class SUPERVISOR:
         '''
         for i in range(self.ROBN):
             self.swarm[i].aggregate()
-# getTime ...............................................................................................................................
+# getTime ......................................................................................................................
     def getTime(self):
         return int(self.time)
-# getNAS ...............................................................................................................................
+# getNAS .......................................................................................................................
     def getNAS(self):
         inCue=np.count_nonzero(self.NASfunction(self.swarm))
         return inCue/self.ROBN
-# getQRs ...............................................................................................................................
+# getQRs .......................................................................................................................
     def getQRs(self):
         '''
         old fashion non vectorized way:
@@ -444,14 +453,14 @@ class SUPERVISOR:
             
         for i in allRobotIndx:
             self.swarm[i].detectedQR='QR0'
-# swarmRL ...............................................................................................................................
+# swarmRL ......................................................................................................................
     def swarmRL(self):
         for i in range(self.ROBN):
             '''first you must not recently collided. scond you must be either doing an action >or< you must be out of QR area
             the first part is to avoid a bug which happens when robots collide inside QR-code'''
             if (not i in self.colliders) and (self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True)  :
                 self.swarm[i].RL()
-# talk ...............................................................................................................................
+# talk .........................................................................................................................
     def talk(self): ##### print must be fixed ####### epsilon sharing policy must be changed
         for i in range(self.ROBN):
             if any(self.flagsR[i]):
@@ -469,31 +478,31 @@ class SUPERVISOR:
                     self.swarm[j].RLparams['epsilon']=temp
                     if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
         if self.vizFlag : print("------------------------------------------------------")
-# getLog ...............................................................................................................................
+# getLog .......................................................................................................................
     def getLog(self):
         location=[]
         for i in range(self.ROBN):
             location.append(np.append(self.swarm[i].position,self.swarm[i].rotation))
         return np.array(location)
-# getQtables ...............................................................................................................................
+# getQtables ...................................................................................................................
     def getQtables(self):
         Qtables=[]
         for i in range(self.ROBN):
             Qtables.append(self.swarm[i].Qtable)
         return np.array(Qtables)
-# getReward ...............................................................................................................................
+# getReward ....................................................................................................................
     def getReward(self):
             return np.array([self.swarm[_].rewardMemory[-1] if len(self.swarm[_].rewardMemory)>0 else 0 for _ in range(self.ROBN)]) 
-# getEps ...............................................................................................................................
+# getEps .......................................................................................................................
     def getEps(self):
-        if self.paramReductionMethod=='classic':
+        if self.paramReductionMethod=='classic' or self.paramReductionMethod=='cyclical':
             return np.array([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)]) 
         elif self.paramReductionMethod=='VDBE':
             return np.array([self.swarm[_].eps_1d for _ in range(self.ROBN)]) #[1:] is because discarding state 0
-# getAlpha ...............................................................................................................................
+# getAlpha .....................................................................................................................
     def getAlpha(self):
         return np.array([np.mean(self.swarm[_].alpha) for _ in range(self.ROBN)]) 
-# changeGround ...............................................................................................................................
+# changeGround .................................................................................................................
     def changeGround(self):
         ''' this code will ruin address exchange'''
         self.ground=cv.rotate(self.ground,cv.ROTATE_180)
@@ -554,7 +563,10 @@ class ROBOT(SUPERVISOR):
         ''' only robot 0 will talk '''
         self.printFlag=True if self.robotName=='0' and self.printFlag else False 
         self.SAR=[]
-# move ...............................................................................................................................  
+
+        ''' for cyclical '''
+        self.epoch=0
+# move .........................................................................................................................
     def move(self):
             ''' rotation must be changed in any cond '''
             self.rotation=self.rotation2B
@@ -595,7 +607,7 @@ class ROBOT(SUPERVISOR):
             else:
                 ''' easily leave the aggregation ''' 
                 self.position=np.copy(self.position2B)
-# groundSense ...............................................................................................................................
+# groundSense ..................................................................................................................
     def groundSense(self):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
         ''' if dist(self.position,[self.Xlen//4,self.Ylen//2])<=self.cueRadius: '''
@@ -605,18 +617,18 @@ class ROBOT(SUPERVISOR):
 
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
-# aggregate ...............................................................................................................................
+# aggregate ....................................................................................................................
     def aggregate(self,forced=False):
         self.groundSense()
         if ( any(self.SUPERVISOR.flagsR[int(self.robotName)]) and self.groundSensorValue>0 and not self.delayFlag ) or forced:
             self.waitingTime=self.SUPERVISOR.Wmax*((self.groundSensorValue**2)/((self.groundSensorValue**2) + 5000))
             self.delayFlag=True
             forced=False
-# RL ...............................................................................................................................
+# RL ...........................................................................................................................
     def RL(self):
         if self.inAction==False :
             self.state=int(self.detectedQR[-1])
-            if self.SUPERVISOR.paramReductionMethod=='classic':
+            if self.SUPERVISOR.paramReductionMethod=='classic' or self.SUPERVISOR.paramReductionMethod=='cyclical':
                 eps=self.RLparams['epsilon']
             elif self.SUPERVISOR.paramReductionMethod=='VDBE':
                 eps=self.eps_1d[self.state]
@@ -631,7 +643,7 @@ class ROBOT(SUPERVISOR):
                 self.action=self.actionSpace[actionIndx]
                 self.ExploreExploit='Exploit'
         self.actAndReward()
-# actAndReward ...............................................................................................................................
+# actAndReward .................................................................................................................
     def actAndReward(self,rewardInp=None):
         if self.inAction==False:
             angle=self.action[1]
@@ -649,7 +661,7 @@ class ROBOT(SUPERVISOR):
             self.reward=0
             self.desiredPos=self.initialPos+actionXY_SudoVec
             self.lastdetectedQR=self.detectedQR
-        elif (self.inAction==True and dist(self.position-self.desiredPos)<=20) or rewardInp!=None:
+        elif (self.inAction==True and dist(self.position-self.desiredPos)<=self.desiredPosDistpx) or rewardInp!=None:
             ''' elif goal reached or a reward is forced '''
             self.inAction=False
             if rewardInp==None:
@@ -678,7 +690,7 @@ class ROBOT(SUPERVISOR):
             '''for debugging alpha effect
             if y<10 and y>0 and self.reward==-1:
                 print('catched',self.robotName,self.SUPERVISOR.getTime(),x,y,self.reward)'''
-# updateRLparameters ...............................................................................................................................
+# updateRLparameters ...........................................................................................................
     def updateRLparameters(self,x=None,y=None):
         if self.SUPERVISOR.paramReductionMethod=='classic':
             self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
@@ -700,53 +712,7 @@ class ROBOT(SUPERVISOR):
             if self.printFlag:
                 print('\t\t[+] state {} f {:2.2f} comm_term {:2.2f} Qtable {:2.2f} prevQtable {:2.2f} \n\t\t prev_eps {:2.2f} new_eps {:2.2f}'\
                     .format(x,f,comm_term,self.Qtable[x,y],self.prevQtable[x,y],self.prev_eps_1d[x],self.eps_1d[x]))
-            
-
-
-
-
-
-        '''
-        else :
-            if self.SUPERVISOR.paramReductionMethod=='myAdaptive':
-                beforeEps=self.epsilon[self.state,self.actionIndx]
-                beforeAlpha=self.alpha[self.state,self.actionIndx]
-            elif self.SUPERVISOR.paramReductionMethod=='adaptive united':
-                beforeEps=np.mean(self.epsilon)
-                beforeAlpha=np.mean(self.alpha)
-            elif self.SUPERVISOR.paramReductionMethod=='adaptive shut':
-                beforeEps=np.mean(self.epsilon[self.state])
-                beforeAlpha=np.mean(self.alpha[self.state])
-
-            # sensitivity must be multiplied not divided 
-            if self.SUPERVISOR.paramReductionMethod=='adaptive' or self.SUPERVISOR.paramReductionMethod=='adaptive united':
-                self.epsilon[self.state,self.actionIndx]=saturate(self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
-                self.alpha[self.state,self.actionIndx]=self.epsilon[self.state,self.actionIndx]/2 ####
-            elif self.SUPERVISOR.paramReductionMethod=='adaptive shut':
-                # if np.any(self.deltaDot[self.state]>0): # does delta of any action for a specific state increases?
-                if self.deltaDot[self.state,self.actionIndx]>0: # does delta of any action for a specific state increases?
-                    # self.epsilon[self.state]=1 # all values of epsilon for all actions for this specific state will be one 
-                    # self.alpha[self.state]=0.5 # same scenario for alpha
-                    self.epsilon[self.state,self.actionIndx]=1 # all values of epsilon for all actions for this specific state will be one 
-                    self.alpha[self.state,self.actionIndx]=0.5 # same scenario for alpha
-
-                    shut=True
-                else:
-                    self.epsilon[self.state,self.actionIndx]=saturate(self.DELTA[self.state,self.actionIndx]*self.RLparams["sensitivity"])
-                    self.alpha[self.state,self.actionIndx]=self.epsilon[self.state,self.actionIndx]/2 ####
-                    shut=False
-                    if self.printFlag:  # for debugging
-                        print()
-            # printing how parameters are changed 
-            if self.printFlag:
-                if self.SUPERVISOR.paramReductionMethod=='adaptive':
-                    print('\t[+] eps: {}->{} alpha: {}->{}\n'\
-                    .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3)))
-                elif self.SUPERVISOR.paramReductionMethod=='adaptive united':
-                    print('\t[+] eps: {}->{} alpha: {}->{}\n'\
-                    .format(round(beforeEps,3),round(np.mean(self.epsilon),3),round(beforeAlpha,3),round(np.mean(self.alpha),3)))
-                elif self.SUPERVISOR.paramReductionMethod=='adaptive shut':
-                    print('\t[+] eps: {}->{} alpha: {}->{} shut {}\n'\
-                    # .format(round(beforeEps,3),round(np.mean(self.epsilon[self.state]),3),round(beforeAlpha,3),round(np.mean(self.alpha[self.state]),3),shut))
-                    .format(round(beforeEps,3),round(self.epsilon[self.state,self.actionIndx],3),round(beforeAlpha,3),round(self.alpha[self.state,self.actionIndx],3),shut))
-        '''
+        elif self.SUPERVISOR.paramReductionMethod=='cyclical':
+            self.epoch+=1
+            s=100 # period 
+            self.RLparams["epsilon"]=(cos(self.epoch*2*np.pi/s)+1)/2
