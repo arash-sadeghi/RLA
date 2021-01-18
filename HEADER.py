@@ -12,16 +12,23 @@ import signal
 from varname import nameof
 import pickle
 # import dill as pickle
+import matplotlib.pyplot as plt
 
 from termcolor import colored 
 from subprocess import call 
 from itertools import combinations  as comb , product
-''' np random is not used so seed rnd module '''
-# np.random.seed(0)
-rnd.seed(0)
+
+
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
+def set_seed():
+    seed=int(TIME()%1000)
+    rnd.seed(seed)
+    # rnd.seed(828)
+
+    return seed
+# ------------------------------------------------------------------------------------------------------------------------------
 def warningSupress():
     from sys import warnoptions
     from warnings import simplefilter
@@ -86,15 +93,19 @@ def quadratic(x):
 ################################################################################################################################
 ################################################################################################################################
 class SUPERVISOR:
-    def __init__(self,ROBN,codeBeginTime,vizFlag,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3,paramReductionMethod='adaptive'):
+    def __init__(self,ROBN,codeBeginTime,showFrames,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3,paramReductionMethod='adaptive'):
         self.Lx=m2px(Lx)
         self.Ly=m2px(Ly)
         self.cueRaduis=m2px(cueRaduis)
         self.visibleRaduis=m2px(visibleRaduis)
+        self.QRloc={'QR1':(self.Lx,self.Ly//4),'QR2':(self.Lx,self.Ly//4*2),\
+            'QR3':(self.Lx,self.Ly//4*3),'QR4':(0,self.Ly//4*3),'QR5':(0,self.Ly//4*2),'QR6':(0,self.Ly//4)}
         self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRaduis,self.visibleRaduis)
         self.codeBeginTime=codeBeginTime
         self.sharedParams()
-        self.vizFlag=vizFlag
+        self.showFrames=showFrames
+        self.record=record
+        self.vizFlag=record or showFrames
         self.fps=int(self.timeStep*10)
         self.ROBN=ROBN
         self.collisionDist=m2px(0.05)
@@ -110,10 +121,8 @@ class SUPERVISOR:
         self.collisionDetectDist=self.robotSenseRad+self.collisionDist
         self.Wmax=120 if not self.debug else 0
         self.paramReductionMethod=paramReductionMethod
-        print(colored('\t[+] paramReductionMethod','red'),self.paramReductionMethod)
         if self.debug: print('\t[+] Debugging mode: Wmax=0')
         self.log=0
-        self.record=record
         videoRecordTime=ctime(TIME()).replace(':','_')
         capture_rate=5
         FPS=5
@@ -123,20 +132,19 @@ class SUPERVISOR:
         '''
         size=(self.Ylen,self.Xlen)
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
-        if self.record:
+        if self.vizFlag:
             self.video = cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+videoRecordTime+'.mp4',fourcc, FPS, size,True)
 
         self.allRobotIndx=np.arange(0,self.ROBN)
         self.globalQ=globalQ
         self.globalQ=globalQ
         self.allnodes=np.array(list(comb(self.allRobotIndx,2)))
-        self.crowdThresh= 5
         self.colliders=[]
         self.all_poses=[]
         self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
         self.QRpos_ar=np.array(list(self.QRloc.values()))
         self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
-        if self.vizFlag and self.record==False:
+        if self.showFrames:
             ''' positioning window to make it easier to watch '''
             cv.namedWindow('background')
             cv.moveWindow('background',1000,0)
@@ -152,8 +160,14 @@ class SUPERVISOR:
         ''' places of Xlen and Ylen must been changed but dont 
         touch it. now Xlen=1024>Ylen=512 but is should have been 
         other way. any way! '''  
+
         self.cueRadius=m2px(0.7)   
         self.EpsilonDampRatio=0.999 #######
+
+        '''self.desiredPosDistpx the radius of a circle in which I say desired point has reached 
+        This parameter depends on the pixel distance that each robot travels in each cycle.'''
+        self.desiredPosDistpx=10
+
 
         angles=np.arange(0,180+18,18)
         maxlen=int(16*512/9.2) # 14
@@ -165,24 +179,21 @@ class SUPERVISOR:
         
         '''self.RLparams:  start value of parameters'''
         self.RLparams={"epsilon":1,"alpha":0.1}
-        
+
         ''' if supervisor is executing this method, add two parameters to params file'''
         if not hasattr(self,'robotName'):
             with open(self.codeBeginTime+DirLocManage(returnchar=True)+'params.txt','a') as paramfile :
                 paramDict={"RLparams":self.RLparams,"EpsilonDampRatio":self.EpsilonDampRatio}
                 paramfile.write(str(paramDict))
+        else:
+            ''' if robot is running this method, get QRlocs from supervisor'''
+            self.QRloc=self.SUPERVISOR.QRloc    
         self.velocity=14
         self.timeStep=512*0.001
         ''' printFlag: True: robot0 will print content False: No one will print any shit  '''
         self.printFlag= not True 
         '''self.debug: in debugging mode Wmax will be zero and robot 0 will be indicated with green color in visualize'''
         self.debug=not True ##########
-        '''location of QR-codes '''
-        self.QRloc={'QR1':(self.Ylen,self.Xlen//4),'QR2':(self.Ylen,self.Xlen//4*2),\
-            'QR3':(self.Ylen,self.Xlen//4*3),'QR4':(0,self.Xlen//4*3),'QR5':(0,self.Xlen//4*2),'QR6':(0,self.Xlen//4)}
-        self.QRdetectableArea=m2px(0.3)      
-        '''self.desiredPosDistpx the radius of a circle in which I say desired point has reached '''
-        self.desiredPosDistpx=20
 # generateBackground ...........................................................................................................
     def generateBackground(self,Lx,Ly,cueRaduis,visibleRaduis):
         Lxpx=Lx
@@ -197,10 +208,12 @@ class SUPERVISOR:
         for i in range(0,R):
             cv.circle(im,(int((Lypx/4)),int(Lxpx/2)),i,gauss(Lxpx/2-i),2)
         im=cv.rotate(im, cv.ROTATE_90_CLOCKWISE)
-        QRlocs=[(Lxpx,Lypx//4),(Lxpx,Lypx//2),(Lxpx,3*Lypx//4),(0,3*Lypx//4),(0,Lypx//2),(0,Lypx//4)]
-        for i in QRlocs:
-            cv.circle(im,i,10,(255,255,255),-1)
-            cv.circle(im,i,visibleRaduis,(255,255,255),1)
+        # QRlocs=[(Lxpx,Lypx//4),(Lxpx,Lypx//2),(Lxpx,3*Lypx//4),(0,3*Lypx//4),(0,Lypx//2),(0,Lypx//4)]
+        # QRlocs=[(Lxpx,Lypx//4),(Lxpx,Lypx//2),(Lxpx,3*Lypx//4),(0,3*Lypx//4),(0,Lypx//2),(0,Lypx//4)]
+
+        for i in self.QRloc.values():
+            cv.circle(im,tuple(i),10,(255,255,255),-1)
+            cv.circle(im,tuple(i),visibleRaduis,(255,255,255),1)
         im=255-255*im
         '''writing and reading back the image to have a 3 channel image with pixels between 0-255'''
         cv.imwrite("BackgroundGeneratedBySim.png",im)
@@ -234,7 +247,7 @@ class SUPERVISOR:
         self.pos_getter=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
         self.rot_getter=np.vectorize(lambda x: RotStandard(self.swarm[x].rotation),otypes=[np.ndarray])
 # visualize ....................................................................................................................
-    def visualize(self,forceShow=False):
+    def visualize(self):
         if self.vizFlag:
             background=np.copy(self.ground)
             for i in range(self.ROBN):
@@ -248,21 +261,16 @@ class SUPERVISOR:
                 vizPos=[]
                 for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
 
-                RobotColor=(255,100,100)
-                debugRobotColor=(0,255,0)
                 if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
                     RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
+                elif i==0:
+                    ''' robot0 is in purple for debug purposes '''
+                    RobotColor=(128,0,128)
+                else:
+                    RobotColor=(255,100,100)
 
-                # if self.debug and i==0:
-                #     cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
-                #     cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
-                # else:
-                #     cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
-                #     cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
-
-                if i==0:
-                    cv.circle(background,tuple(vizPos),self.robotSenseRad,debugRobotColor,1)
-                    cv.circle(background,tuple(vizPos),m2px(self.robotRad),debugRobotColor,-1)
+                cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
+                cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
 
                 direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
                     , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
@@ -281,15 +289,16 @@ class SUPERVISOR:
                 EpsilonAverage=round(np.mean(AllEpsilons),3)
                 cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
-            if self.record: self.video.write(background)
-            else:
+            if self.record:
+                self.video.write(background)
+            if self.showFrames:
+                ''' with openCV '''
                 cv.imshow("background",background)
                 cv.waitKey(self.fps)
-                ''' for saving all images in a directory without putting them in a video:
-                cv.imwrite(self.codeBeginTime+DirLocManage(returnchar=True)+str(self.getTime())+'.png',background)'''
-            if forceShow:
-                cv.imshow("background",background)
-                cv.waitKey(self.fps)
+                ''' with matplotlib '''
+                # plt.imshow(background)
+                # plt.pause(self.fps*0.0000000000000000000001)
+                # plt.draw()
 # moveAll ......................................................................................................................
     def moveAll(self):
         for i in range(self.ROBN):
@@ -430,9 +439,13 @@ class SUPERVISOR:
     def getTime(self):
         return int(self.time)
 # getNAS .......................................................................................................................
-    def getNAS(self):
-        inCue=np.count_nonzero(self.NASfunction(self.swarm))
-        return inCue/self.ROBN
+    def getNAS(self,weighted=False):
+        if weighted==False:
+            inCue=np.count_nonzero(self.NASfunction(self.swarm))
+            return inCue/self.ROBN
+        elif weighted==True:
+            return np.sum(self.NASfunction(self.swarm))/(self.ROBN*255)
+
 # getQRs .......................................................................................................................
     def getQRs(self):
         '''
@@ -443,7 +456,7 @@ class SUPERVISOR:
         robots=self.all_poses[self.allRobotQRs[:,0]]
         QRs=self.QRpos_ar[self.allRobotQRs[:,1]]
         dists=dist(robots-QRs)
-        indx=np.where(dists<=self.QRdetectableArea)
+        indx=np.where(dists<=self.visibleRaduis)
         detects=self.allRobotQRs[indx]
         allRobotIndx=np.copy(self.allRobotIndx)
         if len(detects)>0:
@@ -566,6 +579,10 @@ class ROBOT(SUPERVISOR):
 
         ''' for cyclical '''
         self.epoch=0
+
+        '''self.rewardNoise: flag that says if reward will have noise or not '''
+        self.rewardNoise=True
+        self.noiseStrength=10
 # move .........................................................................................................................
     def move(self):
             ''' rotation must be changed in any cond '''
@@ -582,6 +599,8 @@ class ROBOT(SUPERVISOR):
             self.position2B[0]=max(self.position2B[0],0+1)
             self.position2B[1]=max(self.position2B[1],0+1)
 
+            if self.robotName=='0' and self.SUPERVISOR.getTime()<1:
+                print(colored("\t[+] traveled distance in each cycle in px:","green"),round(dist(self.position-self.position2B)))
             ''' check col with 2B poses'''
             temp=np.zeros((self.SUPERVISOR.ROBN-1,2),dtype=int)
             robotNum=int(self.robotName)
@@ -612,8 +631,8 @@ class ROBOT(SUPERVISOR):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
         ''' if dist(self.position,[self.Xlen//4,self.Ylen//2])<=self.cueRadius: '''
         ''' for dynamic env, x condition is deleted ''' ####
-        if self.position[0]<= self.Ylen-self.SUPERVISOR.visibleRaduis and self.position[0]>= self.SUPERVISOR.visibleRaduis\
-            and self.position[1]>=self.SUPERVISOR.visibleRaduis and self.position[1]<=self.Xlen-self.SUPERVISOR.visibleRaduis:
+        if self.position[0]<= self.Ylen-(self.SUPERVISOR.visibleRaduis+2) and self.position[0]>= (self.SUPERVISOR.visibleRaduis+2)\
+            and self.position[1]>=(self.SUPERVISOR.visibleRaduis+2) and self.position[1]<=self.Xlen-(self.SUPERVISOR.visibleRaduis+2):
 
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
@@ -648,7 +667,7 @@ class ROBOT(SUPERVISOR):
         if self.inAction==False:
             angle=self.action[1]
             length=self.action[0]
-            if self.state<=3: angle=180+angle
+            if self.state<=3: angle=180+angle # caviat
 
             actionXY=np.array([length*sin(np.radians(angle)),length*cos(np.radians(angle))])
             self.sudoVec= np.array(self.QRloc[self.detectedQR])-self.position
@@ -667,6 +686,12 @@ class ROBOT(SUPERVISOR):
             if rewardInp==None:
                 self.groundSense()
                 self.reward=self.groundSensorValue
+                ''' add noise to reward '''
+                if self.rewardNoise:
+                    self.reward+=rnd.randint(-1*self.noiseStrength, self.noiseStrength)
+                    self.reward=max(0,self.reward)
+                    self.reward=min(self.reward,255)
+
             else: self.reward=rewardInp
             self.actionIndx=self.actionSpace.index(self.action)
             x=self.state
@@ -685,7 +710,7 @@ class ROBOT(SUPERVISOR):
             ''' logging reward and SAR '''
             self.rewardMemory.append(self.reward)
             if self.robotName=='0':
-                self.SAR.append(np.array([x,y,self.reward]))
+                self.SAR.append(np.array([self.SUPERVISOR.getTime(),x,y,self.reward]))
 
             '''for debugging alpha effect
             if y<10 and y>0 and self.reward==-1:

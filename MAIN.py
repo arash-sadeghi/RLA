@@ -1,12 +1,12 @@
-# jan 16 2021
+# jan 17 2021
 from HEADER import *
 #...............................................................................................................................
 def saveData(caller=None):
     print(colored("\n\t\t[+] data saved ",'yellow'))
-    data2BsavedStr=["NAS","log","Qtable","rewards","eps","alpha"]
+    data2BsavedStr=["NASw","NAS","log","Qtable","rewards","eps","alpha"]
     dataType='process data'
     QtableMem[it,:,:,:]=sup.getQtables()
-    data2Bsaved=[NAS,log,QtableMem,reward,eps,alpha]
+    data2Bsaved=[NASw,NAS,log,QtableMem,reward,eps,alpha]
     fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' '
     for i in range(len(data2Bsaved)):
         with open(fileName+data2BsavedStr[i]+commentDividerChar+comment+'.npy','wb') as f:
@@ -16,17 +16,16 @@ def saveData(caller=None):
 
         with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
             try:
-                '''
-                del sup.video
-                this is not needed since in iterations other than it=0,
-                sup wont record and thus wont have video recorder
-                '''
+                if hasattr(sup,'video'):
+                    del sup.video
                 del sup.pos_getter
                 del sup.rot_getter
+                del sup.NASfunction
                 pickle.dump(sup, supSaver)
             except Exception as E: 
                 print(colored('\t\t[-] error in saving class: '+str(E),'red'))
     elif caller=='interupt':
+        ''' you should not delete any thing here, for code will continue after here'''
         with open(fileName+commentDividerChar+comment+'.sup', 'wb') as supSaver:
             try:
                 pickle.dump(sup, supSaver)
@@ -55,31 +54,44 @@ if __name__ == "__main__" or True:
     dirChangeCharacter=DirLocManage()
 
     ''' parameter value assigning '''
-    Lx=2
-    Ly=4
-    cueRaduis=0.7
-    visibleRaduis=0.3
-    iteration=1
+    # ORIGINALS
+    # Lx=2
+    # Ly=4
+    # cueRaduis=0.7
+    # visibleRaduis=0.3
+
+    Lx=2*sqrt(2)
+    Ly=4*sqrt(2)
+    cueRaduis=0.7*sqrt(2)
+    visibleRaduis=0.3*sqrt(2)
+
+    iteration=5
     samplingPeriodSmall=10
+    # samplingPeriodSmall=10 # original
     FinalTime=1160000 ### alert
-    # FinalTime=116000 ### alert
+    # FinalTime=1160000 ### alert-original
     HalfTime=FinalTime//2
-    dynamic=not True
+    dynamic=True
     samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
     ROBN=10
 
-    '''comment: comment to apear in file name '''
-    comment='no noise sanity test'#'alpha 0.1 VDBE sigma 1'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>... 
 
     '''paramReductionMethod: possible values= 'classic' , 'VDBE' , 'cyclical' '''
     paramReductionMethod='cyclical'
+    print(colored('[+] paramReductionMethod','green'),paramReductionMethod)
+
+    '''comment: comment to apear in file name '''
+    comment=paramReductionMethod+' 100 noise added'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
     
     '''commentDividerChar: plotter code will take legend what ever is after this char'''
     commentDividerChar=' x '
     
-    '''vizFlag: whether the visualization computation will happen or not. if it is True,
-    cod will either record arena or show you scene '''
-    vizFlag=not True
+    '''showFrames: whether the visualization computation will end up showing arena scenes or not '''
+    showFrames=False
+
+    '''record: if set True, you will get video of first iteration '''
+    record=True
     
     '''globalQ: whether all robots will share one Q-table '''
     globalQ=not True
@@ -87,8 +99,6 @@ if __name__ == "__main__" or True:
     '''communicate: flag for local communication '''
     communicate=not True
     
-    '''record: if set True, you will get video of first iteration '''
-    record=True
     
     '''Method: RL , BEECLUST '''
     method='RL'
@@ -111,10 +121,13 @@ if __name__ == "__main__" or True:
 
     save_tables_videos=False
     imsName=["epsilon","QtableCheck","QtableRob0"]
+    
+    '''initiate seed'''
+    seed=set_seed()
 
     ''' save parameters into a file '''
-    paramDict={'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
-        'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'vizFlag':vizFlag , 'globalQ':globalQ , \
+    paramDict={seed:"seed",'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
+        'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'showFrames':showFrames , 'globalQ':globalQ , \
             'communicate':communicate , 'record':record , 'method':method}
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
         paramfile.write(str(paramDict))
@@ -138,6 +151,7 @@ if __name__ == "__main__" or True:
     alpha=np.zeros((iteration,sampledDataNum,ROBN))
     reward=np.zeros((iteration,sampledDataNum,ROBN))
     NAS=np.zeros((iteration,sampledDataNum))
+    NASw=np.zeros((iteration,sampledDataNum))
     strip=np.arange(0,44) ##### caviat: table dimentions pre known
     strip[strip%2==0]=0
     strip[strip%2==1]=255
@@ -155,7 +169,7 @@ if __name__ == "__main__" or True:
         iteration_duration=TIME()
         print(colored("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
-        sup=SUPERVISOR(ROBN,codeBeginTime,vizFlag,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
+        sup=SUPERVISOR(ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
         sup.generateRobots()
         sup.moveAll() # to make initilazation happen
         GroundChanged=False # to make sure ground is changed only once in each iteration
@@ -169,6 +183,9 @@ if __name__ == "__main__" or True:
                 sup.swarmRL()
                 if communicate==True:
                     sup.talk()
+            # if 31370<sup.getTime()<31390:
+            #     sup.showFrames=True
+            #     sup.visualize()
             sup.moveAll()
             ''' end of main loop. rest is logging '''
 
@@ -186,23 +203,26 @@ if __name__ == "__main__" or True:
                 '''logs specail for first iteration'''
                 if it==0: # save these in the first iteration only
                     sup.visualize() # moved for less file size >>>>>>>>>>>>>> alert
-                    if sampled % 100==0 and save_tables_videos:
-                        QtableRob0=sup.getQtables()[0]
+                    if sampled % 100==0 :
+                        '''save csvs '''
                         if save_csv:
+                            QtableRob0=sup.getQtables()[0]
                             np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
-                        imsMat=[sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
 
-                        for count_,v in enumerate(imsMat):
-                            v=np.minimum(v,np.ones(v.shape)*255)
-                            v[0]=strip
-                            im=255-v
-                            im.astype(int)
-                            canvas=np.zeros((im.shape[0],im.shape[1],3))
-                            canvas[:,:,0]=im
-                            canvas[:,:,1]=im
-                            canvas[:,:,2]=im
-                            canvas=cv.resize(canvas,tableImSize)
-                            videoList[count_].write(np.uint8(canvas))
+                        '''save tables videos '''
+                        if save_tables_videos:
+                            imsMat=[sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
+                            for count_,v in enumerate(imsMat):
+                                v=np.minimum(v,np.ones(v.shape)*255)
+                                v[0]=strip
+                                im=255-v
+                                im.astype(int)
+                                canvas=np.zeros((im.shape[0],im.shape[1],3))
+                                canvas[:,:,0]=im
+                                canvas[:,:,1]=im
+                                canvas[:,:,2]=im
+                                canvas=cv.resize(canvas,tableImSize)
+                                videoList[count_].write(np.uint8(canvas))
 
                     elif abs(FinalTime-sup.getTime())<1:
                         '''iteration 0 is about to end. so release the video and turn of record
@@ -211,6 +231,7 @@ if __name__ == "__main__" or True:
                             for _ in range(len(videoList)):
                                 videoList[_].release()
                         record=False
+                        showFrames=False
                         if hasattr(sup,'video'): sup.video.release()
                         ''' save SAR '''
                         SAR=np.stack(sup.swarm[0].SAR)
@@ -219,6 +240,7 @@ if __name__ == "__main__" or True:
                         np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
 
                 ''' in every iteration, log the vital performance indexes with frequency of samplingPeriodSmall''' 
+                NASw[it,sampled]=sup.getNAS(weighted=True)
                 NAS[it,sampled]=sup.getNAS()
                 log[it,sampled,:,:]=sup.getLog()
                 eps[it,sampled,:]=sup.getEps()
@@ -236,6 +258,6 @@ if __name__ == "__main__" or True:
         del sup
         print(colored("\t[+] iteration duration: ",'blue'),int(TIME()-iteration_duration))
     print(colored('[+] duration','green'),int(TIME()-t1_))
-    print(colored('[+] goodbye',"green"))
+    print(colored('[+] goodbye  ^^',"green"))
 
 
