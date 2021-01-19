@@ -3,10 +3,14 @@ from HEADER import *
 #...............................................................................................................................
 def saveData(caller=None):
     print(colored("\n\t\t[+] data saved ",'yellow'))
-    data2BsavedStr=["NASw","NAS","log","Qtable","rewards","eps","alpha"]
     dataType='process data'
     QtableMem[it,:,:,:]=sup.getQtables()
-    data2Bsaved=[NASw,NAS,log,QtableMem,reward,eps,alpha]
+    if localMinima:
+        data2BsavedStr=["NASwG","NASG","NASwL","NASL","log","Qtable","rewards","eps","alpha"]
+        data2Bsaved=[NASwG,NASG,NASwL,NASL,log,QtableMem,reward,eps,alpha]
+    else:
+        data2BsavedStr=["NASw","NAS","log","Qtable","rewards","eps","alpha"]
+        data2Bsaved=[NASw,NAS,log,QtableMem,reward,eps,alpha]
     fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' '
     for i in range(len(data2Bsaved)):
         with open(fileName+data2BsavedStr[i]+commentDividerChar+comment+'.npy','wb') as f:
@@ -21,6 +25,9 @@ def saveData(caller=None):
                 del sup.pos_getter
                 del sup.rot_getter
                 del sup.NASfunction
+                if localMinima:
+                    del sup.NASGfunction
+                    del sup.NASfunction
                 pickle.dump(sup, supSaver)
             except Exception as E: 
                 print(colored('\t\t[-] error in saving class: '+str(E),'red'))
@@ -78,12 +85,21 @@ if __name__ == "__main__" or True:
 
     '''paramReductionMethod: possible values= 'classic' , 'VDBE' , 'cyclical' '''
     paramReductionMethod='cyclical'
-    print(colored('[+] paramReductionMethod','green'),paramReductionMethod)
+
+    '''PRMparameter: parameter reduction method parameter '''
+    PRMparameter=100
+    print(colored('[+] paramReductionMethod','green'),paramReductionMethod,PRMparameter)
 
     '''comment: comment to apear in file name '''
-    comment=paramReductionMethod+' 100 noise added'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    comment=paramReductionMethod+' '+str(PRMparameter)+' '+'local minima'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    print(colored('[+] '+comment,'green'))
 
-    
+    '''localMinima: if two cue must exist '''
+    localMinima=True
+
+    ''' noise: flag to decide existence of noise'''
+    noise=True
+
     '''commentDividerChar: plotter code will take legend what ever is after this char'''
     commentDividerChar=' x '
     
@@ -109,7 +125,6 @@ if __name__ == "__main__" or True:
     '''save_tables_videos: whether tables will be saved as videos or not '''
     save_tables_videos=False
 
-    print(colored('[+] '+comment,'green'))
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
     if globalQ and communicate:
         '''local and global communication cant be toghether '''
@@ -152,6 +167,12 @@ if __name__ == "__main__" or True:
     reward=np.zeros((iteration,sampledDataNum,ROBN))
     NAS=np.zeros((iteration,sampledDataNum))
     NASw=np.zeros((iteration,sampledDataNum))
+    if localMinima:
+        NASG=np.zeros((iteration,sampledDataNum))
+        NASwG=np.zeros((iteration,sampledDataNum))
+        NASL=np.zeros((iteration,sampledDataNum))
+        NASwL=np.zeros((iteration,sampledDataNum))
+
     strip=np.arange(0,44) ##### caviat: table dimentions pre known
     strip[strip%2==0]=0
     strip[strip%2==1]=255
@@ -169,7 +190,7 @@ if __name__ == "__main__" or True:
         iteration_duration=TIME()
         print(colored("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
-        sup=SUPERVISOR(ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod)
+        sup=SUPERVISOR(ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod,PRMparameter,noise,localMinima)
         sup.generateRobots()
         sup.moveAll() # to make initilazation happen
         GroundChanged=False # to make sure ground is changed only once in each iteration
@@ -183,9 +204,6 @@ if __name__ == "__main__" or True:
                 sup.swarmRL()
                 if communicate==True:
                     sup.talk()
-            # if 31370<sup.getTime()<31390:
-            #     sup.showFrames=True
-            #     sup.visualize()
             sup.moveAll()
             ''' end of main loop. rest is logging '''
 
@@ -196,8 +214,9 @@ if __name__ == "__main__" or True:
                 if dynamic:
                     sup.changeGround()
 
-            # sup.visualize(True) # for debug
-            # sup.visualize() 
+            ''' becareful it is for debuging otherwise huge sized videos will come out
+            sup.visualize() 
+            '''
             ''' main logger '''
             if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
                 '''logs specail for first iteration'''
@@ -240,8 +259,12 @@ if __name__ == "__main__" or True:
                         np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
 
                 ''' in every iteration, log the vital performance indexes with frequency of samplingPeriodSmall''' 
-                NASw[it,sampled]=sup.getNAS(weighted=True)
-                NAS[it,sampled]=sup.getNAS()
+                if localMinima:
+                    NASG[it,sampled],NASL[it,sampled]=sup.getNAS()                    
+                    NASwG[it,sampled],NASwL[it,sampled]=sup.getNAS(weighted=True)                    
+                else:
+                    NASw[it,sampled]=sup.getNAS(weighted=True)
+                    NAS[it,sampled]=sup.getNAS()
                 log[it,sampled,:,:]=sup.getLog()
                 eps[it,sampled,:]=sup.getEps()
                 alpha[it,sampled,:]=sup.getAlpha()

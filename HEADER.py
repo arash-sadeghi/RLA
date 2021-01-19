@@ -13,7 +13,7 @@ from varname import nameof
 import pickle
 # import dill as pickle
 import matplotlib.pyplot as plt
-
+from psutil import disk_usage
 from termcolor import colored 
 from subprocess import call 
 from itertools import combinations  as comb , product
@@ -36,9 +36,30 @@ def warningSupress():
         simplefilter("ignore")
 # ------------------------------------------------------------------------------------------------------------------------------
 def checkHealth():
-    health=shutil.disk_usage('/')
-    if health[-1]/(2**30)<=5:
-        raise NameError('[-] disk is getting full')
+    MinDiskCap=30
+    # health=shutil.disk_usage('/')
+    # if health[-1]/(2**30)<=5:
+    #     raise NameError('[-] disk is getting full')
+    disk='/media/arash/7bee828d-5758-452e-956d-aca000de2c81'
+    try:
+        hdd=disk_usage(disk)
+        total,used,free=hdd.total / (2**30),hdd.used / (2**30),hdd.free / (2**30)
+        if free<MinDiskCap:
+                print (colored('[-] disk is almost full',"red"))
+                exit(1)
+
+    except Exception as E:
+        print(colored("[+] Error not in "+disk+" ERROR:"+E,'red'))
+
+    hdd2=disk_usage(__file__)
+    total2,used2,free2=hdd2.total / (2**30),hdd2.used / (2**30),hdd2.free / (2**30)
+
+    if free2<MinDiskCap:
+            print (colored('[-] disk is almost full',"red"))
+            exit(1)
+
+
+
 # ------------------------------------------------------------------------------------------------------------------------------
 def m2px(inp):
     return int(inp*512/2)
@@ -93,14 +114,16 @@ def quadratic(x):
 ################################################################################################################################
 ################################################################################################################################
 class SUPERVISOR:
-    def __init__(self,ROBN,codeBeginTime,showFrames,globalQ=False,record=False,Lx=2,Ly=4,cueRaduis=0.7,visibleRaduis=0.3,paramReductionMethod='adaptive'):
+    def __init__(self,ROBN,codeBeginTime,showFrames,globalQ=False,record=False,Lx=2,Ly=4,cueRadius=0.7,visibleRaduis=0.3,paramReductionMethod='classic',PRMparameter=None,noise=False,localMinima=False):
         self.Lx=m2px(Lx)
         self.Ly=m2px(Ly)
-        self.cueRaduis=m2px(cueRaduis)
+        self.cueRadius=m2px(cueRadius)
         self.visibleRaduis=m2px(visibleRaduis)
         self.QRloc={'QR1':(self.Lx,self.Ly//4),'QR2':(self.Lx,self.Ly//4*2),\
             'QR3':(self.Lx,self.Ly//4*3),'QR4':(0,self.Ly//4*3),'QR5':(0,self.Ly//4*2),'QR6':(0,self.Ly//4)}
-        self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRaduis,self.visibleRaduis)
+        '''self.localMinima: flag to determine if local minima will exist or not '''
+        self.localMinima=localMinima
+        self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRadius,self.visibleRaduis)
         self.codeBeginTime=codeBeginTime
         self.sharedParams()
         self.showFrames=showFrames
@@ -144,10 +167,18 @@ class SUPERVISOR:
         self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
         self.QRpos_ar=np.array(list(self.QRloc.values()))
         self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
+
+        '''for local and global NAS '''
+        if self.localMinima:
+            self.NASGfunction=np.vectorize(lambda x: x.groundSensorValueG)
+            self.NASLfunction=np.vectorize(lambda x: x.groundSensorValueL)
+
         if self.showFrames:
             ''' positioning window to make it easier to watch '''
             cv.namedWindow('background')
             cv.moveWindow('background',1000,0)
+        self.noise=noise
+        self.PRMparameter=PRMparameter
 # sharedParams .................................................................................................................
     def sharedParams(self):
         """
@@ -161,7 +192,6 @@ class SUPERVISOR:
         touch it. now Xlen=1024>Ylen=512 but is should have been 
         other way. any way! '''  
 
-        self.cueRadius=m2px(0.7)   
         self.EpsilonDampRatio=0.999 #######
 
         '''self.desiredPosDistpx the radius of a circle in which I say desired point has reached 
@@ -195,10 +225,10 @@ class SUPERVISOR:
         '''self.debug: in debugging mode Wmax will be zero and robot 0 will be indicated with green color in visualize'''
         self.debug=not True ##########
 # generateBackground ...........................................................................................................
-    def generateBackground(self,Lx,Ly,cueRaduis,visibleRaduis):
+    def generateBackground(self,Lx,Ly,cueRadius,visibleRaduis):
         Lxpx=Lx
         Lypx=Ly
-        R=cueRaduis
+        R=cueRadius
         def gauss(x):
             a = 1.0 # amplititude of peak
             b = Lxpx/2.0 # center of peak
@@ -207,9 +237,17 @@ class SUPERVISOR:
         im=np.zeros((Lxpx,Lypx))
         for i in range(0,R):
             cv.circle(im,(int((Lypx/4)),int(Lxpx/2)),i,gauss(Lxpx/2-i),2)
+
+        if self.localMinima:
+            self.cueGcenter=np.flip(np.array([int((Lypx/4)),int(Lxpx/2)]))
+            self.cueLcenter=np.flip(np.array([int((3*Lypx/4)),int(Lxpx/2)]))
+
+            for i in range(0,R):
+                cv.circle(im,(int((3*Lypx/4)),int(Lxpx/2)),i,gauss(Lxpx/2-i)/2,2)
+
+        ''' until here dim(x)>dim(y). after here it changes '''
         im=cv.rotate(im, cv.ROTATE_90_CLOCKWISE)
-        # QRlocs=[(Lxpx,Lypx//4),(Lxpx,Lypx//2),(Lxpx,3*Lypx//4),(0,3*Lypx//4),(0,Lypx//2),(0,Lypx//4)]
-        # QRlocs=[(Lxpx,Lypx//4),(Lxpx,Lypx//2),(Lxpx,3*Lypx//4),(0,3*Lypx//4),(0,Lypx//2),(0,Lypx//4)]
+
 
         for i in self.QRloc.values():
             cv.circle(im,tuple(i),10,(255,255,255),-1)
@@ -280,6 +318,7 @@ class SUPERVISOR:
 
             cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
+            ''' put eps info on right corener
             if self.paramReductionMethod=='classic':
                 AllEpsilons= np.mean([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
                 EpsilonAverage=round(np.mean(AllEpsilons),3)
@@ -288,7 +327,7 @@ class SUPERVISOR:
                 AllEpsilons=np.array([np.mean(self.swarm[_].epsilon[1:]) for _ in range(self.ROBN)]) # 1: is for disolving the effect of state 0
                 EpsilonAverage=round(np.mean(AllEpsilons),3)
                 cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-
+            '''
             if self.record:
                 self.video.write(background)
             if self.showFrames:
@@ -440,12 +479,18 @@ class SUPERVISOR:
         return int(self.time)
 # getNAS .......................................................................................................................
     def getNAS(self,weighted=False):
-        if weighted==False:
-            inCue=np.count_nonzero(self.NASfunction(self.swarm))
-            return inCue/self.ROBN
-        elif weighted==True:
-            return np.sum(self.NASfunction(self.swarm))/(self.ROBN*255)
+        if self.localMinima:
+            if weighted:
+                return np.sum(self.NASGfunction(self.swarm))/(self.ROBN*255),np.sum(self.NASLfunction(self.swarm))/(self.ROBN*255)
+            else:
+                return np.count_nonzero(self.NASGfunction(self.swarm))/self.ROBN,np.count_nonzero(self.NASLfunction(self.swarm))/self.ROBN
 
+        else:
+            ''' no discrimination of local and global cue '''
+            if weighted==False:
+                return np.count_nonzero(self.NASfunction(self.swarm))/self.ROBN
+            elif weighted==True:
+                return np.sum(self.NASfunction(self.swarm))/(self.ROBN*255)
 # getQRs .......................................................................................................................
     def getQRs(self):
         '''
@@ -519,6 +564,7 @@ class SUPERVISOR:
     def changeGround(self):
         ''' this code will ruin address exchange'''
         self.ground=cv.rotate(self.ground,cv.ROTATE_180)
+        self.cueLcenter,self.cueGcenter=np.copy(self.cueGcenter),np.copy(self.cueLcenter)
         for i in range(self.ROBN):
             self.swarm[i].ground=self.ground
         ''' now address equality returned '''
@@ -534,6 +580,9 @@ class ROBOT(SUPERVISOR):
         self.ground=0 # initilizing for robots
         self.rotation=0
         self.rotation2B=0
+        '''self.position[1]>self.position[0] -> first element of position is for x axis of the
+        image of the vertical rectangle. for self.ground it is inverse since its first element
+        is bigger than the second one'''
         self.position=[0,0]
         self.position2B=[0,0]
         self.groundSensorValue=0
@@ -559,7 +608,6 @@ class ROBOT(SUPERVISOR):
         self.prevdelta=np.zeros(np.shape(self.Qtable))
         self.DELTA=np.zeros(np.shape(self.Qtable))
 
-
         ''' start with the predetermined initial values '''
         self.epsilon=np.zeros(np.shape(self.Qtable))+self.RLparams['epsilon']
         self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
@@ -581,8 +629,15 @@ class ROBOT(SUPERVISOR):
         self.epoch=0
 
         '''self.rewardNoise: flag that says if reward will have noise or not '''
-        self.rewardNoise=True
+        self.rewardNoise=self.SUPERVISOR.noise
         self.noiseStrength=10
+
+        ''' for local and global minima '''
+        if self.SUPERVISOR.localMinima:
+            self.groundSensorValueG=0
+            self.groundSensorValueL=0
+
+
 # move .........................................................................................................................
     def move(self):
             ''' rotation must be changed in any cond '''
@@ -621,21 +676,31 @@ class ROBOT(SUPERVISOR):
             if np.size(indexes)>0:
                 ''' cant leave the aggregation with this angle '''
                 self.aggregate(forced=True)
-
-
             else:
                 ''' easily leave the aggregation ''' 
                 self.position=np.copy(self.position2B)
 # groundSense ..................................................................................................................
     def groundSense(self):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
-        ''' if dist(self.position,[self.Xlen//4,self.Ylen//2])<=self.cueRadius: '''
-        ''' for dynamic env, x condition is deleted ''' ####
         if self.position[0]<= self.Ylen-(self.SUPERVISOR.visibleRaduis+2) and self.position[0]>= (self.SUPERVISOR.visibleRaduis+2)\
             and self.position[1]>=(self.SUPERVISOR.visibleRaduis+2) and self.position[1]<=self.Xlen-(self.SUPERVISOR.visibleRaduis+2):
 
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
+        
+        if self.SUPERVISOR.localMinima:
+            ''' if discrimination of local and global cue is needed'''
+            if dist(self.position-self.SUPERVISOR.cueGcenter)<=self.SUPERVISOR.cueRadius:
+                self.groundSensorValueG=self.groundSensorValue
+                self.groundSensorValueL=0
+
+            elif dist(self.position-self.SUPERVISOR.cueLcenter)<=self.SUPERVISOR.cueRadius:
+                self.groundSensorValueL=self.groundSensorValue
+                self.groundSensorValueG=0
+            else:
+                self.groundSensorValueL=0
+                self.groundSensorValueG=0
+
 # aggregate ....................................................................................................................
     def aggregate(self,forced=False):
         self.groundSense()
@@ -721,11 +786,7 @@ class ROBOT(SUPERVISOR):
             self.RLparams["epsilon"]*=self.EpsilonDampRatio ####
         elif self.SUPERVISOR.paramReductionMethod=='VDBE':
             ''' assuming sigma=1'''
-            # sigma=1
-            # sigma=0.2
-            # sigma=3
-            # sigma=10
-            sigma=10*5
+            sigma=self.SUPERVISOR.PRMparameter
 
             delta=1/44 # caviat: inverse of number of actions. number of actions is known so cheated
             ''' less delta means slower updates so small delta will change eps slowly '''
@@ -739,5 +800,5 @@ class ROBOT(SUPERVISOR):
                     .format(x,f,comm_term,self.Qtable[x,y],self.prevQtable[x,y],self.prev_eps_1d[x],self.eps_1d[x]))
         elif self.SUPERVISOR.paramReductionMethod=='cyclical':
             self.epoch+=1
-            s=100 # period 
+            s=self.SUPERVISOR.PRMparameter # period 
             self.RLparams["epsilon"]=(cos(self.epoch*2*np.pi/s)+1)/2
