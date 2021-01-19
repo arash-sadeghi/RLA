@@ -57,7 +57,7 @@ def checkHealth():
     if free2<MinDiskCap:
             print (colored('[-] disk is almost full',"red"))
             exit(1)
-
+    print(colored('\t[+] Disk health checked. free2: ','green'),str(int(free2)),' GB')
 
 
 # ------------------------------------------------------------------------------------------------------------------------------
