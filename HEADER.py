@@ -40,7 +40,9 @@ def checkHealth():
     # health=shutil.disk_usage('/')
     # if health[-1]/(2**30)<=5:
     #     raise NameError('[-] disk is getting full')
-    disk='/media/arash/7bee828d-5758-452e-956d-aca000de2c81'
+    # disk='/media/arash/7bee828d-5758-452e-956d-aca000de2c81'
+    disk=os.getcwd()
+
     try:
         hdd=disk_usage(disk)
         total,used,free=hdd.total / (2**30),hdd.used / (2**30),hdd.free / (2**30)
@@ -51,7 +53,12 @@ def checkHealth():
     except Exception as E:
         print(colored("[+] Error not in "+disk+" ERROR:"+E,'red'))
 
-    hdd2=disk_usage(__file__)
+    s=__file__
+    s=s.replace(__name__,"")
+    s=s.replace('.py',"")
+    if '\\' in s:
+        s=s.replace('\\','/')
+    hdd2=disk_usage(s)
     total2,used2,free2=hdd2.total / (2**30),hdd2.used / (2**30),hdd2.free / (2**30)
 
     if free2<MinDiskCap:

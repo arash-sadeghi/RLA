@@ -61,69 +61,90 @@ if __name__ == "__main__" or True:
     dirChangeCharacter=DirLocManage()
 
     ''' parameter value assigning '''
-    # ORIGINALS
-    # Lx=2
-    # Ly=4
-    # cueRaduis=0.7
-    # visibleRaduis=0.3
+    GUI_flag=True
+    if GUI_flag:
+        from GUI import parameterGUI
+        # vals,flags=parameterGUI()
+        pgui=parameterGUI()
 
-    Lx=2*sqrt(2)
-    Ly=4*sqrt(2)
-    cueRaduis=0.7*sqrt(2)
-    visibleRaduis=0.3*sqrt(2)
+        for valg_name, val_value in pgui.vals:
+            try: 
+                val_value=int(val_value)
+            except:
+                try: 
+                    val_value=float(val_value)
+                except:
+                    pass
+            
+            globals()[valg_name]=val_value
 
-    iteration=5
-    samplingPeriodSmall=10
-    # samplingPeriodSmall=10 # original
-    FinalTime=1160000 ### alert
-    # FinalTime=1160000 ### alert-original
-    HalfTime=FinalTime//2
-    dynamic=True
-    samplingPeriod=FinalTime//5 #100 causes in 2500 files 100*5*5
-    ROBN=10
+        for flag_name, flag_value in pgui.flags:
+            globals()[flag_name]=True if flag_value==1 else False
+        del pgui
+        del parameterGUI
+
+    else:
+        # ORIGINALS
+        # Lx=2
+        # Ly=4
+        # cueRaduis=0.7
+        # visibleRaduis=0.3
+
+        Lx=2*sqrt(2)
+        Ly=4*sqrt(2)
+        cueRaduis=0.7*sqrt(2)
+        visibleRaduis=0.3*sqrt(2)
+
+        iteration=5
+        samplingPeriodSmall=10
+        FinalTime=1160000 ### alert
+        HalfTime=FinalTime//2
+        dynamic=True
+        ROBN=10
 
 
-    '''paramReductionMethod: possible values= 'classic' , 'VDBE' , 'cyclical' '''
-    paramReductionMethod='cyclical'
+        '''paramReductionMethod: possible values= 'classic' , 'VDBE' , 'cyclical' '''
+        paramReductionMethod='cyclical'
 
-    '''PRMparameter: parameter reduction method parameter '''
-    PRMparameter=100
-    print(colored('[+] paramReductionMethod','green'),paramReductionMethod,PRMparameter)
+        '''PRMparameter: parameter reduction method parameter '''
+        PRMparameter=100
 
-    '''comment: comment to apear in file name '''
-    comment=paramReductionMethod+' '+str(PRMparameter)+' '+'local minima'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        '''comment: comment to apear in file name '''
+        comment=paramReductionMethod+' '+str(PRMparameter)+' '+'local minima'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+        '''localMinima: if two cue must exist '''
+        localMinima=True
+
+        ''' noise: flag to decide existence of noise'''
+        noise=True
+
+        '''commentDividerChar: plotter code will take legend what ever is after this char'''
+        commentDividerChar=' x '
+        
+        '''showFrames: whether the visualization computation will end up showing arena scenes or not '''
+        showFrames=False
+
+        '''record: if set True, you will get video of first iteration '''
+        record=True
+        
+        '''globalQ: whether all robots will share one Q-table '''
+        globalQ=not True
+        
+        '''communicate: flag for local communication '''
+        communicate=not True
+        
+        
+        '''Method: RL , BEECLUST '''
+        method='RL'
+        
+        '''save_csv: whether tables will be saved as csv or not '''
+        save_csv=not True
+
+        '''save_tables_videos: whether tables will be saved as videos or not '''
+        save_tables_videos=False
+
     print(colored('[+] '+comment,'green'))
-
-    '''localMinima: if two cue must exist '''
-    localMinima=True
-
-    ''' noise: flag to decide existence of noise'''
-    noise=True
-
-    '''commentDividerChar: plotter code will take legend what ever is after this char'''
-    commentDividerChar=' x '
-    
-    '''showFrames: whether the visualization computation will end up showing arena scenes or not '''
-    showFrames=False
-
-    '''record: if set True, you will get video of first iteration '''
-    record=True
-    
-    '''globalQ: whether all robots will share one Q-table '''
-    globalQ=not True
-    
-    '''communicate: flag for local communication '''
-    communicate=not True
-    
-    
-    '''Method: RL , BEECLUST '''
-    method='RL'
-    
-    '''save_csv: whether tables will be saved as csv or not '''
-    save_csv=not True
-
-    '''save_tables_videos: whether tables will be saved as videos or not '''
-    save_tables_videos=False
+    print(colored('[+] paramReductionMethod','green'),paramReductionMethod,PRMparameter)
 
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
     if globalQ and communicate:
@@ -134,15 +155,12 @@ if __name__ == "__main__" or True:
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
 
-    save_tables_videos=False
-    imsName=["epsilon","QtableCheck","QtableRob0"]
-    
     '''initiate seed'''
     seed=set_seed()
 
     ''' save parameters into a file '''
     paramDict={seed:"seed",'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
-        'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'samplingPeriod':samplingPeriod , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'showFrames':showFrames , 'globalQ':globalQ , \
+        'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'showFrames':showFrames , 'globalQ':globalQ , \
             'communicate':communicate , 'record':record , 'method':method}
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
         paramfile.write(str(paramDict))
@@ -179,6 +197,7 @@ if __name__ == "__main__" or True:
     tableImSize=(7*20,44*20)[::-1] ##### caviat: table dimentions pre known
 
     if save_tables_videos:
+        imsName=["epsilon","QtableCheck","QtableRob0"]
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
         FPS=1
         videoList=[]
