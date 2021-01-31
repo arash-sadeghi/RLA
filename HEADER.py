@@ -1,4 +1,3 @@
-# jan 16 2021
 import cv2 as cv
 import numpy as np
 import random as rnd
@@ -7,27 +6,25 @@ from itertools import product
 from time import time as TIME
 from time import ctime
 import os
-import shutil
-import signal
-from varname import nameof
-import pickle
-# import dill as pickle
+import signal # used in main
+import pickle # used in main
 import matplotlib.pyplot as plt
 from psutil import disk_usage
 from termcolor import colored 
-from subprocess import call 
 from itertools import combinations  as comb , product
 
-
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
-def set_seed():
-    seed=int(TIME()%1000)
-    rnd.seed(seed)
-    # rnd.seed(828)
-
-    return seed
+def set_seed(sd=None):
+    if sd is None:
+        seed=int(TIME()%1000)
+        rnd.seed(seed)
+        return seed
+    else:
+        print(colored("\n\n[!]>>>>>>>>>>>> SEED GIVEN. NOT RANDOM<<<<<<<<<<<<<<\n\n","yellow"))
+        rnd.seed(sd)
+        return sd
 # ------------------------------------------------------------------------------------------------------------------------------
 def warningSupress():
     from sys import warnoptions
@@ -65,8 +62,6 @@ def checkHealth():
             print (colored('[-] disk is almost full',"red"))
             exit(1)
     print(colored('\t[+] Disk health checked. free2: ','green'),str(int(free2)),' GB')
-
-
 # ------------------------------------------------------------------------------------------------------------------------------
 def m2px(inp):
     return int(inp*512/2)
@@ -121,7 +116,8 @@ def quadratic(x):
 ################################################################################################################################
 ################################################################################################################################
 class SUPERVISOR:
-    def __init__(self,ROBN,codeBeginTime,showFrames,globalQ=False,record=False,Lx=2,Ly=4,cueRadius=0.7,visibleRaduis=0.3,paramReductionMethod='classic',PRMparameter=None,noise=False,localMinima=False):
+    def __init__(self,ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRadius,visibleRaduis,paramReductionMethod,PRMparameter,noise,localMinima,method):
+        self.Etol=2
         self.Lx=m2px(Lx)
         self.Ly=m2px(Ly)
         self.cueRadius=m2px(cueRadius)
@@ -167,7 +163,6 @@ class SUPERVISOR:
 
         self.allRobotIndx=np.arange(0,self.ROBN)
         self.globalQ=globalQ
-        self.globalQ=globalQ
         self.allnodes=np.array(list(comb(self.allRobotIndx,2)))
         self.colliders=[]
         self.all_poses=[]
@@ -186,6 +181,7 @@ class SUPERVISOR:
             cv.moveWindow('background',1000,0)
         self.noise=noise
         self.PRMparameter=PRMparameter
+        self.method=method
 # sharedParams .................................................................................................................
     def sharedParams(self):
         """
@@ -207,7 +203,7 @@ class SUPERVISOR:
 
 
         angles=np.arange(0,180+18,18)
-        maxlen=int(16*512/9.2) # 14
+        maxlen=int(16*512/9.2)*sqrt(2) # caviat
         lens=[maxlen//4,2*maxlen//4,3*maxlen//4,4*maxlen//4]
         self.actionSpace=list(product(lens,angles))
 
@@ -296,24 +292,35 @@ class SUPERVISOR:
         if self.vizFlag:
             background=np.copy(self.ground)
             for i in range(self.ROBN):
-                if self.swarm[i].inAction== True:
-                    I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
-                    E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
-                    Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
-                    cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
-                    cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
-                    cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
                 vizPos=[]
                 for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
-
-                if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
-                    RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
-                elif i==0:
+                RobotColor=(255,100,100)
+                if i==0:
                     ''' robot0 is in purple for debug purposes '''
                     RobotColor=(128,0,128)
-                else:
-                    RobotColor=(255,100,100)
 
+                if self.method=="RL":
+                    if self.swarm[i].inAction== True:
+                        I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
+                        E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
+                        Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
+                        cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
+                        cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
+                        cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
+
+                    if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
+                        RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
+
+
+                elif self.method=="LBA":
+                    if self.swarm[i].checkArrived== True:
+                        I=tuple(map(lambda x: int(round(x)),self.swarm[i].initialPos))
+                        E=tuple(map(lambda x: int(round(x)),self.swarm[i].desiredPos))
+                        Q=tuple(map(lambda x: int(round(x)),self.swarm[i].QRloc[self.swarm[i].lastdetectedQR]))
+                        cv.arrowedLine(background,Q,E,(0,0,255),2) # action space vector
+                        cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
+                        cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
+                    
                 cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
                 cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
 
@@ -325,16 +332,6 @@ class SUPERVISOR:
 
             cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
-            ''' put eps info on right corener
-            if self.paramReductionMethod=='classic':
-                AllEpsilons= np.mean([self.swarm[_].RLparams['epsilon'] for _ in range(self.ROBN)])
-                EpsilonAverage=round(np.mean(AllEpsilons),3)
-                cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-            else:
-                AllEpsilons=np.array([np.mean(self.swarm[_].epsilon[1:]) for _ in range(self.ROBN)]) # 1: is for disolving the effect of state 0
-                EpsilonAverage=round(np.mean(AllEpsilons),3)
-                cv.putText(background,'eps: '+str(EpsilonAverage),(20,50),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
-            '''
             if self.record:
                 self.video.write(background)
             if self.showFrames:
@@ -369,14 +366,20 @@ class SUPERVISOR:
                 self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
                 self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                 self.flagsR[i,j]=1
-                self.swarm[i].inAction=False
+                if self.method=="LBA":
+                    self.swarm[i].checkArrived=False
+                elif self.method=="RL":
+                    self.swarm[i].inAction=False
                 i,j=j,i
                 collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] \
                     , self.swarm[j].position[1]-self.swarm[i].position[1] )))
                 self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
                 self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
                 self.flagsR[i,j]=1
-                self.swarm[i].inAction=False
+                if self.method=="LBA":
+                    self.swarm[i].checkArrived=False
+                elif self.method=="RL":
+                    self.swarm[i].inAction=False
         else:
             c=np.reshape(cols,(np.size(cols)//2,2))
             for pairs in c:
@@ -392,6 +395,7 @@ class SUPERVISOR:
         '''specific: if collision avoidence is forced. this onle happens when you want
         to leave aggregation '''
         if specific==False:
+            ''' collision with wall detection '''
             self.all_poses=np.vstack(self.pos_getter(self.allRobotIndx))
             all_rots=self.rot_getter(self.allRobotIndx)
             '''list order: 1 >| , 2 |< , 3 _ , 4 - '''
@@ -413,15 +417,23 @@ class SUPERVISOR:
                         for j in loc_conds[i]:
                             if j in rot_conds[i]:
                                 self.swarm[j].rotation2B=RotStandard(rnd.randint(ranges[i][0],ranges[i][1]))
-                                if self.swarm[j].inAction==True:
-                                    self.swarm[j].actAndReward(-1) 
-                                    y=self.swarm[j].actionIndx
-                                    x=self.swarm[j].state
-                                    '''V to catch alpha=1 bug if it happens again '''
-                                    if y<10 and y>0 :
-                                        print('catched',j,self.getTime(),x,y)
+                                if self.method=='RL':
+                                    if self.swarm[j].inAction==True:
+                                        self.swarm[j].actAndReward(-1) 
+                                        y=self.swarm[j].actionIndx
+                                        x=self.swarm[j].state
+                                        '''V to catch alpha=1 bug if it happens again '''
+                                        if y<10 and y>0 :
+                                            print('catched',j,self.getTime(),x,y)
+                                elif self.method=='LBA' and self.swarm[j].checkArrived:
+                                    self.swarm[j].checkArrived=False
+                                    LQR=int(self.swarm[j].lastdetectedQR[-1])
+                                    self.swarm[j].e[LQR-1]+=1
+                                    if self.swarm[j].e[LQR-1]>=self.Etol:
+                                        self.swarm[j].vecs[LQR-1]*=0
 
-
+            
+            ''' collision with robot detection '''
             Robot1=self.all_poses[self.allnodes[:,0]]
             Robot2=self.all_poses[self.allnodes[:,1]]
             dists=Robot1-Robot2
@@ -513,8 +525,13 @@ class SUPERVISOR:
         allRobotIndx=np.copy(self.allRobotIndx)
         if len(detects)>0:
             for i,j in detects:
+                ''' these robots has detected QR. so change their QR parameter and
+                delete their indexes from  allRobotIndx so the rest gets QR0'''
                 self.swarm[i].detectedQR='QR'+str(j+1)
                 allRobotIndx=np.delete(allRobotIndx,allRobotIndx==i)
+                '''lastdetectedQR only saves the non zero values of QR. for RL it is only used for visualization'''
+                self.swarm[i].lastdetectedQR=self.swarm[i].detectedQR
+
             
         for i in allRobotIndx:
             self.swarm[i].detectedQR='QR0'
@@ -571,10 +588,44 @@ class SUPERVISOR:
     def changeGround(self):
         ''' this code will ruin address exchange'''
         self.ground=cv.rotate(self.ground,cv.ROTATE_180)
-        self.cueLcenter,self.cueGcenter=np.copy(self.cueGcenter),np.copy(self.cueLcenter)
+        if self.localMinima: self.cueLcenter,self.cueGcenter=np.copy(self.cueGcenter),np.copy(self.cueLcenter)
         for i in range(self.ROBN):
             self.swarm[i].ground=self.ground
         ''' now address equality returned '''
+# LBA .................................................................................................................
+    def LBA(self):
+        for i in range(self.ROBN):
+            if self.swarm[i].detectedQR!='QR0':
+                ''' a QR is detected '''
+                QR=int(self.swarm[i].detectedQR[-1])
+                if np.all(self.swarm[i].vecs[QR-1]==0):
+                    """ we see the QR for the first time. so we are WAITING TO LEARN """
+                    self.swarm[i].waitingCue=True
+
+                else:
+                    """ this QR have been seen before. EXECUTE VECTOR """
+                    sudoVec=self.QRpos_ar[QR-1]-self.swarm[i].position
+                    actionXY_SudoVec=self.swarm[i].vecs[QR-1]+sudoVec
+                    angle=np.degrees(atan2(actionXY_SudoVec[0],actionXY_SudoVec[1]))
+                    length=sqrt(actionXY_SudoVec[0]**2+actionXY_SudoVec[1]**2)
+                    self.swarm[i].rotation2B=angle
+                    self.swarm[i].initialPos=np.copy(self.swarm[i].position)
+                    self.swarm[i].desiredPos=self.swarm[i].initialPos+actionXY_SudoVec
+                    self.swarm[i].checkArrived=True
+
+
+            elif self.swarm[i].waitingCue and self.swarm[i].groundSensorValue>0 and np.any(self.flagsR[i]==1):
+                ''' robot has collided inside the cue and has seen QR previously. so we LEARN '''
+                self.swarm[i].waitingCue=False
+                LQR=int(self.swarm[i].lastdetectedQR[-1])
+                p1=self.QRpos_ar[LQR-1]
+                p2=self.swarm[i].position
+                connector=p2-p1
+                self.swarm[i].vecs[LQR-1]=np.copy(connector)
+
+            # elif self.swarm[i].checkArrived:
+            #     if dist(self.swarm[i].position-self.swarm[i].desiredPos)<=self.desiredPosDistpx :
+            #         self.swarm[i].checkArrived=False
 ################################################################################################################################
 ################################################################################################################################
 ################################################################################################################################
@@ -595,54 +646,62 @@ class ROBOT(SUPERVISOR):
         self.groundSensorValue=0
         self.waitingTime=0
         self.delayFlag=False
-        self.detectedQR=' '
-        self.lastdetectedQR=' '
-        self.Qtable=np.zeros((self.numberOfStates,self.NumberOfActions))
-        self.prevQtable=np.zeros((self.numberOfStates,self.NumberOfActions))
-        self.QtableCheck=np.zeros((self.numberOfStates,self.NumberOfActions))
-        self.exploredAmount=0
-        self.inAction=False
-        self.desiredPos=0
-        self.action=0
-        self.state=0
-        self.initialPos=0
-        self.rewardMemory=[]
-        self.sudoVec=0
-        self.ExploreExploit=''
-        self.actionIndx=0
-        self.delta=np.zeros(np.shape(self.Qtable))
-        self.deltaDot=np.zeros(np.shape(self.Qtable))
-        self.prevdelta=np.zeros(np.shape(self.Qtable))
-        self.DELTA=np.zeros(np.shape(self.Qtable))
-
-        ''' start with the predetermined initial values '''
-        self.epsilon=np.zeros(np.shape(self.Qtable))+self.RLparams['epsilon']
-        self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
-        self.eps_1d=np.zeros((np.shape(self.Qtable)[0],))+self.RLparams['epsilon']
-        self.prev_eps_1d=np.zeros((np.shape(self.Qtable)[0],))+self.RLparams['epsilon']
-
-        ''' making first row striped'''
-        x=np.arange(0,len(self.delta[0]))
-        self.delta[0,x%2==0]=255
-        self.deltaDot[0,x%2==0]=255
-        self.DELTA[0,x%2==0]=255
-        self.epsilon[0,x%2==0]=255
 
         ''' only robot 0 will talk '''
         self.printFlag=True if self.robotName=='0' and self.printFlag else False 
-        self.SAR=[]
-
-        ''' for cyclical '''
-        self.epoch=0
 
         '''self.rewardNoise: flag that says if reward will have noise or not '''
         self.rewardNoise=self.SUPERVISOR.noise
-        self.noiseStrength=10
+        self.noiseStrength=self.rewardNoise
 
         ''' for local and global minima '''
         if self.SUPERVISOR.localMinima:
             self.groundSensorValueG=0
             self.groundSensorValueL=0
+
+        if self.SUPERVISOR.method=="LBA" or self.SUPERVISOR.method=="RL":
+            ''' common parameters of LBA and RL '''
+            self.detectedQR=' '
+            self.lastdetectedQR=' '
+            self.initialPos=0
+            self.sudoVec=0
+            self.desiredPos=0
+            if self.SUPERVISOR.method=="RL":
+                ''' parameters of just RL '''
+                self.Qtable=np.zeros((self.numberOfStates,self.NumberOfActions))
+                self.prevQtable=np.zeros((self.numberOfStates,self.NumberOfActions))
+                self.QtableCheck=np.zeros((self.numberOfStates,self.NumberOfActions))
+                self.exploredAmount=0
+                self.inAction=False
+                self.action=0
+                self.state=0
+                self.rewardMemory=[]
+                self.ExploreExploit=''
+                self.actionIndx=0
+                ''' start with the predetermined initial values '''
+                self.epsilon=np.zeros(np.shape(self.Qtable))+self.RLparams['epsilon']
+                self.alpha=np.zeros(np.shape(self.Qtable))+self.RLparams['alpha']
+                self.eps_1d=np.zeros((np.shape(self.Qtable)[0],))+self.RLparams['epsilon']
+                self.prev_eps_1d=np.zeros((np.shape(self.Qtable)[0],))+self.RLparams['epsilon']
+
+                ''' making first row striped'''
+                x=np.arange(0,len(self.delta[0]))
+                self.delta[0,x%2==0]=255
+                self.deltaDot[0,x%2==0]=255
+                self.DELTA[0,x%2==0]=255
+                self.epsilon[0,x%2==0]=255
+
+                self.SAR=[]
+                ''' for cyclical '''
+                self.epoch=0
+            elif self.SUPERVISOR.method=="LBA":
+                ''' parameters of just LBA '''
+                self.e=np.zeros(len(self.SUPERVISOR.QRloc))
+                self.vecs=np.zeros((len(self.SUPERVISOR.QRloc),2))
+                self.checkArrived=False
+                self.waitingCue=False
+
+
 
 
 # move .........................................................................................................................
@@ -751,7 +810,6 @@ class ROBOT(SUPERVISOR):
             self.initialPos=np.copy(self.position)
             self.reward=0
             self.desiredPos=self.initialPos+actionXY_SudoVec
-            self.lastdetectedQR=self.detectedQR
         elif (self.inAction==True and dist(self.position-self.desiredPos)<=self.desiredPosDistpx) or rewardInp!=None:
             ''' elif goal reached or a reward is forced '''
             self.inAction=False

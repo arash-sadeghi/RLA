@@ -1,4 +1,3 @@
-# jan 17 2021
 from HEADER import *
 #...............................................................................................................................
 def saveData(caller=None):
@@ -53,43 +52,119 @@ def clearTerminal():
     if os.name=='nt':os.system('cls')
     else:os.system('clear')
 #...............................................................................................................................
-if __name__ == "__main__" or True:
-    t1_=TIME()
-    # clearTerminal()
-    ''' call wsential functions '''
-    warningSupress()
-    dirChangeCharacter=DirLocManage()
+def LOG():
+    global sup,samplingPeriodSmall,it,sampled,save_csv,codeBeginTime,dirChangeCharacter,FinalTime,save_tables_videos,videoList,record,showFrames,SAR,localMinima,t
+    global NASw,NAS,log,eps,alpha,reward # caviat: if localMinima is true, its matrices are not globalized here
 
-    ''' parameter value assigning '''
-    GUI_flag=True
+    if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
+        '''logs specail for first iteration'''
+        if method=='RL':
+            if it==0: # save these in the first iteration only
+                sup.visualize() # moved for less file size >>>>>>>>>>>>>> alert
+                if sampled % 100==0 :
+                    '''save csvs '''
+                    if save_csv:
+                        QtableRob0=sup.getQtables()[0]
+                        np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
+
+                    '''save tables videos '''
+                    if save_tables_videos:
+                        imsMat=[sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
+                        for count_,v in enumerate(imsMat):
+                            v=np.minimum(v,np.ones(v.shape)*255)
+                            v[0]=strip
+                            im=255-v
+                            im.astype(int)
+                            canvas=np.zeros((im.shape[0],im.shape[1],3))
+                            canvas[:,:,0]=im
+                            canvas[:,:,1]=im
+                            canvas[:,:,2]=im
+                            canvas=cv.resize(canvas,tableImSize)
+                            videoList[count_].write(np.uint8(canvas))
+
+                elif abs(FinalTime-sup.getTime())<1:
+                    '''iteration 0 is about to end. so release the video and turn of record
+                    flag so we dont have any video attribute afterwards and save SARs as npy ans csv '''
+                    if save_tables_videos:
+                        for _ in range(len(videoList)):
+                            videoList[_].release()
+                    record=False
+                    showFrames=False
+                    if hasattr(sup,'video'): sup.video.release()
+                    ''' save SAR '''
+                    SAR=np.stack(sup.swarm[0].SAR)
+                    with open(codeBeginTime+dirChangeCharacter+'SAR_robot0.npy','wb') as SAR_f:
+                        np.save(SAR_f,SAR)
+                    np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
+
+            ''' in every iteration, log the vital performance indexes with frequency of samplingPeriodSmall''' 
+            if localMinima:
+                NASG[it,sampled],NASL[it,sampled]=sup.getNAS()                    
+                NASwG[it,sampled],NASwL[it,sampled]=sup.getNAS(weighted=True)                    
+            else:
+                NASw[it,sampled]=sup.getNAS(weighted=True)
+                NAS[it,sampled]=sup.getNAS()
+            log[it,sampled,:,:]=sup.getLog()
+            eps[it,sampled,:]=sup.getEps()
+            alpha[it,sampled,:]=sup.getAlpha()
+            reward[it,sampled,:]=sup.getReward()
+        elif method=='BEECLUST' or method=='LBA':
+            if it==0: # save these in the first iteration only
+                sup.visualize() 
+                if abs(FinalTime-sup.getTime())<1:
+                    '''iteration 0 is about to end. so release the video and turn of record
+                    flag so we dont have any video attribute afterwards and save SARs as npy ans csv '''
+                    record=False
+                    showFrames=False
+                    if hasattr(sup,'video'): sup.video.release()
+            NASw[it,sampled]=sup.getNAS(weighted=True)
+            NAS[it,sampled]=sup.getNAS()
+
+            if abs(FinalTime-sup.getTime())<1:
+                '''iteration 0 is about to end. so release the video and turn of record
+                flag so we dont have any video attribute afterwards and save SARs as npy ans csv '''
+                record=False
+                showFrames=False
+                if hasattr(sup,'video'): sup.video.release()
+        else:
+            raise NameError("[-] METHOD NOT RECOGNIZED")
+        sampled+=1
+        t=sup.getTime()
+#...............................................................................................................................
+if __name__ == "__main__" or True:
+    print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
+    GUI_flag=not True
     if GUI_flag:
         from GUI import parameterGUI
-        # vals,flags=parameterGUI()
         pgui=parameterGUI()
-
+        parameters=[]
         for valg_name, val_value in pgui.vals:
-            try: 
-                val_value=int(val_value)
-            except:
-                try: 
+            if val_value.replace(".","").isdigit():
+                if "." in val_value:
                     val_value=float(val_value)
-                except:
+                elif val_value.isdigit():
+                    val_value=int(val_value)
+            else:
+                try:
+                    ''' if I have written an exdpression calculate it '''
+                    val_value=eval(val_value)
+                    ''' if it is int change its type to int '''
+                    if val_value%1==0:
+                        val_value=int(val_value)
+                except: 
                     pass
-            
+            ''' eval function diffrentiates / and //'''
             globals()[valg_name]=val_value
-
+            parameters.append([valg_name,val_value])
+        print(colored("[+] parameters:","green"),parameters)
         for flag_name, flag_value in pgui.flags:
             globals()[flag_name]=True if flag_value==1 else False
         del pgui
         del parameterGUI
-
+        comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' '+str(int(noise/255*100))
+        ''' noise must always be int '''
+        noise=int(noise)
     else:
-        # ORIGINALS
-        # Lx=2
-        # Ly=4
-        # cueRaduis=0.7
-        # visibleRaduis=0.3
-
         Lx=2*sqrt(2)
         Ly=4*sqrt(2)
         cueRaduis=0.7*sqrt(2)
@@ -97,7 +172,7 @@ if __name__ == "__main__" or True:
 
         iteration=5
         samplingPeriodSmall=10
-        FinalTime=1160000 ### alert
+        FinalTime=int(116e+4) ### alert
         HalfTime=FinalTime//2
         dynamic=True
         ROBN=10
@@ -110,19 +185,20 @@ if __name__ == "__main__" or True:
         PRMparameter=100
 
         '''comment: comment to apear in file name '''
-        comment=paramReductionMethod+' '+str(PRMparameter)+' '+'local minima'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        # comment=paramReductionMethod+' '+str(PRMparameter)+' '+'local minima'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        comment="LBA Etol 2"#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         '''localMinima: if two cue must exist '''
-        localMinima=True
+        localMinima=False
 
         ''' noise: flag to decide existence of noise'''
-        noise=True
+        noise=False
 
         '''commentDividerChar: plotter code will take legend what ever is after this char'''
         commentDividerChar=' x '
         
         '''showFrames: whether the visualization computation will end up showing arena scenes or not '''
-        showFrames=False
+        showFrames=not True
 
         '''record: if set True, you will get video of first iteration '''
         record=True
@@ -134,8 +210,8 @@ if __name__ == "__main__" or True:
         communicate=not True
         
         
-        '''Method: RL , BEECLUST '''
-        method='RL'
+        '''Method: RL , BEECLUST , LBA '''
+        method='LBA'
         
         '''save_csv: whether tables will be saved as csv or not '''
         save_csv=not True
@@ -143,8 +219,22 @@ if __name__ == "__main__" or True:
         '''save_tables_videos: whether tables will be saved as videos or not '''
         save_tables_videos=False
 
+    '''initiate seed'''
+    # seed=set_seed(800)
+    seed=set_seed()
+
+
+    t1_=TIME()
+    # clearTerminal()
+    ''' call wsential functions '''
+    warningSupress()
+    dirChangeCharacter=DirLocManage()
+
+    ''' parameter value assigning '''
     print(colored('[+] '+comment,'green'))
     print(colored('[+] paramReductionMethod','green'),paramReductionMethod,PRMparameter)
+
+    # LOGthrd=threading.Thread(target=LOG)
 
     codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
     if globalQ and communicate:
@@ -154,9 +244,6 @@ if __name__ == "__main__" or True:
     ''' preparing dirs '''
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
-
-    '''initiate seed'''
-    seed=set_seed()
 
     ''' save parameters into a file '''
     paramDict={seed:"seed",'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
@@ -209,7 +296,7 @@ if __name__ == "__main__" or True:
         iteration_duration=TIME()
         print(colored("\t[+] iteration: ",'blue'), it)
         t=0;tt=0;sampled=0
-        sup=SUPERVISOR(ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod,PRMparameter,noise,localMinima)
+        sup=SUPERVISOR(ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRaduis,visibleRaduis,paramReductionMethod,PRMparameter,noise,localMinima,method)
         sup.generateRobots()
         sup.moveAll() # to make initilazation happen
         GroundChanged=False # to make sure ground is changed only once in each iteration
@@ -223,6 +310,10 @@ if __name__ == "__main__" or True:
                 sup.swarmRL()
                 if communicate==True:
                     sup.talk()
+            elif method=='LBA':
+                sup.getQRs()
+                sup.LBA()
+
             sup.moveAll()
             ''' end of main loop. rest is logging '''
 
@@ -233,68 +324,11 @@ if __name__ == "__main__" or True:
                 if dynamic:
                     sup.changeGround()
 
-            ''' becareful it is for debuging otherwise huge sized videos will come out
-            sup.visualize() 
-            '''
-            ''' main logger '''
-            if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
-                '''logs specail for first iteration'''
-                if it==0: # save these in the first iteration only
-                    sup.visualize() # moved for less file size >>>>>>>>>>>>>> alert
-                    if sampled % 100==0 :
-                        '''save csvs '''
-                        if save_csv:
-                            QtableRob0=sup.getQtables()[0]
-                            np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
+            LOG()
+            # sup.visualize() 
 
-                        '''save tables videos '''
-                        if save_tables_videos:
-                            imsMat=[sup.swarm[0].epsilon*255,sup.swarm[0].QtableCheck*255,QtableRob0]
-                            for count_,v in enumerate(imsMat):
-                                v=np.minimum(v,np.ones(v.shape)*255)
-                                v[0]=strip
-                                im=255-v
-                                im.astype(int)
-                                canvas=np.zeros((im.shape[0],im.shape[1],3))
-                                canvas[:,:,0]=im
-                                canvas[:,:,1]=im
-                                canvas[:,:,2]=im
-                                canvas=cv.resize(canvas,tableImSize)
-                                videoList[count_].write(np.uint8(canvas))
-
-                    elif abs(FinalTime-sup.getTime())<1:
-                        '''iteration 0 is about to end. so release the video and turn of record
-                        flag so we dont have any video attribute afterwards and save SARs as npy ans csv '''
-                        if save_tables_videos:
-                            for _ in range(len(videoList)):
-                                videoList[_].release()
-                        record=False
-                        showFrames=False
-                        if hasattr(sup,'video'): sup.video.release()
-                        ''' save SAR '''
-                        SAR=np.stack(sup.swarm[0].SAR)
-                        with open(codeBeginTime+dirChangeCharacter+'SAR_robot0.npy','wb') as SAR_f:
-                            np.save(SAR_f,SAR)
-                        np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
-
-                ''' in every iteration, log the vital performance indexes with frequency of samplingPeriodSmall''' 
-                if localMinima:
-                    NASG[it,sampled],NASL[it,sampled]=sup.getNAS()                    
-                    NASwG[it,sampled],NASwL[it,sampled]=sup.getNAS(weighted=True)                    
-                else:
-                    NASw[it,sampled]=sup.getNAS(weighted=True)
-                    NAS[it,sampled]=sup.getNAS()
-                log[it,sampled,:,:]=sup.getLog()
-                eps[it,sampled,:]=sup.getEps()
-                alpha[it,sampled,:]=sup.getAlpha()
-                reward[it,sampled,:]=sup.getReward()
-                sampled+=1
-                t=sup.getTime()
-
-
-
-        
-        QtableMem[it,:,:,:]=sup.getQtables()
+        if method=="RL":
+            QtableMem[it,:,:,:]=sup.getQtables()
         '''V: -1 is for that 'it' at max will be iteration-1 and after that code will exit the loop'''
         if it==iteration-1: saveData("iterationDone") 
         del sup

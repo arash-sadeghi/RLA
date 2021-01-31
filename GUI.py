@@ -7,7 +7,7 @@ class parameterGUI(object):
         self.frame = tk.LabelFrame(self.root, padx=50, pady=50)
         self.frame.pack(padx=10, pady=10)
 
-        self.canvas = tk.Canvas(self.frame, width = 600, height = 400)
+        self.canvas = tk.Canvas(self.frame, width = 600, height = 500)
         self.canvas.pack()
 
         self.OK = tk.Button(text='OK',bg='white', command=self.OK,font= 10,width=8)
@@ -16,7 +16,7 @@ class parameterGUI(object):
         self.flags=[
             ["dynamic",True],
             ["localMinima",False],
-            ["noise",False],
+            # ["noise",True],
             ["showFrames",False],
             ["record",True],
             ["globalQ",False],
@@ -33,7 +33,7 @@ class parameterGUI(object):
             self.canvas.create_window(400, 10+c*30, window=self.labels[c],anchor=tk.W)
 
             self.fvar[c].set(v[1])
-            self.cb[c]=tk.Checkbutton(variable=self.fvar[c])
+            self.cb[c]=tk.Checkbutton(variable=self.fvar[c],textvariable=self.fvar[c])
             self.canvas.create_window(600, 10+c*30, window=self.cb[c],anchor=tk.W)
 
         self.vals=[
@@ -48,9 +48,10 @@ class parameterGUI(object):
             ["ROBN",10],
             ["paramReductionMethod","cyclical"],
             ["PRMparameter",100],
-            ["comment","_"],
+            ["comment","noise "],
             ["commentDividerChar"," x "],
             ["method","RL"],
+            ["noise",0],
             ["seed","_"]]
 
         self.labels=[0 for _ in range(len(self.vals))]
@@ -77,11 +78,12 @@ class parameterGUI(object):
 
 
     def OK(self):
+
         flag_vals=list(map(lambda x: x.get(),self.fvar))
         for c,v in enumerate(self.flags):
             self.flags[c][1]=flag_vals[c]
+
         v_vals=list(map(lambda x: x.get(),self.e))
         for c,v in enumerate(self.vals):
             self.vals[c][1]=v_vals[c]
         self.root.destroy()
-
