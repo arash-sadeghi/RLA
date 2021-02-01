@@ -3,7 +3,8 @@ from HEADER import *
 def saveData(caller=None):
     print(colored("\n\t\t[+] data saved ",'yellow'))
     dataType='process data'
-    QtableMem[it,:,:,:]=sup.getQtables()
+    if method=="RL":
+        QtableMem[it,:,:,:]=sup.getQtables()
     if localMinima:
         data2BsavedStr=["NASwG","NASG","NASwL","NASL","log","Qtable","rewards","eps","alpha"]
         data2Bsaved=[NASwG,NASG,NASwL,NASL,log,QtableMem,reward,eps,alpha]
