@@ -132,97 +132,78 @@ def LOG():
         sampled+=1
         t=sup.getTime()
 #...............................................................................................................................
-if __name__ == "__main__" or True:
-    print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
+def init_params():
+    flags=[
+    ["dynamic",True],
+    ["localMinima",False],
+    ["noise",True],
+    ["showFrames",False],
+    ["record",False],
+    ["globalQ",False],
+    ["communicate",False],
+    ["save_csv",False],
+    ["save_tables_videos",False]]
+    vals=[
+    ["Lx",round(2*sqrt(2),2)],
+    ["Ly",round(4*sqrt(2),2)],
+    ["cueRaduis",round(0.7*sqrt(2),2)],
+    ["visibleRaduis",round(0.3*sqrt(2),2)],
+    ["iteration",5],
+    ["samplingPeriodSmall",10],
+    ["FinalTime",1160000],
+    ["HalfTime",1160000//2],
+    ["ROBN",10],
+    ["paramReductionMethod","cyclical"],
+    ["PRMparameter",100],
+    ["comment","noise "],
+    ["commentDividerChar"," x "],
+    ["method","LBA"],
+    # ["noise",0],
+    ["seed_value","_"]]
+
+    for c in range(len(vals)):
+        if not(type(vals[c][1]) is str):
+            vals[c][1]=str(vals[c][1])
+
     GUI_flag=not True
     if GUI_flag:
         from GUI import parameterGUI
-        pgui=parameterGUI()
-        parameters=[]
-        for valg_name, val_value in pgui.vals:
-            if val_value.replace(".","").isdigit():
-                if "." in val_value:
-                    val_value=float(val_value)
-                elif val_value.isdigit():
-                    val_value=int(val_value)
-            else:
-                try:
-                    ''' if I have written an exdpression calculate it '''
-                    val_value=eval(val_value)
-                    ''' if it is int change its type to int '''
-                    if val_value%1==0:
-                        val_value=int(val_value)
-                except: 
-                    pass
-            ''' eval function diffrentiates / and //'''
-            globals()[valg_name]=val_value
-            parameters.append([valg_name,val_value])
-        print(colored("[+] parameters:","green"),parameters)
-        for flag_name, flag_value in pgui.flags:
-            globals()[flag_name]=True if flag_value==1 else False
+        pgui=parameterGUI(flags,vals)
+        vals,flags=pgui.vals,pgui.flags
         del pgui
         del parameterGUI
-        comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' '+str(int(noise/255*100))
-        ''' noise must always be int '''
-        noise=int(noise)
-    else:
-        Lx=2*sqrt(2)
-        Ly=4*sqrt(2)
-        cueRaduis=0.7*sqrt(2)
-        visibleRaduis=0.3*sqrt(2)
+    global parameters
+    parameters=[]
+    for valg_name, val_value in vals:
+        if val_value.replace(".","").isdigit():
+            if "." in val_value:
+                val_value=float(val_value)
+            elif val_value.isdigit():
+                val_value=int(val_value)
+        else:
+            try:
+                ''' if I have written an exdpression calculate it '''
+                val_value=eval(val_value)
+                ''' if it is int change its type to int '''
+                if val_value%1==0:
+                    val_value=int(val_value)
+            except: 
+                pass
+        ''' eval function diffrentiates / and //'''
+        globals()[valg_name]=val_value
+        parameters.append([valg_name,val_value])
+    print(colored("[+] parameters:","green"),parameters)
+    for flag_name, flag_value in flags:
+        globals()[flag_name]=True if flag_value==1 else False
 
-        iteration=5
-        samplingPeriodSmall=10
-        FinalTime=int(116e+4) ### alert
-        HalfTime=FinalTime//2
-        dynamic=True
-        ROBN=10
-
-
-        '''paramReductionMethod: possible values= 'classic' , 'VDBE' , 'cyclical' '''
-        paramReductionMethod='cyclical'
-
-        '''PRMparameter: parameter reduction method parameter '''
-        PRMparameter=100
-
-        '''comment: comment to apear in file name '''
-        # comment=paramReductionMethod+' '+str(PRMparameter)+' '+'local minima'#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        comment="LBA Etol 2"#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-        '''localMinima: if two cue must exist '''
-        localMinima=False
-
-        ''' noise: flag to decide existence of noise'''
-        noise=False
-
-        '''commentDividerChar: plotter code will take legend what ever is after this char'''
-        commentDividerChar=' x '
-        
-        '''showFrames: whether the visualization computation will end up showing arena scenes or not '''
-        showFrames=not True
-
-        '''record: if set True, you will get video of first iteration '''
-        record=True
-        
-        '''globalQ: whether all robots will share one Q-table '''
-        globalQ=not True
-        
-        '''communicate: flag for local communication '''
-        communicate=not True
-        
-        
-        '''Method: RL , BEECLUST , LBA '''
-        method='LBA'
-        
-        '''save_csv: whether tables will be saved as csv or not '''
-        save_csv=not True
-
-        '''save_tables_videos: whether tables will be saved as videos or not '''
-        save_tables_videos=False
-
+    global comment
+    comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' '+str(int(noise/255*100))
+#...............................................................................................................................
+if __name__ == "__main__" or True:
+    print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
+    init_params()    
     '''initiate seed'''
-    # seed=set_seed(800)
-    seed=set_seed()
+    seed=set_seed(seed_value)
 
 
     t1_=TIME()
@@ -247,11 +228,8 @@ if __name__ == "__main__" or True:
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
 
     ''' save parameters into a file '''
-    paramDict={seed:"seed",'Lx':Lx , 'Ly':Ly , 'cueRaduis':cueRaduis , 'visibleRaduis':visibleRaduis , 'iteration':iteration , 'samplingPeriodSmall':samplingPeriodSmall , \
-        'FinalTime':FinalTime , 'HalfTime':HalfTime , 'dynamic':dynamic , 'ROBN':ROBN , 'paramReductionMethod':paramReductionMethod , 'showFrames':showFrames , 'globalQ':globalQ , \
-            'communicate':communicate , 'record':record , 'method':method}
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
-        paramfile.write(str(paramDict))
+        paramfile.write(str(parameters))
 
     ''' for saving csvs which is Q-table of robot 0 for iteration 0 '''
     if save_csv: os.makedirs(codeBeginTime+dirChangeCharacter+'csvs') 

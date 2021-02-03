@@ -1,7 +1,7 @@
 import tkinter as tk
 from math import sqrt
 class parameterGUI(object):
-    def __init__(self):
+    def __init__(self,flags,vals):
         self.root= tk.Tk()
         self.root.title("Parameter determination")
         self.frame = tk.LabelFrame(self.root, padx=50, pady=50)
@@ -13,16 +13,7 @@ class parameterGUI(object):
         self.OK = tk.Button(text='OK',bg='white', command=self.OK,font= 10,width=8)
         self.canvas.create_window(600, 400, window=self.OK)
 
-        self.flags=[
-            ["dynamic",True],
-            ["localMinima",False],
-            # ["noise",True],
-            ["showFrames",False],
-            ["record",True],
-            ["globalQ",False],
-            ["communicate",False],
-            ["save_csv",False],
-            ["save_tables_videos",False]]
+        self.flags=flags
         
         self.fvar=[tk.IntVar() for _ in range(len(self.flags))]
         self.labels=[0 for _ in range(len(self.flags))]
@@ -36,23 +27,7 @@ class parameterGUI(object):
             self.cb[c]=tk.Checkbutton(variable=self.fvar[c],textvariable=self.fvar[c])
             self.canvas.create_window(600, 10+c*30, window=self.cb[c],anchor=tk.W)
 
-        self.vals=[
-            ["Lx",round(2*sqrt(2),2)],
-            ["Ly",round(4*sqrt(2),2)],
-            ["cueRaduis",round(0.7*sqrt(2),2)],
-            ["visibleRaduis",round(0.3*sqrt(2),2)],
-            ["iteration",5],
-            ["samplingPeriodSmall",10],
-            ["FinalTime",1160000],
-            ["HalfTime",1160000//2],
-            ["ROBN",10],
-            ["paramReductionMethod","cyclical"],
-            ["PRMparameter",100],
-            ["comment","noise "],
-            ["commentDividerChar"," x "],
-            ["method","RL"],
-            ["noise",0],
-            ["seed","_"]]
+        self.vals=vals
 
         self.labels=[0 for _ in range(len(self.vals))]
         self.e=[0 for _ in range(len(self.vals))]
