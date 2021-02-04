@@ -137,8 +137,8 @@ def init_params():
     ["dynamic",True],
     ["localMinima",False],
     ["noise",True],
-    ["showFrames",False],
-    ["record",False],
+    ["showFrames",not True],
+    ["record",not True],
     ["globalQ",False],
     ["communicate",False],
     ["save_csv",False],
@@ -155,11 +155,11 @@ def init_params():
     ["ROBN",10],
     ["paramReductionMethod","cyclical"],
     ["PRMparameter",100],
-    ["comment","noise "],
+    ["comment","proper noise fixed "],
     ["commentDividerChar"," x "],
     ["method","LBA"],
     # ["noise",0],
-    ["seed_value","_"]]
+    ["seed_value","x"]]
 
     for c in range(len(vals)):
         if not(type(vals[c][1]) is str):
@@ -197,13 +197,22 @@ def init_params():
         globals()[flag_name]=True if flag_value==1 else False
 
     global comment
-    comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' '+str(int(noise/255*100))
+    if method=="RL":
+        comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' '+str(int(noise/255*100))
+    else:
+        comment=method+' '+comment+' '+str(int(noise/255*100))
+
 #...............................................................................................................................
 if __name__ == "__main__" or True:
     print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
     init_params()    
+
     '''initiate seed'''
     seed=set_seed(seed_value)
+    param0=[_[0] for _ in parameters]
+    indx=param0.index("seed_value")
+    parameters[indx][1]=seed
+    # indx=parameters.in
 
 
     t1_=TIME()

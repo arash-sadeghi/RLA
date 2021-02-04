@@ -17,14 +17,16 @@ from itertools import combinations  as comb , product
 ################################################################################################################################
 ################################################################################################################################
 def set_seed(sd=None):
-    if sd is None:
-        seed=int(TIME()%1000)
-        rnd.seed(seed)
-        return seed
-    elif (type(sd) is float) or (type(sd) is int):
+    if (type(sd) is float) or (type(sd) is int):
         print(colored("\n\n[!]>>>>>>>>>>>> SEED GIVEN. NOT RANDOM<<<<<<<<<<<<<<\n\n","red"))
         rnd.seed(sd)
         return sd
+    else:
+        seed=int(TIME()%1000)
+        print(colored("[+] seed: ","red"),seed)
+        rnd.seed(seed)
+        return seed
+
 # ------------------------------------------------------------------------------------------------------------------------------
 def warningSupress():
     from sys import warnoptions
@@ -613,7 +615,7 @@ class SUPERVISOR:
                     """ we see the QR for the first time. so we are WAITING TO LEARN """
                     self.swarm[i].waitingCue=True
 
-                else:
+                elif self.swarm[i].checkArrived==False:
                     angle=0;length=0
                     """ this QR have been seen before. EXECUTE VECTOR """
                     sudoVec=self.QRpos_ar[QR-1]-self.swarm[i].position
@@ -625,7 +627,6 @@ class SUPERVISOR:
                     # self.swarm[i].desiredPos=self.swarm[i].initialPos+actionXY_SudoVec
                     self.swarm[i].desiredPos=self.swarm[i].initialPos+\
                         np.array([length*sin(np.radians(angle)),length*cos(np.radians(angle))])
-
                     self.swarm[i].checkArrived=True
 
 
