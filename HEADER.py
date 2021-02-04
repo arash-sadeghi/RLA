@@ -183,7 +183,7 @@ class SUPERVISOR:
             cv.namedWindow('background')
             cv.moveWindow('background',1000,0)
         self.noise=noise
-        self.sigma={"angle":20,"length":self.maxlen//4//2}
+        self.sigma={"angle":int(180*0.25),"length":int(self.maxlen//4*0.25)}
         self.PRMparameter=PRMparameter
         self.method=method
 # sharedParams .................................................................................................................
@@ -432,7 +432,7 @@ class SUPERVISOR:
                                         x=self.swarm[j].state
                                         '''V to catch alpha=1 bug if it happens again '''
                                         if y<10 and y>0 :
-                                            print('catched',j,self.getTime(),x,y)
+                                            # print('catched',j,self.getTime(),x,y)
                                 elif self.method=='LBA' :
                                     if self.swarm[j].waitingCue:
                                         self.swarm[j].turnPoint+=1

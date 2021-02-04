@@ -154,10 +154,10 @@ def init_params():
     ["HalfTime",1160000//2],
     ["ROBN",10],
     ["paramReductionMethod","cyclical"],
-    ["PRMparameter",100],
+    ["PRMparameter",50],
     ["comment","proper noise fixed "],
     ["commentDividerChar"," x "],
-    ["method","LBA"],
+    ["method","RL"],
     # ["noise",0],
     ["seed_value","x"]]
 
