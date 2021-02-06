@@ -687,8 +687,8 @@ class ROBOT(SUPERVISOR):
 
         if self.SUPERVISOR.method=="LBA" or self.SUPERVISOR.method=="RL":
             ''' common parameters of LBA and RL '''
-            self.detectedQR=' '
-            self.lastdetectedQR=' '
+            self.detectedQR='QR0'
+            self.lastdetectedQR='QR0'
             self.initialPos=0
             self.sudoVec=0
             self.desiredPos=0
