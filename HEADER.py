@@ -431,7 +431,7 @@ class SUPERVISOR:
                                         y=self.swarm[j].actionIndx
                                         x=self.swarm[j].state
                                         '''V to catch alpha=1 bug if it happens again '''
-                                        if y<10 and y>0 :
+                                        # if y<10 and y>0 :
                                             # print('catched',j,self.getTime(),x,y)
                                 elif self.method=='LBA' :
                                     if self.swarm[j].waitingCue:
