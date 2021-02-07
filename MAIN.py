@@ -1,3 +1,4 @@
+import sys
 from HEADER import *
 #...............................................................................................................................
 def saveData(caller=None):
@@ -61,8 +62,8 @@ def LOG():
         '''logs specail for first iteration'''
         if method=='RL':
             if it==0: # save these in the first iteration only
-                sup.visualize() # moved for less file size >>>>>>>>>>>>>> alert
                 if sampled % 100==0 :
+                    sup.visualize() # moved for less file size >>>>>>>>>>>>>> alert
                     '''save csvs '''
                     if save_csv:
                         QtableRob0=sup.getQtables()[0]
@@ -103,11 +104,11 @@ def LOG():
                 NASG[it,sampled],NASL[it,sampled]=sup.getNAS()                    
                 NASwG[it,sampled],NASwL[it,sampled]=sup.getNAS(weighted=True)                    
             else:
-                NASw[it,sampled]=sup.getNAS(weighted=True)
+                # NASw[it,sampled]=sup.getNAS(weighted=True)
                 NAS[it,sampled]=sup.getNAS()
-            log[it,sampled,:,:]=sup.getLog()
+            # log[it,sampled,:,:]=sup.getLog()
             eps[it,sampled,:]=sup.getEps()
-            alpha[it,sampled,:]=sup.getAlpha()
+            # alpha[it,sampled,:]=sup.getAlpha()
             reward[it,sampled,:]=sup.getReward()
         elif method=='BEECLUST' or method=='LBA':
             if it==0: # save these in the first iteration only
@@ -118,7 +119,7 @@ def LOG():
                     record=False
                     showFrames=False
                     if hasattr(sup,'video'): sup.video.release()
-            NASw[it,sampled]=sup.getNAS(weighted=True)
+            # NASw[it,sampled]=sup.getNAS(weighted=True)
             NAS[it,sampled]=sup.getNAS()
 
             if abs(FinalTime-sup.getTime())<1:
@@ -133,12 +134,13 @@ def LOG():
         t=sup.getTime()
 #...............................................................................................................................
 def init_params():
+    # print(">>>>",sys.argv[1])
     flags=[
     ["dynamic",True],
     ["localMinima",False],
-    ["noise",True],
-    ["showFrames",not True],
-    ["record",not True],
+    # ["noise",True],
+    ["showFrames",False],
+    ["record",False],
     ["globalQ",False],
     ["communicate",False],
     ["save_csv",False],
@@ -150,15 +152,15 @@ def init_params():
     ["visibleRaduis",round(0.3*sqrt(2),2)],
     ["iteration",5],
     ["samplingPeriodSmall",10],
-    ["FinalTime",1160000],
-    ["HalfTime",1160000//2],
+    ["FinalTime",int(10e+6)],
+    ["HalfTime",int(10e+6)//2],
     ["ROBN",10],
-    ["paramReductionMethod","cyclical"],
-    ["PRMparameter",50],
-    ["comment","proper noise fixed "],
+    ["paramReductionMethod","VDBE"],
+    ["PRMparameter",1],
+    ["comment",""],
     ["commentDividerChar"," x "],
     ["method","RL"],
-    # ["noise",0],
+    ["noise",int(sys.argv[1])],
     ["seed_value","x"]]
 
     for c in range(len(vals)):
@@ -198,9 +200,9 @@ def init_params():
 
     global comment
     if method=="RL":
-        comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' '+str(int(noise/255*100))
+        comment=paramReductionMethod+' '+str(PRMparameter)+' '+comment+' noise '+str(noise)
     else:
-        comment=method+' '+comment+' '+str(int(noise/255*100))
+        comment=method+' '+comment+' noise '+str(noise)
 
 #...............................................................................................................................
 if __name__ == "__main__" or True:

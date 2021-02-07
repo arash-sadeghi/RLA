@@ -121,7 +121,7 @@ class SUPERVISOR:
     def __init__(self,ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRadius,visibleRaduis,\
         paramReductionMethod,PRMparameter,noise,localMinima,method):
 
-        self.Etol=2
+        self.Etol=4
         self.Lx=m2px(Lx)
         self.Ly=m2px(Ly)
         self.cueRadius=m2px(cueRadius)
@@ -183,7 +183,10 @@ class SUPERVISOR:
             cv.namedWindow('background')
             cv.moveWindow('background',1000,0)
         self.noise=noise
-        self.sigma={"angle":int(180*0.25),"length":int(self.maxlen//4*0.25)}
+        # self.sigma={"angle":int(180*0.25),"length":int(self.maxlen//4*0.25)}
+        noise_ratio=self.noise/180
+        self.sigma={"angle":int(180*noise_ratio),"length":int(self.maxlen//4*noise_ratio)}
+
         self.PRMparameter=PRMparameter
         self.method=method
 # sharedParams .................................................................................................................
