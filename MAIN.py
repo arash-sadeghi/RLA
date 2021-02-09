@@ -152,15 +152,15 @@ def init_params():
     ["visibleRaduis",round(0.3*sqrt(2),2)],
     ["iteration",5],
     ["samplingPeriodSmall",10],
-    ["FinalTime",int(10e+6)],
-    ["HalfTime",int(10e+6)//2],
+    ["FinalTime",int(1e+6)],
+    ["HalfTime",int(1e+6)//2],
     ["ROBN",10],
-    ["paramReductionMethod","VDBE"],
-    ["PRMparameter",1],
+    ["paramReductionMethod","cyclical"],
+    ["PRMparameter",float(sys.argv[1])],
     ["comment",""],
     ["commentDividerChar"," x "],
     ["method","RL"],
-    ["noise",int(sys.argv[1])],
+    ["noise",15],
     ["seed_value","x"]]
 
     for c in range(len(vals)):

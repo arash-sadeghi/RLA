@@ -185,7 +185,7 @@ class SUPERVISOR:
         self.noise=noise
         # self.sigma={"angle":int(180*0.25),"length":int(self.maxlen//4*0.25)}
         noise_ratio=self.noise/180
-        self.sigma={"angle":int(180*noise_ratio),"length":int(self.maxlen//4*noise_ratio)}
+        self.sigma={"angle":int(180*noise_ratio),"length":int(self.maxlen//4*noise_ratio*0)}
 
         self.PRMparameter=PRMparameter
         self.method=method
