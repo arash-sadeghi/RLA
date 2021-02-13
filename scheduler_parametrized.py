@@ -23,7 +23,7 @@ def DirLocManage(returnchar=False):
         os.chdir(scriptLoc)
     return dirChangeCharacter
 # DirLocManage()  
-sigs=[0,5,15,90,135,180]
+sigs=[50,150,100,200,500]
 for sig in sigs:
     print("------------------EXECUTING sigma",sig)
     os.system("python3 MAIN.py "+str(sig))
