@@ -14,16 +14,16 @@
         "Ly":"round(2.7,2)",
         "cueRaduis":"round(0.3,2)",
         "visibleRaduis":"round(0.3,3)",
-        "iteration":"5",
+        "iteration":"1",
         "samplingPeriodSmall":"10",
-        "FinalTime":"int(90*60)",
+        "FinalTime":"int(90*600)",
         "HalfTime":"int(90*60//2)",
-        "ROBN":"4",
+        "ROBN":"10",
         "paramReductionMethod":"cyclical",
         "PRMparameter":"500",
         "comment":"real robot",
         "commentDividerChar":" x ",
-        "method":"RL",
+        "method":"BEECLUST",
         "noise":"15",
-        "seed_value":"x" 
+        "seed_value":"100" 
  }}

@@ -1,5 +1,6 @@
 from HEADER import *
 import json
+
 #...............................................................................................................................
 def saveData(caller=None):
     print(colored("\n\t\t[+] data saved ",'yellow'))
@@ -23,8 +24,6 @@ def saveData(caller=None):
             try:
                 if hasattr(sup,'video'):
                     del sup.video
-                del sup.pos_getter
-                del sup.rot_getter
                 del sup.NASfunction
                 if localMinima:
                     del sup.NASGfunction
@@ -137,7 +136,7 @@ def LOG():
 def init_params():
     # print(">>>>",sys.argv[1])
 
-    with open('params.json') as json_file: 
+    with open('params.JSON') as json_file: 
         data = json.load(json_file) 
     for key in data.keys():
         globals()[key+"_dict"]=data[key]
@@ -225,7 +224,7 @@ if __name__ == "__main__" or True:
     print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
     # print(colored("[!] be carefull avout sup.visualuz","red"))
     # print(colored("[!] action space changed","red"))
-
+    DirLocManage()
     init_params()    
 
     '''initiate seed'''
@@ -318,30 +317,52 @@ if __name__ == "__main__" or True:
         checkHealth()
         while sup.getTime()<=FinalTime:
             ''' start of main loop '''
+
+            # t1=TIME()
             sup.checkCollision()
+            # print("checkCollision ",(TIME()-t1)*10000)
+
+            # t1=TIME()
             sup.aggregateSwarm()
+            # print("aggregateSwarm ",(TIME()-t1)*10000)
+
             if method=='RL':
+                # t1=TIME()
                 sup.getQRs()
+                # print("getQRs ",(TIME()-t1)*10000)
+
+                # t1=TIME()
                 sup.swarmRL()
-                if communicate==True:
-                    sup.talk()
+                # print("swarmRL ",(TIME()-t1)*10000)
+
             elif method=='LBA':
+                # t1=TIME()
                 sup.getQRs()
+                # print("getQRs ",(TIME()-t1)*10000)
+
+                # t1=TIME()
                 sup.LBA()
+                # print("LBA ",(TIME()-t1)*10000)
 
+            # t1=TIME()
             sup.moveAll()
-            ''' end of main loop. rest is logging '''
+            # print("moveAll ",(TIME()-t1)*10000)
 
-            '''check half time and change ground if env is dynamic'''
             if abs(HalfTime-sup.getTime())<1 and GroundChanged==False:
                 GroundChanged=True
                 print(colored('\t[+] half time reached','green'))
                 if dynamic:
                     sup.changeGround()
 
+            # t1=TIME()
             LOG()
-            # sup.visualize() 
+            # print("LOG ",(TIME()-t1)*10000)
+            # print("---------------------------------------")
 
+            # lp_wrapper = lp(sup.moveAll)
+            # lp_wrapper()
+            # lp.print_stats()
+            # cp.run('sup.moveAll()')
         if method=="RL":
             QtableMem[it,:,:,:]=sup.getQtables()
         '''V: -1 is for that 'it' at max will be iteration-1 and after that code will exit the loop'''

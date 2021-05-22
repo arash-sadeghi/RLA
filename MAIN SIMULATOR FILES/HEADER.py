@@ -1,16 +1,17 @@
 import os
+import time
 if os.name=="nt": os.system('cls')
 else: os.system('clear')
 # print('[+] updating pip')
 # os.system('python -m pip install --upgrade pip') # upgrading pip
 ''' installing dependincies '''
-dependincies=['opencv-python','numpy','matplotlib','termcolor','psutil']
-availble_pkg=os.popen('pip list').read()
-for d in dependincies:
-    if not(d in availble_pkg):
-        ans=input('[!] pakage '+d+' must be install [y/n]')
-        if ans=='y':
-            os.system('pip install '+d)
+# dependincies=['opencv-python','numpy','matplotlib','termcolor','psutil']
+# availble_pkg=os.popen('pip list').read()
+# for d in dependincies:
+#     if not(d in availble_pkg):
+#         ans=input('[!] pakage '+d+' must be install [y/n]')
+#         if ans=='y':
+#             os.system('pip install '+d)
 
 import sys
 import cv2 as cv
@@ -91,9 +92,11 @@ def RotStandard(inp):
 # ------------------------------------------------------------------------------------------------------------------------------
 def dist(delta):
     if np.size(delta)>2:
-        return np.sqrt(np.square(delta[:,0])+np.square(delta[:,1]))
+        # return np.sqrt(np.square(delta[:,0])+np.square(delta[:,1]))
+        return np.linalg.norm(delta,axis=1)
     else:
-        return np.sqrt(np.square(delta[0])+np.square(delta[1]))
+        return np.linalg.norm(delta)
+        # return np.sqrt(np.square(delta[0])+np.square(delta[1]))
 # ------------------------------------------------------------------------------------------------------------------------------
 def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
@@ -184,7 +187,9 @@ class SUPERVISOR:
         self.all_poses=[]
         self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
         self.QRpos_ar=np.array(list(self.QRloc.values()))
-        self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
+        # self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
+        self.NASfunction=[]
+
 
         '''for local and global NAS '''
         if self.localMinima:
@@ -297,7 +302,12 @@ class SUPERVISOR:
             '''  delete the selected position from all posible poses ''' 
             possiblePos.remove(chosen) 
             self.swarm[i].position=np.ravel(np.array(chosen))
-            self.swarm[i].rotation2B=rnd.sample(list(possibleRot),1)[0]
+            self.swarm[i].rotation2B=np.asarray([rnd.sample(list(possibleRot),1)[0]])
+            """ 
+            adding one dimention to rotation2B is because if you say rotation2B=2 its 
+            address will change but if you say rotation2B[0]=2 the addres wont be touched
+            """
+            self.swarm[i].position=self.swarm[i].position.astype('float64')
             ''' all robots share the same arena texture. if one changes sth, the arena will 
             be changed in every one. equalled by address'''
             self.swarm[i].ground=self.ground 
@@ -307,9 +317,20 @@ class SUPERVISOR:
                 if i==0: tmp=self.swarm[i].Qtable
                 else: self.swarm[i].Qtable=tmp
 
+
         '''vectorized functions to get position and rotation of all robots'''
-        self.pos_getter=np.vectorize(lambda x: self.swarm[x].position,otypes=[np.ndarray])
-        self.rot_getter=np.vectorize(lambda x: RotStandard(self.swarm[x].rotation),otypes=[np.ndarray])
+        self.swarmPosList=[]
+        for i in range(self.ROBN):
+             self.swarmPosList.append(self.swarm[i].position) 
+        ''' ^ its a list that tracks the changes in position. Pointer stuff. if you make it array,
+        it will stop tracking the changes and only will store the value at the moment'''
+        self.swarmRotList=[]
+        for i in range(self.ROBN):
+             self.swarmRotList.append(self.swarm[i].rotation2B)
+        
+        for i in range(self.ROBN):
+            self.NASfunction.append(np.asarray(self.swarm[i].groundSensorValue))
+
 # visualize ....................................................................................................................
     def visualize(self):
         if self.vizFlag:
@@ -370,13 +391,13 @@ class SUPERVISOR:
         for i in range(self.ROBN):
             if self.swarm[i].delayFlag==False:
                 self.swarm[i].move()
+                pass
             else :
                 self.swarm[i].waitingTime-=self.timeStep
                 if self.swarm[i].waitingTime<=0:
                     self.checkCollision(specific=True,robotNum=i)            
                     self.swarm[i].delayFlag=False
                     self.swarm[i].move()
-
         self.time+=self.timeStep
 # avoid ........................................................................................................................
     def avoid(self,cols,specific=False):
@@ -386,8 +407,8 @@ class SUPERVISOR:
                 i,j=pairs
                 collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] \
                     , self.swarm[j].position[1]-self.swarm[i].position[1] )))
-                self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
-                self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
+                self.swarm[i].rotation2B[0]=np.asarray(collisionAngle+rnd.randint(90,270) )
+                self.swarm[i].rotation2B[0]=np.asarray(RotStandard(self.swarm[i].rotation2B))
                 self.flagsR[i,j]=1
                 if self.method=="LBA":
                     self.swarm[i].checkArrived=False
@@ -398,8 +419,8 @@ class SUPERVISOR:
                 i,j=j,i
                 collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] \
                     , self.swarm[j].position[1]-self.swarm[i].position[1] )))
-                self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
-                self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
+                self.swarm[i].rotation2B[0]=np.asarray(collisionAngle+rnd.randint(90,270) )
+                self.swarm[i].rotation2B[0]=np.asarray(RotStandard(self.swarm[i].rotation2B))
                 self.flagsR[i,j]=1
                 if self.method=="LBA":
                     self.swarm[i].checkArrived=False
@@ -413,8 +434,8 @@ class SUPERVISOR:
                 i,j=pairs
                 collisionAngle=RotStandard(np.degrees(atan2( self.swarm[j].position[0]-self.swarm[i].position[0] \
                     , self.swarm[j].position[1]-self.swarm[i].position[1] )))
-                self.swarm[i].rotation2B=collisionAngle+rnd.randint(90,270) 
-                self.swarm[i].rotation2B=RotStandard(self.swarm[i].rotation2B)
+                self.swarm[i].rotation2B[0]=np.asarray(collisionAngle+rnd.randint(90,270) )
+                self.swarm[i].rotation2B[0]=np.asarray(RotStandard(self.swarm[i].rotation2B))
                 self.flagsR[i,j]=0
 # checkCollision ...............................................................................................................
     def checkCollision(self,specific=False,robotNum=None):
@@ -423,8 +444,10 @@ class SUPERVISOR:
         to leave aggregation '''
         if specific==False:
             ''' collision with wall detection '''
-            self.all_poses=np.vstack(self.pos_getter(self.allRobotIndx))
-            all_rots=self.rot_getter(self.allRobotIndx)
+            self.all_poses=np.array(self.swarmPosList)
+            all_rots=np.array(self.swarmRotList)
+            # all_rots=self.rot_getter(self.allRobotIndx)
+
             '''list order: 1 >| , 2 |< , 3 _ , 4 - '''
             loc_conds=[np.where( self.all_poses[:,0]>=self.Ylen-self.robotSenseRad)[0],\
                 np.where(self.all_poses[:,0]<=self.robotSenseRad)[0],\
@@ -443,7 +466,7 @@ class SUPERVISOR:
                     if np.size(loc_conds[i])>0:
                         for j in loc_conds[i]:
                             if j in rot_conds[i]:
-                                self.swarm[j].rotation2B=RotStandard(rnd.randint(ranges[i][0],ranges[i][1]))
+                                self.swarm[j].rotation2B[0]=np.asarray(RotStandard(rnd.randint(ranges[i][0],ranges[i][1])))
                                 if self.method=='RL':
                                     if self.swarm[j].inAction==True:
                                         self.swarm[j].actAndReward(-1) 
@@ -468,8 +491,7 @@ class SUPERVISOR:
             ''' collision with robot detection '''
             Robot1=self.all_poses[self.allnodes[:,0]]
             Robot2=self.all_poses[self.allnodes[:,1]]
-            dists=Robot1-Robot2
-            dists=dist(dists)
+            dists=dist(Robot1-Robot2)
             indexes=np.where(dists<=self.collisionDetectDist+self.velocity*self.timeStep) ##############
             colliders=[]
             if np.size(indexes)>0:
@@ -500,7 +522,7 @@ class SUPERVISOR:
             temp[:,0]+=robotNum
             yaxis=self.allRobotIndx
             temp[:,1]+=yaxis[yaxis!=robotNum]
-            self.all_poses=np.vstack(self.pos_getter(self.allRobotIndx))
+            self.all_poses=np.array(self.swarmPosList)
             Robot1=self.all_poses[temp[:,0]]
             Robot2=self.all_poses[temp[:,1]]
             dists=Robot1-Robot2
@@ -539,9 +561,9 @@ class SUPERVISOR:
         else:
             ''' no discrimination of local and global cue '''
             if weighted==False:
-                return np.count_nonzero(self.NASfunction(self.swarm))/self.ROBN
+                return np.count_nonzero(np.array(self.NASfunction))/self.ROBN
             elif weighted==True:
-                return np.sum(self.NASfunction(self.swarm))/(self.ROBN*255)
+                return np.sum(np.array(self.NASfunction))/(self.ROBN*255)
 # getQRs .......................................................................................................................
     def getQRs(self):
         '''
@@ -641,7 +663,7 @@ class SUPERVISOR:
                     actionXY_SudoVec=self.swarm[i].vecs[QR-1]+sudoVec
                     angle=np.degrees(atan2(actionXY_SudoVec[0],actionXY_SudoVec[1]))+self.Noise("angle")
                     length=sqrt(actionXY_SudoVec[0]**2+actionXY_SudoVec[1]**2)+self.Noise("length")
-                    self.swarm[i].rotation2B=angle
+                    self.swarm[i].rotation2B[0]=np.asarray(angle)
                     self.swarm[i].initialPos=np.copy(self.swarm[i].position)
                     # self.swarm[i].desiredPos=self.swarm[i].initialPos+actionXY_SudoVec
                     self.swarm[i].desiredPos=self.swarm[i].initialPos+\
@@ -681,8 +703,8 @@ class ROBOT(SUPERVISOR):
         self.robotName=name
         super().sharedParams()
         self.ground=0 # initilizing for robots
-        self.rotation=0
-        self.rotation2B=0
+        self.rotation=[0]
+        self.rotation2B=[0]
         '''self.position[1]>self.position[0] -> first element of position is for x axis of the
         image of the vertical rectangle. for self.ground it is inverse since its first element
         is bigger than the second one'''
@@ -745,20 +767,15 @@ class ROBOT(SUPERVISOR):
                 self.waitingCue=False
 # move .........................................................................................................................
     def move(self):
-            ''' rotation must be changed in any cond '''
-            self.rotation=self.rotation2B
-
+            self.rotation[0]=self.rotation2B[0]
             ''' assume you are gone/ 2* is that we want the robot to move two times
             to avoid repititive cols '''
             self.position2B[0]=self.position[0]+self.velocity*sin(np.radians(self.rotation))*self.timeStep
             self.position2B[1]=self.position[1]+self.velocity*cos(np.radians(self.rotation))*self.timeStep
-
             self.position2B[0]=min(self.position2B[0],self.Ylen-1)
             self.position2B[1]=min(self.position2B[1],self.Xlen-1)
-
             self.position2B[0]=max(self.position2B[0],0+1)
             self.position2B[1]=max(self.position2B[1],0+1)
-
             if self.robotName=='0' and self.SUPERVISOR.getTime()<1:
                 print(colored("\t[+] traveled distance in each cycle in px:","green"),round(dist(self.position-self.position2B)))
             ''' check col with 2B poses'''
@@ -767,23 +784,19 @@ class ROBOT(SUPERVISOR):
             temp[:,0]+=robotNum
             yaxis=np.arange(0,self.SUPERVISOR.ROBN)
             temp[:,1]+=yaxis[yaxis!=robotNum]
-
-            Ys=self.SUPERVISOR.pos_getter(temp[:,1])
-            Ys=np.vstack(Ys)
+            Ys=np.array(self.SUPERVISOR.swarmPosList)[temp[:,1]]
             Xs=np.zeros(Ys.shape)
             Xs[:]=self.position2B
-            dists=np.vstack(Xs-Ys)
-            dists=dist(dists)
-
-            dists=np.array(list(map(lambda x: dist(self.position2B-self.SUPERVISOR.swarm[x[1]].position),temp)))
-
+            dists=dist(Xs-Ys)
             indexes=np.where(dists<=self.SUPERVISOR.collisionDetectDist)
             if np.size(indexes)>0:
                 ''' cant leave the aggregation with this angle '''
                 self.aggregate(forced=True)
             else:
                 ''' easily leave the aggregation ''' 
-                self.position=np.copy(self.position2B)
+                # self.position=np.copy(self.position2B) # this one distorts the address
+                self.position[0],self.position[1]=self.position2B[0],self.position2B[1]
+
 # groundSense ..................................................................................................................
     def groundSense(self):
         temp=self.ground[int(round(self.position[1])),int(round(self.position[0]))]
@@ -845,7 +858,7 @@ class ROBOT(SUPERVISOR):
             length=sqrt(actionXY_SudoVec[0]**2+actionXY_SudoVec[1]**2)+self.SUPERVISOR.Noise("length")
             actionXY_SudoVec=np.array([length*sin(np.radians(angle)),length*cos(np.radians(angle))])
 
-            self.rotation2B=angle
+            self.rotation2B[0]=np.asarray(angle)
             self.inAction=True
             self.initialPos=np.copy(self.position)
             self.reward=0
