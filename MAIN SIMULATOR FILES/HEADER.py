@@ -86,8 +86,8 @@ def px2m(inp):
     return inp*2/512
 # ------------------------------------------------------------------------------------------------------------------------------
 def RotStandard(inp):
-    if inp<0: inp+=360
-    if inp>360: inp-=360
+    while inp<0: inp+=360
+    while inp>360: inp-=360
     return inp
 # ------------------------------------------------------------------------------------------------------------------------------
 def dist(delta):
@@ -142,8 +142,11 @@ class SUPERVISOR:
         self.Ly=m2px(Ly)
         self.cueRadius=m2px(cueRadius)
         self.visibleRaduis=m2px(visibleRaduis)
-        self.QRloc={'QR1':(self.Lx//2,0),'QR2':(self.Lx,self.Ly//4),\
-            'QR3':(self.Lx,self.Ly//4*3),'QR4':(self.Lx//2,self.Ly),'QR5':(0,3*self.Ly//4),'QR6':(0,self.Ly//4)}
+        # self.QRloc={'QR1':(self.Lx//2,0),'QR2':(self.Lx,self.Ly//4),\
+        #     'QR3':(self.Lx,self.Ly//4*3),'QR4':(self.Lx//2,self.Ly),'QR5':(0,3*self.Ly//4),'QR6':(0,self.Ly//4)}
+        self.QRloc={'QR1':(self.Lx,self.Ly//4),'QR2':(self.Lx,2*self.Ly//4),\
+            'QR3':(self.Lx,self.Ly//4*3),'QR4':(0,3*self.Ly//4),'QR5':(0,2*self.Ly//4),'QR6':(0,self.Ly//4)}
+
         '''self.localMinima: flag to determine if local minima will exist or not '''
         self.localMinima=localMinima
         self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRadius,self.visibleRaduis)
@@ -330,7 +333,6 @@ class SUPERVISOR:
         
         for i in range(self.ROBN):
             self.NASfunction.append(np.asarray(self.swarm[i].groundSensorValue))
-
 # visualize ....................................................................................................................
     def visualize(self):
         if self.vizFlag:
@@ -582,7 +584,7 @@ class SUPERVISOR:
                 ''' these robots has detected QR. so change their QR parameter and
                 delete their indexes from  allRobotIndx so the rest gets QR0'''
                 self.swarm[i].detectedQR='QR'+str(j+1)
-                allRobotIndx=np.delete(allRobotIndx,allRobotIndx==i)
+                allRobotIndx=np.delete(allRobotIndx,np.where(allRobotIndx==i)[0][0])
                 '''lastdetectedQR only saves the non zero values of QR. for RL it is only used for visualization'''
                 self.swarm[i].lastdetectedQR=self.swarm[i].detectedQR
 
@@ -855,6 +857,7 @@ class ROBOT(SUPERVISOR):
             self.sudoVec= np.array(self.QRloc[self.detectedQR])-self.position
             actionXY_SudoVec=actionXY+self.sudoVec
             angle=np.degrees(atan2(actionXY_SudoVec[0],actionXY_SudoVec[1]))+self.SUPERVISOR.Noise("angle")
+            angle=RotStandard(angle) #! if angle gets negative it causes problem in algorithm
             length=sqrt(actionXY_SudoVec[0]**2+actionXY_SudoVec[1]**2)+self.SUPERVISOR.Noise("length")
             actionXY_SudoVec=np.array([length*sin(np.radians(angle)),length*cos(np.radians(angle))])
 
@@ -922,3 +925,4 @@ class ROBOT(SUPERVISOR):
             self.epoch+=1
             s=self.SUPERVISOR.PRMparameter # period 
             self.RLparams["epsilon"]=(cos(self.epoch*2*np.pi/s)+1)/2
+

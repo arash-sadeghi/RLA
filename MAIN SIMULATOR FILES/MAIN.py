@@ -57,7 +57,7 @@ def LOG():
     global sup,samplingPeriodSmall,it,sampled,save_csv,codeBeginTime,dirChangeCharacter,FinalTime,save_tables_videos,videoList,record,showFrames,SAR,localMinima,t
     global NASw,NAS,log,eps,alpha,reward # caviat: if localMinima is true, its matrices are not globalized here
 
-    # sup.visualize()
+    sup.visualize()
     if sup.getTime()%samplingPeriodSmall==0 and sup.getTime()-t>1:
         '''logs specail for first iteration'''
         if method=='RL':
@@ -317,52 +317,21 @@ if __name__ == "__main__" or True:
         checkHealth()
         while sup.getTime()<=FinalTime:
             ''' start of main loop '''
-
-            # t1=TIME()
             sup.checkCollision()
-            # print("checkCollision ",(TIME()-t1)*10000)
-
-            # t1=TIME()
             sup.aggregateSwarm()
-            # print("aggregateSwarm ",(TIME()-t1)*10000)
-
             if method=='RL':
-                # t1=TIME()
                 sup.getQRs()
-                # print("getQRs ",(TIME()-t1)*10000)
-
-                # t1=TIME()
                 sup.swarmRL()
-                # print("swarmRL ",(TIME()-t1)*10000)
-
             elif method=='LBA':
-                # t1=TIME()
                 sup.getQRs()
-                # print("getQRs ",(TIME()-t1)*10000)
-
-                # t1=TIME()
                 sup.LBA()
-                # print("LBA ",(TIME()-t1)*10000)
-
-            # t1=TIME()
             sup.moveAll()
-            # print("moveAll ",(TIME()-t1)*10000)
-
             if abs(HalfTime-sup.getTime())<1 and GroundChanged==False:
                 GroundChanged=True
                 print(colored('\t[+] half time reached','green'))
                 if dynamic:
                     sup.changeGround()
-
-            # t1=TIME()
             LOG()
-            # print("LOG ",(TIME()-t1)*10000)
-            # print("---------------------------------------")
-
-            # lp_wrapper = lp(sup.moveAll)
-            # lp_wrapper()
-            # lp.print_stats()
-            # cp.run('sup.moveAll()')
         if method=="RL":
             QtableMem[it,:,:,:]=sup.getQtables()
         '''V: -1 is for that 'it' at max will be iteration-1 and after that code will exit the loop'''
@@ -371,5 +340,3 @@ if __name__ == "__main__" or True:
         print(colored("\t[+] iteration duration: ",'blue'),int(TIME()-iteration_duration))
     print(colored('[+] duration','green'),int(TIME()-t1_))
     print(colored('[+] goodbye  ^^',"green"))
-
-
