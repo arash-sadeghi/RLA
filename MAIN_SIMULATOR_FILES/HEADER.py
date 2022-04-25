@@ -230,12 +230,16 @@ class SUPERVISOR:
         self.desiredPosDistpx=10
 
 
-        # angles=np.arange(0,180+18,18)
-        angles=np.array([35,70,70+35])
+        angles=np.arange(0,180+18,18)
+        # angles=np.array([35,70,70+35])
         # self.maxlen=int(16*512/9.2)*sqrt(2) # caviat
-        self.maxlen=int(1*512/2)
+        # self.maxlen=int(1*512/2)
+        self.maxlen=int(5)
 
-        lens=[self.maxlen//2,2*self.maxlen//2]
+        # lens=[self.maxlen//2,2*self.maxlen//2]
+        lens=[1.25 , 2.5, 3.75, 5]
+        lens=[m2px(_) for _ in lens]
+
         self.actionSpace=list(product(lens,angles))
 
         self.numberOfStates=7
@@ -270,7 +274,7 @@ class SUPERVISOR:
             return a*exp(-((x-b)**2)/(2*(c**2)))
         im=np.zeros((Lxpx,Lypx))
         for i in range(0,R):
-            cv.circle(im,(int((Lypx/2)),int(Lxpx/2)),i,gauss(Lxpx/2-i),2)
+            cv.circle(im,(3*Lypx//4 , Lxpx//2),i,gauss(Lxpx/2-i),2)
 
         if self.localMinima:
             self.cueGcenter=np.flip(np.array([int((Lypx/4)),int(Lxpx/2)]))
@@ -285,12 +289,12 @@ class SUPERVISOR:
 
         for i in self.QRloc.values():
             cv.circle(im,tuple(i),10,(255,255,255),-1)
-            cv.circle(im,tuple(i),visibleRaduis,(255,255,255),1)
+            # cv.circle(im,tuple(i),visibleRaduis,(255,255,255),1)
         im=255-255*im
         '''writing and reading back the image to have a 3 channel image with pixels between 0-255'''
         cv.imwrite("BackgroundGeneratedBySim.png",im)
         im=cv.imread("BackgroundGeneratedBySim.png")
-        im=cv.rectangle(im,(0,0),(Lxpx,Lypx),(0,255,0),3)
+        im=cv.rectangle(im,(0,0),(Lxpx,Lypx),(0,0,0),3)
         return im
 # generateRobots ...............................................................................................................
     def generateRobots(self):
@@ -341,9 +345,9 @@ class SUPERVISOR:
                 vizPos=[]
                 for ii in range(len(self.swarm[i].position)): vizPos.append(int(self.swarm[i].position[ii]))
                 RobotColor=(255,100,100)
-                if i==0:
-                    ''' robot0 is in purple for debug purposes '''
-                    RobotColor=(128,0,128)
+                # if i==0:
+                #     ''' robot0 is in purple for debug purposes '''
+                #     RobotColor=(128,0,128)
 
                 if self.method=="RL":
                     if self.swarm[i].inAction== True:
@@ -354,8 +358,8 @@ class SUPERVISOR:
                         cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
                         cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
 
-                    if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
-                        RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
+                    # if self.swarm[i].ExploreExploit=='Exploit' and self.swarm[i].inAction== True:
+                    #     RobotColor=(100,255,100) # color of robot will be green if exploits. otherwise blue again
 
 
                 elif self.method=="LBA":
@@ -367,19 +371,19 @@ class SUPERVISOR:
                         cv.arrowedLine(background,I,E,(0,255,0),2) # vector that must be traversed
                         cv.arrowedLine(background,I,Q,(100,100,0),2) # sudo vec
                     
-                cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
+                # cv.circle(background,tuple(vizPos),self.robotSenseRad,RobotColor,1)
                 cv.circle(background,tuple(vizPos),m2px(self.robotRad),RobotColor,-1)
 
                 direction=np.array([int(m2px(self.robotRad)*sin(np.radians(self.swarm[i].rotation))) \
                     , int(m2px(self.robotRad)*cos(np.radians(self.swarm[i].rotation)))])
-                cv.putText(background,str(i),tuple([vizPos[0]-10,vizPos[1]+10]),cv.FONT_HERSHEY_SIMPLEX\
-                    ,0.75,(0,0,0),3 )
+                # cv.putText(background,str(i),tuple([vizPos[0]-10,vizPos[1]+10]),cv.FONT_HERSHEY_SIMPLEX ,0.75,(0,0,0),3 )
                 cv.line(background,tuple(vizPos),tuple(np.array(vizPos)+direction),(0,0,200),3)
 
-            cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
+            # cv.putText(background,str(int(self.time))+' s',(20,20),cv.FONT_HERSHEY_SIMPLEX,0.75,(0,100,0),3 )
 
             if self.record:
                 self.video.write(background)
+                cv.imwrite(os.path.join("frames",str(int(self.time))+".png"),background)
             if self.showFrames:
                 ''' with openCV '''
                 cv.imshow("background",background)

@@ -220,7 +220,7 @@ def init_params():
         comment=method+' '+comment+' noise '+str(noise)
 
 #...............................................................................................................................
-if __name__ == "__main__" or True:
+if __name__ == "__main__":
     print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
     # print(colored("[!] be carefull avout sup.visualuz","red"))
     # print(colored("[!] action space changed","red"))
@@ -269,8 +269,8 @@ if __name__ == "__main__" or True:
     saved=0
     print(colored('[+] '+method,'green'))
     print(colored('[+] press ctrl+c for saving data asynchronously','green'))
-    # QtableMem=np.zeros((iteration,ROBN,7,44)) ##### caviat
-    QtableMem=np.zeros((iteration,ROBN,7,6)) ##### caviat
+    QtableMem=np.zeros((iteration,ROBN,7,44)) ##### caviat
+    # QtableMem=np.zeros((iteration,ROBN,7,6)) ##### caviat
     
     log=np.zeros((iteration,sampledDataNum,ROBN,3))
     if paramReductionMethod=='classical' or paramReductionMethod=='cyclical':
