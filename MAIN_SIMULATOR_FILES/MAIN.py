@@ -322,6 +322,8 @@ if __name__ == "__main__":
             if method=='RL':
                 sup.getQRs()
                 sup.swarmRL()
+                if communicate:
+                    sup.talk()
             elif method=='LBA':
                 sup.getQRs()
                 sup.LBA()

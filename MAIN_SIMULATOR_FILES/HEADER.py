@@ -2,17 +2,6 @@ import os
 import time
 if os.name=="nt": os.system('cls')
 else: os.system('clear')
-# print('[+] updating pip')
-# os.system('python -m pip install --upgrade pip') # upgrading pip
-''' installing dependincies '''
-# dependincies=['opencv-python','numpy','matplotlib','termcolor','psutil']
-# availble_pkg=os.popen('pip list').read()
-# for d in dependincies:
-#     if not(d in availble_pkg):
-#         ans=input('[!] pakage '+d+' must be install [y/n]')
-#         if ans=='y':
-#             os.system('pip install '+d)
-
 import sys
 import cv2 as cv
 import numpy as np
@@ -612,14 +601,14 @@ class SUPERVISOR:
                     if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable))
                     self.swarm[i].Qtable=np.copy(temp)
                     self.swarm[j].Qtable=np.copy(temp)
-                    if self.vizFlag : print(np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),\
-                        self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
+                    # if self.vizFlag : print(np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),\
+                        # self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
                     
                     temp=min(self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
                     self.swarm[i].RLparams['epsilon']=temp
                     self.swarm[j].RLparams['epsilon']=temp
                     if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
-        if self.vizFlag : print("------------------------------------------------------")
+        # if self.vizFlag : print("------------------------------------------------------")
 # getLog .......................................................................................................................
     def getLog(self):
         location=[]
