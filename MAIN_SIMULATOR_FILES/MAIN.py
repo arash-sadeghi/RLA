@@ -246,15 +246,22 @@ if __name__ == "__main__":
     print(colored('[+] paramReductionMethod','green'),paramReductionMethod,PRMparameter)
 
     # LOGthrd=threading.Thread(target=LOG)
-
-    codeBeginTime=ctime(TIME()).replace(':','_')+'_'+method+'_'+comment
-    if globalQ and communicate:
-        '''local and global communication cant be toghether '''
-        raise NameError('[-] what do you want?')
+    #! put all data in output_base_path
+    output_base_path = "output"
+    
+    #! check if folder already exists
+    if os.path.isfile(output_base_path) == False:
+        os.makedirs(output_base_path)
+    
+    codeBeginTime=os.path.join(output_base_path , ctime(TIME()).replace(':','_')+'_'+method+'_'+comment)
 
     ''' preparing dirs '''
     os.makedirs(codeBeginTime)
     os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
+
+    if globalQ and communicate:
+        '''local and global communication cant be toghether '''
+        raise NameError('[-] what do you want?')
 
     ''' save parameters into a file '''
     with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :

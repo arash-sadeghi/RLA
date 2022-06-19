@@ -1,6 +1,6 @@
 {
     "flags":{
-       "dynamic":"False",
+       "dynamic":"True",
        "localMinima":"False",
        "showFrames":"False",
        "record":"True",
@@ -10,14 +10,14 @@
        "save_tables_videos":"False "
     },
     "vals":{
-       "Lx":"5",
-       "Ly":"10",
+       "Lx":"2.5",
+       "Ly":"5",
        "cueRaduis":"0.7",
        "visibleRaduis":"0.3",
        "iteration":"5",
        "samplingPeriodSmall":"10",
-       "FinalTime":"10000",
-       "HalfTime":"10000//2",
+       "FinalTime":"100000",
+       "HalfTime":"100000//2",
        "ROBN":"10",
        "paramReductionMethod":"cyclical",
        "PRMparameter":"100",
