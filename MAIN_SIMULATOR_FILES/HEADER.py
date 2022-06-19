@@ -598,7 +598,7 @@ class SUPERVISOR:
                 tobesharedRobots=np.where(self.flagsR[i])[0]
                 for j in tobesharedRobots:
                     temp=TableCompare(self.swarm[i].Qtable,self.swarm[j].Qtable)
-                    if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable))
+                    # if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable))
                     self.swarm[i].Qtable=np.copy(temp)
                     self.swarm[j].Qtable=np.copy(temp)
                     # if self.vizFlag : print(np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),\
@@ -607,7 +607,7 @@ class SUPERVISOR:
                     temp=min(self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
                     self.swarm[i].RLparams['epsilon']=temp
                     self.swarm[j].RLparams['epsilon']=temp
-                    if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
+                    # if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
         # if self.vizFlag : print("------------------------------------------------------")
 # getLog .......................................................................................................................
     def getLog(self):
