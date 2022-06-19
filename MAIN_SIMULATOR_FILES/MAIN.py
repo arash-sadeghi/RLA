@@ -307,7 +307,7 @@ if __name__ == "__main__":
     if save_tables_videos:
         imsName=["epsilon","QtableCheck","QtableRob0"]
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
-        FPS=1
+        FPS=10
         videoList=[]
         for _ in range(len(imsName)):
             videoList.append(cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+imsName[_]+'.mp4',fourcc, FPS, tableImSize,True))
