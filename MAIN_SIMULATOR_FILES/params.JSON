@@ -5,7 +5,7 @@
        "showFrames":"False",
        "record":"True",
        "globalQ":"False",
-       "communicate":"True",
+       "communicate":"False",
        "save_csv":"False",
        "save_tables_videos":"False "
     },
@@ -14,16 +14,16 @@
        "Ly":"5",
        "cueRaduis":"0.7",
        "visibleRaduis":"0.3",
-       "iteration":"5",
+       "iteration":"10",
        "samplingPeriodSmall":"10",
        "FinalTime":"100000",
        "HalfTime":"100000//2",
        "ROBN":"10",
        "paramReductionMethod":"cyclical",
        "PRMparameter":"100",
-       "comment":"communication test",
+       "comment":"without communication_random seed",
        "commentDividerChar":" x ",
        "method":"RL",
        "noise":"0",
-       "seed_value":"100" 
+       "seed_value":"" 
 }}

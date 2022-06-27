@@ -3,4 +3,5 @@ MAIN_SIMULATOR_FILES/BackgroundGeneratedBySim.png
 MAIN_SIMULATOR_FILES/__pycache__/
 MAIN_SIMULATOR_FILES/output/
 plotter/.vscode/
+MAIN_SIMULATOR_FILES/*.pyc
 
