@@ -250,7 +250,7 @@ if __name__ == "__main__":
     output_base_path = "output"
     
     #! check if folder already exists
-    if os.path.isfile(output_base_path) == False:
+    if os.path.exists(output_base_path) == False:
         os.makedirs(output_base_path)
     
     codeBeginTime=os.path.join(output_base_path , ctime(TIME()).replace(':','_')+'_'+method+'_'+comment)
