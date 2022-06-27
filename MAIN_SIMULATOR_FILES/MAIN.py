@@ -93,12 +93,12 @@ def LOG():
                     record=False
                     showFrames=False
                     if hasattr(sup,'video'): sup.video.release()
-                    ''' save SAR '''
+                    ''' save SAR 
                     SAR=np.stack(sup.swarm[0].SAR)
                     with open(codeBeginTime+dirChangeCharacter+'SAR_robot0.npy','wb') as SAR_f:
                         np.save(SAR_f,SAR)
                     np.savetxt(codeBeginTime+dirChangeCharacter+'SAR_robot0.csv',np.round(SAR), delimiter=",")
-
+                    '''
             ''' in every iteration, log the vital performance indexes with frequency of samplingPeriodSmall''' 
             if localMinima:
                 NASG[it,sampled],NASL[it,sampled]=sup.getNAS()                    
@@ -341,6 +341,7 @@ if __name__ == "__main__":
                 if dynamic:
                     sup.changeGround()
             LOG()
+            print(sup.NASfunction) #! this is not updating
         if method=="RL":
             QtableMem[it,:,:,:]=sup.getQtables()
         '''V: -1 is for that 'it' at max will be iteration-1 and after that code will exit the loop'''
