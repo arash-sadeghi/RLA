@@ -13,7 +13,7 @@ def saveData(caller=None):
     else:
         data2BsavedStr=["NASw","NAS","log","Qtable","rewards","eps","alpha"]
         data2Bsaved=[NASw,NAS,log,QtableMem,reward,eps,alpha]
-    fileName=codeBeginTime+dirChangeCharacter+dataType+dirChangeCharacter+str(it)+' '+str(sup.getTime())+' s '+ctime(TIME()).replace(':','_')+' '
+    fileName=os.path.join(codeBeginTime , dataType , f"seed_{seed}_it_{str(it)}_sim_time_{str(sup.getTime())}_date_{ctime(TIME()).replace(':','_').replace(' ','_')}")
     for i in range(len(data2Bsaved)):
         with open(fileName+data2BsavedStr[i]+commentDividerChar+comment+'.npy','wb') as f:
             np.save(f,data2Bsaved[i])
@@ -54,7 +54,7 @@ def clearTerminal():
     else:os.system('clear')
 #...............................................................................................................................
 def LOG():
-    global sup,samplingPeriodSmall,it,sampled,save_csv,codeBeginTime,dirChangeCharacter,FinalTime,save_tables_videos,videoList,record,showFrames,SAR,localMinima,t
+    global sup,samplingPeriodSmall,it,sampled,save_csv,codeBeginTime,FinalTime,save_tables_videos,videoList,record,showFrames,SAR,localMinima,t
     global NASw,NAS,log,eps,alpha,reward # caviat: if localMinima is true, its matrices are not globalized here
 
     sup.visualize()
@@ -67,7 +67,10 @@ def LOG():
                     '''save csvs '''
                     if save_csv:
                         QtableRob0=sup.getQtables()[0]
-                        np.savetxt(codeBeginTime+dirChangeCharacter+'csvs'+dirChangeCharacter+str(sup.getTime())+".csv", np.round(QtableRob0,2), delimiter=",")
+                        np.savetxt(
+                            os.path.join(codeBeginTime,'csvs',str(sup.getTime())+".csv"),
+                            np.round(QtableRob0,2),
+                            delimiter=",")
 
                     '''save tables videos '''
                     if save_tables_videos:
@@ -224,7 +227,9 @@ if __name__ == "__main__":
     print(colored("VVVVVVVVVVVVVVVVVV STARTED VVVVVVVVVVVVVVVVVV","yellow"))
     # print(colored("[!] be carefull avout sup.visualuz","red"))
     # print(colored("[!] action space changed","red"))
-    DirLocManage()
+    
+    #! make sure code starts from its own local location. last part is scripts own name that is why .. is for
+    os.chdir(  os.path.dirname(__file__))
     init_params()    
 
     '''initiate seed'''
@@ -239,8 +244,7 @@ if __name__ == "__main__":
     # clearTerminal()
     ''' call wsential functions '''
     warningSupress()
-    dirChangeCharacter=DirLocManage()
-
+    
     ''' parameter value assigning '''
     print(colored('[+] '+comment,'green'))
     print(colored('[+] paramReductionMethod','green'),paramReductionMethod,PRMparameter)
@@ -253,22 +257,21 @@ if __name__ == "__main__":
     if os.path.exists(output_base_path) == False:
         os.makedirs(output_base_path)
     
-    codeBeginTime=os.path.join(output_base_path , ctime(TIME()).replace(':','_')+'_'+method+'_'+comment)
+    codeBeginTime=os.path.join(output_base_path , ctime(TIME()).replace(':','_').replace(' ','_')+'_'+method+'_'+comment)
 
     ''' preparing dirs '''
-    os.makedirs(codeBeginTime)
-    os.makedirs(codeBeginTime+dirChangeCharacter+'process data')
+    os.makedirs(os.path.join(codeBeginTime,'process data') , exist_ok=True)
 
     if globalQ and communicate:
         '''local and global communication cant be toghether '''
         raise NameError('[-] what do you want?')
 
     ''' save parameters into a file '''
-    with open(codeBeginTime+dirChangeCharacter+'params.txt','w') as paramfile :
+    with open( os.path.join(codeBeginTime,'params.txt'),'w' ) as paramfile :
         paramfile.write(str(parameters))
 
     ''' for saving csvs which is Q-table of robot 0 for iteration 0 '''
-    if save_csv: os.makedirs(codeBeginTime+dirChangeCharacter+'csvs') 
+    if save_csv: os.makedirs(os.path.join(codeBeginTime,'csvs')) 
 
 
     ''' initilization '''
@@ -310,7 +313,7 @@ if __name__ == "__main__":
         FPS=10
         videoList=[]
         for _ in range(len(imsName)):
-            videoList.append(cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+imsName[_]+'.mp4',fourcc, FPS, tableImSize,True))
+            videoList.append(cv.VideoWriter(os.path.join(codeBeginTime,imsName[_]+'.mp4'),fourcc, FPS, tableImSize,True))
 
 
     for it in range(iteration):
@@ -341,7 +344,6 @@ if __name__ == "__main__":
                 if dynamic:
                     sup.changeGround()
             LOG()
-            print(sup.NASfunction) #! this is not updating
         if method=="RL":
             QtableMem[it,:,:,:]=sup.getQtables()
         '''V: -1 is for that 'it' at max will be iteration-1 and after that code will exit the loop'''

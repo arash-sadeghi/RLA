@@ -90,24 +90,6 @@ def dist(delta):
 def TableCompare(table1,table2):
     return np.round((table1+table2)/2,3)
 # ------------------------------------------------------------------------------------------------------------------------------
-def DirLocManage(returnchar=False):
-    ''' with this segment code is callable from any folder '''
-    if os.name=='nt':
-        dirChangeCharacter='\\'
-    else:
-        dirChangeCharacter='/'
-    if returnchar==False:
-        scriptLoc=__file__
-        for i in range(len(scriptLoc)):
-            # if '/' in scriptLoc[-i-2:-i]: # in running
-            if dirChangeCharacter in scriptLoc[-i-2:-i]: # in debuging
-                scriptLoc=scriptLoc[0:-i-2]
-                break
-        # print('[+] code path',scriptLoc)
-        os.chdir(scriptLoc)
-    return dirChangeCharacter
-    ''' done '''
-# ------------------------------------------------------------------------------------------------------------------------------
 def sigmoid(x):
     return 1/(1+exp(-10*x+5))
 # ------------------------------------------------------------------------------------------------------------------------------
@@ -170,7 +152,7 @@ class SUPERVISOR:
         size=(self.Ylen,self.Xlen)
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
         if self.vizFlag:
-            self.video = cv.VideoWriter(codeBeginTime+DirLocManage(returnchar=True)+videoRecordTime+'.mp4',fourcc, FPS, size,True)
+            self.video = cv.VideoWriter(os.path.join(codeBeginTime,videoRecordTime+'.mp4'),fourcc, FPS, size,True)
 
         self.allRobotIndx=np.arange(0,self.ROBN)
         self.globalQ=globalQ
@@ -179,9 +161,6 @@ class SUPERVISOR:
         self.all_poses=[]
         self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
         self.QRpos_ar=np.array(list(self.QRloc.values()))
-        # self.NASfunction=np.vectorize(lambda x: x.groundSensorValue)
-        self.NASfunction=[]
-
 
         '''for local and global NAS '''
         if self.localMinima:
@@ -239,7 +218,7 @@ class SUPERVISOR:
 
         ''' if supervisor is executing this method, add two parameters to params file'''
         if not hasattr(self,'robotName'):
-            with open(self.codeBeginTime+DirLocManage(returnchar=True)+'params.txt','a') as paramfile :
+            with open( os.path.join( self.codeBeginTime,'params.txt'),'a') as paramfile :
                 paramDict={"RLparams":self.RLparams,"EpsilonDampRatio":self.EpsilonDampRatio}
                 paramfile.write(str(paramDict))
         else:
@@ -322,10 +301,8 @@ class SUPERVISOR:
         it will stop tracking the changes and only will store the value at the moment'''
         self.swarmRotList=[]
         for i in range(self.ROBN):
-             self.swarmRotList.append(self.swarm[i].rotation2B)
-        
-        for i in range(self.ROBN):
-            self.NASfunction.append(np.asarray(self.swarm[i].groundSensorValue))
+             self.swarmRotList.append(self.swarm[i].rotation2B)     
+
 # visualize ....................................................................................................................
     def visualize(self):
         if self.vizFlag:
@@ -556,7 +533,11 @@ class SUPERVISOR:
         else:
             ''' no discrimination of local and global cue '''
             if weighted==False:
-                return np.count_nonzero(np.array(self.NASfunction))/self.ROBN
+                NAS_values = []
+                for i in range(self.ROBN):
+                    NAS_values.append(self.swarm[i].groundSensorValue)
+                return np.count_nonzero(np.array(NAS_values))/self.ROBN
+
             elif weighted==True:
                 return np.sum(np.array(self.NASfunction))/(self.ROBN*255)
 # getQRs .......................................................................................................................
