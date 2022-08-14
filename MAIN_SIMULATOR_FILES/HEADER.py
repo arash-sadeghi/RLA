@@ -9,104 +9,15 @@ import random as rnd
 from math import radians, sin,cos,sqrt,atan2,exp
 from time import time as TIME
 from time import ctime
-import signal # used in main
-import pickle # used in main
 import matplotlib.pyplot as plt
 from psutil import disk_usage
 from termcolor import colored 
 from itertools import combinations  as comb , product
+from standard_functons import m2px, RotStandard, dist
 
-################################################################################################################################
-################################################################################################################################
-################################################################################################################################
-def set_seed(sd=None):
-    if (type(sd) is float) or (type(sd) is int):
-        print(colored("\n\n[!]>>>>>>>>>>>> SEED GIVEN. NOT RANDOM<<<<<<<<<<<<<<\n\n","red"))
-        rnd.seed(sd)
-        return sd
-    else:
-        seed=int(TIME()%1000)
-        print(colored("[+] seed: ","red"),seed)
-        rnd.seed(seed)
-        return seed
-
-# ------------------------------------------------------------------------------------------------------------------------------
-def warningSupress():
-    from sys import warnoptions
-    from warnings import simplefilter
-    if not warnoptions:
-        simplefilter("ignore")
-# ------------------------------------------------------------------------------------------------------------------------------
-def checkHealth():
-    MinDiskCap=30
-    # health=shutil.disk_usage('/')
-    # if health[-1]/(2**30)<=5:
-    #     raise NameError('[-] disk is getting full')
-    # disk='/media/arash/7bee828d-5758-452e-956d-aca000de2c81'
-    disk=os.getcwd()
-
-    try:
-        hdd=disk_usage(disk)
-        total,used,free=hdd.total / (2**30),hdd.used / (2**30),hdd.free / (2**30)
-        if free<MinDiskCap:
-                print (colored('[-] disk is almost full',"red"))
-                exit(1)
-
-    except Exception as E:
-        print(colored("[+] Error not in "+disk+" ERROR:"+E,'red'))
-
-    s=__file__
-    s=s.replace(__name__,"")
-    s=s.replace('.py',"")
-    if '\\' in s:
-        s=s.replace('\\','/')
-    hdd2=disk_usage(s)
-    total2,used2,free2=hdd2.total / (2**30),hdd2.used / (2**30),hdd2.free / (2**30)
-
-    if free2<MinDiskCap:
-            print (colored('[-] disk is almost full',"red"))
-            exit(1)
-    print(colored('\t[+] Disk health checked. free2: ','green'),str(int(free2)),' GB')
-# ------------------------------------------------------------------------------------------------------------------------------
-def m2px(inp):
-    return int(inp*512/2)
-# ------------------------------------------------------------------------------------------------------------------------------
-def px2m(inp):
-    return inp*2/512
-# ------------------------------------------------------------------------------------------------------------------------------
-def RotStandard(inp):
-    while inp<0: inp+=360
-    while inp>360: inp-=360
-    return inp
-# ------------------------------------------------------------------------------------------------------------------------------
-def dist(delta):
-    if np.size(delta)>2:
-        # return np.sqrt(np.square(delta[:,0])+np.square(delta[:,1]))
-        return np.linalg.norm(delta,axis=1)
-    else:
-        return np.linalg.norm(delta)
-        # return np.sqrt(np.square(delta[0])+np.square(delta[1]))
-# ------------------------------------------------------------------------------------------------------------------------------
-def TableCompare(table1,table2):
-    return np.round((table1+table2)/2,3)
-# ------------------------------------------------------------------------------------------------------------------------------
-def sigmoid(x):
-    return 1/(1+exp(-10*x+5))
-# ------------------------------------------------------------------------------------------------------------------------------
-def saturate(x):
-    if x>=1: return 1
-    elif x<=0: return 0
-    else: return x
-# ------------------------------------------------------------------------------------------------------------------------------
-def quadratic(x):
-    return saturate(x**2)
-# ------------------------------------------------------------------------------------------------------------------------------
-################################################################################################################################
-################################################################################################################################
-################################################################################################################################
 class SUPERVISOR:
     def __init__(self,ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRadius,visibleRaduis,\
-        paramReductionMethod,PRMparameter,noise,localMinima,method):
+        paramReductionMethod,PRMparameter,noise,method):
 
         self.Etol=4
         self.Lx=m2px(Lx)
@@ -118,8 +29,6 @@ class SUPERVISOR:
         self.QRloc={'QR1':(self.Lx,self.Ly//4),'QR2':(self.Lx,2*self.Ly//4),\
             'QR3':(self.Lx,self.Ly//4*3),'QR4':(0,3*self.Ly//4),'QR5':(0,2*self.Ly//4),'QR6':(0,self.Ly//4)}
 
-        '''self.localMinima: flag to determine if local minima will exist or not '''
-        self.localMinima=localMinima
         self.ground=self.generateBackground(self.Lx,self.Ly,self.cueRadius,self.visibleRaduis)
         self.codeBeginTime=codeBeginTime
         self.sharedParams()
@@ -161,11 +70,6 @@ class SUPERVISOR:
         self.all_poses=[]
         self.allRobotQRs=np.array(list(product(self.allRobotIndx,np.arange(0,len(self.QRloc)))))
         self.QRpos_ar=np.array(list(self.QRloc.values()))
-
-        '''for local and global NAS '''
-        if self.localMinima:
-            self.NASGfunction=np.vectorize(lambda x: x.groundSensorValueG)
-            self.NASLfunction=np.vectorize(lambda x: x.groundSensorValueL)
 
         if self.showFrames:
             ''' positioning window to make it easier to watch '''
@@ -243,10 +147,6 @@ class SUPERVISOR:
         im=np.zeros((Lxpx,Lypx))
         for i in range(0,R):
             cv.circle(im,(3*Lypx//4 , Lxpx//2),i,gauss(Lxpx/2-i),2)
-
-        if self.localMinima:
-            self.cueGcenter=np.flip(np.array([int((Lypx/4)),int(Lxpx/2)]))
-            self.cueLcenter=np.flip(np.array([int((3*Lypx/4)),int(Lxpx/2)]))
 
             for i in range(0,R):
                 cv.circle(im,(int((3*Lypx/4)),int(Lxpx/2)),i,gauss(Lxpx/2-i)/2,2)
@@ -510,36 +410,22 @@ class SUPERVISOR:
                 self.avoid(colliders_forced,specific)
 # aggregateSwarm ...............................................................................................................
     def aggregateSwarm(self):
-        '''
-        a try to vectorized here but better not since some other 
-        functions also use the aggregate method of each robot
-        y=self.all_poses.astype(int)
-        y[:,0],y[:,1]=np.copy(y[:,1]),np.copy(y[:,0])
-        groundValues=255-self.ground[y]
-        '''
         for i in range(self.ROBN):
             self.swarm[i].aggregate()
 # getTime ......................................................................................................................
     def getTime(self):
         return int(self.time)
+# who_is_in_cue .......................................................................................................................
+    def who_is_in_cue(self):
+        #! returns a binary array indicating which robot is in cue which is not
+        NAS_values = []
+        for i in range(self.ROBN):
+            is_in_cue = 1 if self.swarm[i].groundSensorValue>0 else 0
+            NAS_values.append(is_in_cue)
+        return np.array(NAS_values)
 # getNAS .......................................................................................................................
     def getNAS(self,weighted=False):
-        if self.localMinima:
-            if weighted:
-                return np.sum(self.NASGfunction(self.swarm))/(self.ROBN*255),np.sum(self.NASLfunction(self.swarm))/(self.ROBN*255)
-            else:
-                return np.count_nonzero(self.NASGfunction(self.swarm))/self.ROBN,np.count_nonzero(self.NASLfunction(self.swarm))/self.ROBN
-
-        else:
-            ''' no discrimination of local and global cue '''
-            if weighted==False:
-                NAS_values = []
-                for i in range(self.ROBN):
-                    NAS_values.append(self.swarm[i].groundSensorValue)
-                return np.count_nonzero(np.array(NAS_values))/self.ROBN
-
-            elif weighted==True:
-                return np.sum(np.array(self.NASfunction))/(self.ROBN*255)
+        return np.count_nonzero(self.who_is_in_cue())
 # getQRs .......................................................................................................................
     def getQRs(self):
         '''
@@ -573,23 +459,20 @@ class SUPERVISOR:
             if (not i in self.colliders) and (self.swarm[i].detectedQR != 'QR0' or self.swarm[i].inAction==True)  :
                 self.swarm[i].RL()
 # talk .........................................................................................................................
-    def talk(self): ##### print must be fixed ####### epsilon sharing policy must be changed
+    def talk(self): 
+        #! can be improved speed wise by only iterating over collided robots
+        #! eps is not shared in this form
+        in_cues = self.who_is_in_cue()
+        Qtable_stack = []
         for i in range(self.ROBN):
-            if any(self.flagsR[i]):
-                tobesharedRobots=np.where(self.flagsR[i])[0]
-                for j in tobesharedRobots:
-                    temp=TableCompare(self.swarm[i].Qtable,self.swarm[j].Qtable)
-                    # if self.vizFlag : print('table shared among ',i,j,np.all(self.swarm[i].Qtable==self.swarm[j].Qtable))
-                    self.swarm[i].Qtable=np.copy(temp)
-                    self.swarm[j].Qtable=np.copy(temp)
-                    # if self.vizFlag : print(np.all(self.swarm[i].Qtable==self.swarm[j].Qtable),\
-                        # self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
-                    
-                    temp=min(self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
-                    self.swarm[i].RLparams['epsilon']=temp
-                    self.swarm[j].RLparams['epsilon']=temp
-                    # if self.vizFlag : print('eps after',self.swarm[i].RLparams['epsilon'],self.swarm[j].RLparams['epsilon'])
-        # if self.vizFlag : print("------------------------------------------------------")
+            if in_cues[i]:
+                Qtable_stack.append(self.swarm[i].Qtable)
+        if len(Qtable_stack) > 0:
+            max_Q = np.maximum.reduce(Qtable_stack)
+            for i in range(self.ROBN):
+                if in_cues[i]:
+                    self.swarm[i].Qtable = np.copy(max_Q)
+                    # print(f"[+] shared with {i}")
 # getLog .......................................................................................................................
     def getLog(self):
         location=[]
@@ -618,7 +501,6 @@ class SUPERVISOR:
     def changeGround(self):
         ''' this code will ruin address exchange'''
         self.ground=cv.rotate(self.ground,cv.ROTATE_180)
-        if self.localMinima: self.cueLcenter,self.cueGcenter=np.copy(self.cueGcenter),np.copy(self.cueLcenter)
         for i in range(self.ROBN):
             self.swarm[i].ground=self.ground
         ''' now address equality returned '''
@@ -697,10 +579,6 @@ class ROBOT(SUPERVISOR):
         self.rewardNoise=self.SUPERVISOR.noise
         self.noiseStrength=self.rewardNoise
         '''
-        ''' for local and global minima '''
-        if self.SUPERVISOR.localMinima:
-            self.groundSensorValueG=0
-            self.groundSensorValueL=0
 
         if self.SUPERVISOR.method=="LBA" or self.SUPERVISOR.method=="RL":
             ''' common parameters of LBA and RL '''
@@ -782,18 +660,6 @@ class ROBOT(SUPERVISOR):
             self.groundSensorValue=255-temp[0]
         else: self.groundSensorValue=0
         
-        if self.SUPERVISOR.localMinima:
-            ''' if discrimination of local and global cue is needed'''
-            if dist(self.position-self.SUPERVISOR.cueGcenter)<=self.SUPERVISOR.cueRadius:
-                self.groundSensorValueG=self.groundSensorValue
-                self.groundSensorValueL=0
-
-            elif dist(self.position-self.SUPERVISOR.cueLcenter)<=self.SUPERVISOR.cueRadius:
-                self.groundSensorValueL=self.groundSensorValue
-                self.groundSensorValueG=0
-            else:
-                self.groundSensorValueL=0
-                self.groundSensorValueG=0
 # aggregate ....................................................................................................................
     def aggregate(self,forced=False):
         self.groundSense()

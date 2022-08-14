@@ -1,29 +1,29 @@
 {
-    "flags":{
-       "dynamic":"True",
-       "localMinima":"False",
-       "showFrames":"False",
-       "record":"True",
-       "globalQ":"False",
-       "communicate":"False",
-       "save_csv":"False",
-       "save_tables_videos":"False "
+   "flags":{
+      "dynamic":"False",
+      "showFrames":"False",
+      "record":"True",
+      "globalQ":"False",
+      "communicate":"True",
+      "save_csv":"False",
+      "save_tables_videos":"False"
     },
-    "vals":{
-       "Lx":"2.28",
-       "Ly":"5.65",
-       "cueRaduis":"1",
-       "visibleRaduis":"0.3",
-       "iteration":"1",
-       "samplingPeriodSmall":"10",
-      "FinalTime":"100000",
-      "HalfTime":"100000//2",
-       "ROBN":"10",
-       "paramReductionMethod":"cyclical",
-       "PRMparameter":"100",
-       "comment":"video_check",
-       "commentDividerChar":" x ",
-       "method":"RL",
-       "noise":"0",
-       "seed_value":"" 
-}}
+   "vals":{
+      "Lx":"2.5",
+      "Ly":"5",
+      "cueRaduis":"1",
+      "visibleRaduis":"0.3",
+      "iteration":"5",
+      "samplingPeriodSmall":"10",
+      "FinalTime":"50000",
+      "HalfTime":"50000",
+      "ROBN":"10",
+      "paramReductionMethod":"cyclical",
+      "PRMparameter":"100",
+      "comment":"thesis_cases",
+      "commentDividerChar":" x ",
+      "method":"RL",
+      "noise":"0",
+      "seed_value":"random" 
+   }
+}
