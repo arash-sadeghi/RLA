@@ -2,16 +2,16 @@
    "flags":{
       "dynamic":"False",
       "showFrames":"False",
-      "record":"True",
+      "record":"False",
       "globalQ":"False",
-      "communicate":"True",
+      "communicate":"False",
       "save_csv":"False",
       "save_tables_videos":"False"
     },
    "vals":{
       "Lx":"2.5",
       "Ly":"5",
-      "cueRaduis":"1",
+      "cueRaduis":"0.7",
       "visibleRaduis":"0.3",
       "iteration":"5",
       "samplingPeriodSmall":"10",
@@ -20,7 +20,7 @@
       "ROBN":"10",
       "paramReductionMethod":"cyclical",
       "PRMparameter":"100",
-      "comment":"thesis_cases",
+      "comment":"RLA",
       "commentDividerChar":" x ",
       "method":"RL",
       "noise":"0",

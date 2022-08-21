@@ -18,7 +18,7 @@ def saveData(caller=None):
         QtableMem[it,:,:,:]=sup.getQtables()
     data2BsavedStr=["NAS","log","Qtable","rewards","eps","alpha"]
     data2Bsaved=[NAS,log,QtableMem,reward,eps,alpha]
-    fileName=os.path.join(codeBeginTime , dataType , f"seed_{seed}_it_{str(it)}_sim_time_{str(sup.getTime())}_date_{ctime(TIME()).replace(':','_').replace(' ','_')}")
+    fileName=os.path.join(codeBeginTime , dataType , f"seed_{seed}")
     for i in range(len(data2Bsaved)):
         with open(fileName+data2BsavedStr[i]+params.vals.commentDividerChar+comment+'.npy','wb') as f:
             np.save(f,data2Bsaved[i])
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     if os.path.exists(output_base_path) == False:
         os.makedirs(output_base_path)
     
-    codeBeginTime=os.path.join(output_base_path , ctime(TIME()).replace(':','_').replace(' ','_')+'_'+params.vals.method+'_'+comment)
+    codeBeginTime=os.path.join(output_base_path , str(seed)+ctime(TIME()).replace(':','_').replace(' ','_')+'_'+params.vals.method+'_'+comment)
 
     ''' preparing dirs '''
     os.makedirs(os.path.join(codeBeginTime,'process data') , exist_ok=True)

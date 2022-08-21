@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from psutil import disk_usage
 from termcolor import colored 
 from itertools import combinations  as comb , product
-from standard_functons import m2px, RotStandard, dist
+from standard_functons import m2px, RotStandard, dist, px2m 
 
 class SUPERVISOR:
     def __init__(self,ROBN,codeBeginTime,showFrames,globalQ,record,Lx,Ly,cueRadius,visibleRaduis,\
@@ -106,10 +106,10 @@ class SUPERVISOR:
         # angles=np.array([35,70,70+35])
         # self.maxlen=int(16*512/9.2)*sqrt(2) # caviat
         # self.maxlen=int(1*512/2)
-        self.maxlen=int(5)
-
+        # self.maxlen=int(5) #!tobe
+        self.maxlen = np.sqrt( px2m(self.Xlen)**2+ px2m(self.Ylen)**2 )
         # lens=[self.maxlen//2,2*self.maxlen//2]
-        lens=[1.25 , 2.5, 3.75, 5]
+        lens=[self.maxlen/4 , self.maxlen/4*2, self.maxlen/4*3, self.maxlen]
         lens=[m2px(_) for _ in lens]
 
         self.actionSpace=list(product(lens,angles))
@@ -142,14 +142,11 @@ class SUPERVISOR:
         def gauss(x):
             a = 1.0 # amplititude of peak
             b = Lxpx/2.0 # center of peak
-            c = Lxpx/11# standard deviation
+            c = Lxpx/8 # standard deviation
             return a*exp(-((x-b)**2)/(2*(c**2)))
         im=np.zeros((Lxpx,Lypx))
         for i in range(0,R):
             cv.circle(im,(3*Lypx//4 , Lxpx//2),i,gauss(Lxpx/2-i),2)
-
-            for i in range(0,R):
-                cv.circle(im,(int((3*Lypx/4)),int(Lxpx/2)),i,gauss(Lxpx/2-i)/2,2)
 
         ''' until here dim(x)>dim(y). after here it changes '''
         im=cv.rotate(im, cv.ROTATE_90_CLOCKWISE)
@@ -425,7 +422,7 @@ class SUPERVISOR:
         return np.array(NAS_values)
 # getNAS .......................................................................................................................
     def getNAS(self,weighted=False):
-        return np.count_nonzero(self.who_is_in_cue())
+        return np.count_nonzero(self.who_is_in_cue())/self.ROBN
 # getQRs .......................................................................................................................
     def getQRs(self):
         '''
