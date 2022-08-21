@@ -14,7 +14,7 @@ class plotter:
 
 
 #! path to folder containing .npy s to be plotted
-input_folder_paths="/home/arash/Desktop/workdir/emre_thesis/RLA/MAIN_SIMULATOR_FILES/output/CASES/res"
+input_folder_paths="/home/arash/Desktop/workdir/emre_thesis/RLA/plotter/model_comparison/data"
 output_path=input_folder_paths
 pointN_percent=0.01 # you will have pointN_percent*data point number of points in your graph
 datasLen=int(1e+5)
@@ -66,7 +66,8 @@ def plotter(arr,lable_,color):
     return x
 #------------------------------------------------------------------------
 for i in range( len(arrays) ):
-    label = os.path.basename(labels[i]).split('.')[0].split('x')[1]
+    # label = os.path.basename(labels[i]).split('.')[0].split('x')[1]
+    label = os.path.basename(labels[i]).split('.')[0]
     x_axis = plotter(arrays[i],label,palete[i])
 
 lines_labels = ax.get_legend_handles_labels()

@@ -154,7 +154,7 @@ class SUPERVISOR:
 
         for i in self.QRloc.values():
             cv.circle(im,tuple(i),10,(255,255,255),-1)
-            # cv.circle(im,tuple(i),visibleRaduis,(255,255,255),1)
+            cv.circle(im,tuple(i),visibleRaduis,(255,255,255),1)
         im=255-255*im
         '''writing and reading back the image to have a 3 channel image with pixels between 0-255'''
         cv.imwrite("BackgroundGeneratedBySim.png",im)
